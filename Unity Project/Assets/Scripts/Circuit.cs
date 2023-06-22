@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
-public abstract class Circuit
+public abstract class Circuit : MonoBehaviour
 {
     // Represents all required members of an input node
-    private class Input
+    public class Input
     {
         private bool powered; // Represents whether the input is powered by means of the attached circuit
 
@@ -15,8 +16,8 @@ public abstract class Circuit
         public Circuit Circuit { get { return circuit; } set { circuit = value; } }
     }
 
-    // Represents all rquired members of an output node
-    private class Output
+    // Represents all required members of an output node
+    public class Output
     {
         private bool powered; // Represents whether a specific output is powered by this current circuit
 
@@ -40,9 +41,12 @@ public abstract class Circuit
 
     private readonly Output[] outputs; // The list of output nodes for this circuit
 
+    private readonly string circuitName;
+
     // Utilized by inherited circuits to determine the specific number of input and output nodes
-    public Circuit(int numInputs, int numOutputs)
+    public Circuit(string circuitName, int numInputs, int numOutputs)
     {
+        this.circuitName = circuitName;
         inputs = new Input[numInputs];
         outputs = new Output[numOutputs];
     }
@@ -76,4 +80,11 @@ public abstract class Circuit
      * Utilizes all inputs to calculate the state of all outputs
      */
     public abstract void UpdateOutputs();
+
+    // Getter methods
+    public Input[] Inputs { get { return inputs; } }
+
+    public Output[] Outputs {  get { return outputs; } }
+
+    public string CircuitName { get { return circuitName; } }
 }
