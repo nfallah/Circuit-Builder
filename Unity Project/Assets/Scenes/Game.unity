@@ -417,10 +417,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d549af36ad2495c4680401b3e151e160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  borderThickness: 0.075
   inputSize: 0.5
   outputSize: 0.5
   heightMargins: 0.425
   width: 4
   baseMaterial: {fileID: 2100000, guid: 297305c5ad699094cb4c39216519e1d7, type: 2}
+  borderMaterial: {fileID: 2100000, guid: b9491ae56382a9c48a111bd15de8c436, type: 2}
   inputMaterial: {fileID: 2100000, guid: dcf6dc60d1bfe1d4399ec14febfd73e6, type: 2}
   outputMaterial: {fileID: 2100000, guid: 902826a6fcd41624ea1a663e894a9cd2, type: 2}
+  textPadding: {x: 0.25, y: 0.125}
