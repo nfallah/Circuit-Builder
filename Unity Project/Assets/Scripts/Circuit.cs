@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Circuit : MonoBehaviour
+public abstract class Circuit
 {
     // Represents all required members of an input node
     public class Input
@@ -36,6 +36,8 @@ public abstract class Circuit : MonoBehaviour
 
         public List<int> InputIndex { get { return inputIndex; } set { inputIndex = value; } }
     }
+
+    private GameObject physicalObject;
 
     private readonly Input[] inputs; // The list of input nodes for this circuit
 
@@ -80,6 +82,9 @@ public abstract class Circuit : MonoBehaviour
      * Utilizes all inputs to calculate the state of all outputs
      */
     public abstract void UpdateOutputs();
+
+    // Getter and setter methods
+    public GameObject PhysicalObject { get { return physicalObject; } set { physicalObject = value; } }
 
     // Getter methods
     public Input[] Inputs { get { return inputs; } }
