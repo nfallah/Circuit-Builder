@@ -13,10 +13,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Circuit (Base)
+  - Circuit (Input)
+  - Circuit (Output)
+  - Wire
   - 
   - 
   - 

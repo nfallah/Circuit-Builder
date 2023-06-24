@@ -1,6 +1,6 @@
-﻿public class XorGate : Circuit
+﻿public class XOrGate : Circuit
 {
-    public XorGate() : base("XOR", 2, 1) { }
+    public XOrGate() : base("XOR", 2, 1) { }
 
     public override void UpdateOutputs()
     {

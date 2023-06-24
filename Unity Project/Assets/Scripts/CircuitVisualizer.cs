@@ -35,11 +35,6 @@ public class CircuitVisualizer : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        VisualizeCircuit(new AndGate());    
-    }
-
     // Generates a mesh corresponding to the name & inputs/outputs of a given circuit
     public void VisualizeCircuit(Circuit circuit)
     {
@@ -53,6 +48,7 @@ public class CircuitVisualizer : MonoBehaviour
         GameObject physicalObject = new GameObject("\"" + circuit.CircuitName + "\" Gate");
         GameObject baseQuad = new GameObject("Base");
 
+        baseQuad.layer = 8;
         baseQuad.transform.parent = physicalObject.transform;
         baseQuad.transform.localPosition = Vector3.zero;
 
@@ -77,6 +73,7 @@ public class CircuitVisualizer : MonoBehaviour
         // Creating circuit border
         GameObject borderQuad = new GameObject("Border");
 
+        borderQuad.layer = 8;
         borderQuad.transform.parent = physicalObject.transform;
         borderQuad.transform.localPosition = Vector3.down * 0.01f;
 
@@ -106,6 +103,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject inputQuad = new GameObject("Input " + (index + 1));
 
+            inputQuad.layer = 9;
             inputQuad.transform.parent = physicalObject.transform;
             inputQuad.transform.localPosition = new Vector3(-dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
             mesh = new Mesh();
@@ -124,6 +122,7 @@ public class CircuitVisualizer : MonoBehaviour
             meshFilter.mesh = mesh;
             meshRenderer.material = inputMaterial;
             inputQuad.AddComponent<MeshCollider>();
+            circuit.Inputs[index].Transform = inputQuad.transform;
             index++;
         }
 
@@ -135,6 +134,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject outputQuad = new GameObject("Output " + (index + 1));
 
+            outputQuad.layer = 10;
             outputQuad.transform.parent = physicalObject.transform;
             outputQuad.transform.localPosition = new Vector3(dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
             mesh = new Mesh();
@@ -153,6 +153,7 @@ public class CircuitVisualizer : MonoBehaviour
             meshFilter.mesh = mesh;
             meshRenderer.material = outputMaterial;
             outputQuad.AddComponent<MeshCollider>();
+            circuit.Outputs[index].Transform = outputQuad.transform;
             index++;
         }
 
@@ -173,6 +174,10 @@ public class CircuitVisualizer : MonoBehaviour
         text.fontSizeMin = 0;
 
         circuit.PhysicalObject = physicalObject; // Connects new game object to its circuit for future access
+
+        CircuitReference circuitReference = physicalObject.AddComponent<CircuitReference>();
+
+        circuitReference.Circuit = circuit;
     }
 
     // Getter method

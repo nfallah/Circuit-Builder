@@ -1,7 +1,7 @@
 ﻿// Universal gate
-public class NorGate : Circuit
+public class NOrGate : Circuit
 {
-    public NorGate() : base("NOR", 2, 1) { }
+    public NOrGate() : base("NOR", 2, 1) { }
 
     public override void UpdateOutputs()
     {
