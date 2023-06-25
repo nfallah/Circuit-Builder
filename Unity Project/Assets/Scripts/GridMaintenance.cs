@@ -15,6 +15,7 @@ public class GridMaintenance : MonoBehaviour
     private void Start()
     {
         grid = Instantiate(gridReference);
+        grid.name = "Grid";
         grid.transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         grid.transform.eulerAngles = Vector3.zero;
         gridMaterial = grid.GetComponent<MeshRenderer>().material;

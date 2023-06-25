@@ -4,7 +4,7 @@
 
     public InputGate() : base("INPUT", 0, 1) { }
 
-    public override void UpdateOutputs()
+    protected override void UpdateOutputs()
     {
         Outputs[0].Powered = powered;
     }

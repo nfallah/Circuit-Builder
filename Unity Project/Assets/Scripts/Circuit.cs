@@ -12,6 +12,8 @@ public abstract class Circuit
 
         private GameObject wire; // Represents the wire attached to this input, if any
 
+        private MeshRenderer statusRenderer; // Mesh renderer of the material that displays whether the input is powered or not
+
         private Transform transform; // Represents the in-scene transform of the input
 
         // Getter and setter methods
@@ -20,6 +22,8 @@ public abstract class Circuit
         public Circuit ParentCircuit { get { return parentCircuit; } set { parentCircuit = value; } }
 
         public GameObject Wire { get { return wire; } set { wire = value;  } }
+
+        public MeshRenderer StatusRenderer { get { return statusRenderer; } set { statusRenderer = value; } }
 
         public Transform Transform { get { return transform; } set { transform = value; } }
     }
@@ -37,10 +41,13 @@ public abstract class Circuit
 
         private List<int> inputIndex = new List<int>(); // Represents the list of which input(s) this output has attached to
 
+        private MeshRenderer statusRenderer; // Mesh renderer of the material that displays whether the output is powered or not
+
         private Transform transform; // Represents the in-scene transform of the output
 
         // Getter and setter methods
         public bool Powered { get { return powered; } set { powered = value; } }
+
         public GameObject Wire { get { return wire; } set { wire = value; } }
 
         public int NumOutputs { get { return numOutputs; } set { numOutputs = value; } }
@@ -48,6 +55,8 @@ public abstract class Circuit
         public List<Circuit> Circuits { get { return circuits; } set { circuits = value; } }
 
         public List<int> InputIndex { get { return inputIndex; } set { inputIndex = value; } }
+
+        public MeshRenderer StatusRenderer { get { return statusRenderer; } set { statusRenderer = value; } }
 
         public Transform Transform { get { return transform; } set { transform = value; } }
     }
@@ -80,7 +89,7 @@ public abstract class Circuit
     {
         inputs[inputIndex].Powered = powered;
         inputs[inputIndex].ParentCircuit = circuit;
-        UpdateOutputs();
+        Update();
         UpdateChildren();
     }
 
@@ -96,11 +105,25 @@ public abstract class Circuit
         }
     }
 
+    public void Update()
+    {
+        UpdateOutputs();
+        UpdateStatuses();
+    }
+
+    private void UpdateStatuses()
+    {
+        foreach (Output output in outputs)
+        {
+            output.StatusRenderer.material = (output.Powered) ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
+        }
+    }
+
     /*
      * Abstract implementation representing the input/output logic of the circuit
      * Utilizes all inputs to calculate the state of all outputs
      */
-    public abstract void UpdateOutputs();
+    protected abstract void UpdateOutputs();
 
     // Getter and setter methods
     public GameObject PhysicalObject { get { return physicalObject; } set { physicalObject = value; } }

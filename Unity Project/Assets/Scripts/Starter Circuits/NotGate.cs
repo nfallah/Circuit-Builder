@@ -2,7 +2,7 @@
 {
     public NotGate() : base("NOT", 1, 1) {}
 
-    public override void UpdateOutputs()
+    protected override void UpdateOutputs()
     {
         Outputs[0].Powered = !Inputs[0].Powered;
     }

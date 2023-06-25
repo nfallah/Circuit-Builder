@@ -9,8 +9,6 @@ public class CircuitConnector : MonoBehaviour
 
     [SerializeField] Material poweredWire, unpoweredWire;
 
-    private Connection connection;
-
     private static CircuitConnector instance;
 
     public class Connection : MonoBehaviour
@@ -37,21 +35,6 @@ public class CircuitConnector : MonoBehaviour
         }
 
         instance = this;
-        connection = NewConnection;
-    }
-
-    private void Update()
-    {
-        Vector3 pos;
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (new Plane(Vector3.up, Vector3.zero).Raycast(ray, out float distance))
-        {
-            pos = ray.GetPoint(distance);
-
-            Connect(connection, Vector3.zero, pos);
-        }
     }
 
     // Utilized for instantly creating a new wire and connecting its input and output
