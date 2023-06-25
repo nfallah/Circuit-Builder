@@ -11,15 +11,17 @@ public class CircuitConnector : MonoBehaviour
 
     private static CircuitConnector instance;
 
+    private Connection currentConnection;
+
+    private GameObject currentWire;
+
+    private Vector3 currentPos;
+
     public class Connection : MonoBehaviour
     {
-        private GameObject wire;
-
         private Circuit.Input input;
 
         private Circuit.Output output;
-
-        public GameObject Wire { get { return wire; } set { wire = value; } }
 
         public Circuit.Input Input { get { return input; } set { input = value; } }
 
@@ -35,41 +37,61 @@ public class CircuitConnector : MonoBehaviour
         }
 
         instance = this;
+        //enabled = false;
     }
 
-    // Utilized for instantly creating a new wire and connecting its input and output
-    public void Connect(Circuit.Input input, Circuit.Output output)
+    private void Start()
     {
-        Connect(NewConnection, input, output);
+        Circuit circuit = new NAndGate();
+        CircuitVisualizer.Instance.VisualizeCircuit(circuit);
+        BeginConnection(circuit.Outputs[0]);
     }
 
-    // Utilizes an existing connection (i.e. wire) and updates its input and output
-    public void Connect(Connection connection, Circuit.Input input, Circuit.Output output)
+    private void Update()
     {
-        Connect(connection, input.Transform.position, output.Transform.position);
-        connection.Input = input;
-        connection.Output = output;
-    }
+        UpdatePosition(currentWire, currentPos, Coordinates.Instance.GridPos);
 
-    // Utilizes an existing connection (i.e. wire) and updates its start and end positions
-    public void Connect(Connection connection, Vector3 a, Vector3 b)
-    {
-        connection.Wire.transform.position = (a + b) / 2;
-        connection.Wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
-        connection.Wire.transform.LookAt(b);
-    }
-
-    public Connection NewConnection
-    {
-        get
+        if (Input.GetMouseButtonDown(0))
         {
-            GameObject wire = Instantiate(wireReference);
-            Connection connection = wire.AddComponent<Connection>();
-
-            wire.name = "Wire";
-            connection.Wire = wire;
-            return connection;
+            InstantiateWire(currentConnection, Coordinates.Instance.GridPos);
         }
+    }
+
+    public void BeginConnection(Circuit.Input input)
+    {
+        currentConnection = InstantiateConnection();
+        currentConnection.Input = input;
+        InstantiateWire(currentConnection, input.Transform.position);
+        input.Wire = currentWire;
+        //enabled = true;
+    }
+
+    public void BeginConnection(Circuit.Output output)
+    {
+        currentConnection = InstantiateConnection();
+        currentConnection.Output = output;
+        InstantiateWire(currentConnection, output.Transform.position);
+        output.Wire = currentWire;
+        //enabled = true;
+    }
+
+    public void InstantiateWire(Connection connection, Vector3 a)
+    {
+        currentWire = Instantiate(wireReference, connection.transform);
+        currentPos = new Vector3(a.x, 0, a.z); // change later
+        currentWire.transform.position = currentPos;
+    }
+
+    // Utilizes an existing wire and updates its start and end positions
+    public void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
+    {
+        wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
+        wire.transform.LookAt(b);
+    }
+
+    public Connection InstantiateConnection()
+    {
+        return new GameObject("Connection").AddComponent<Connection>();
     }
 
     public static CircuitConnector Instance { get { return instance; } }

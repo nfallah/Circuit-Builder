@@ -8,6 +8,8 @@ public class Coordinates : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI coordinateText;
 
+    private Vector3 gridPos;
+
     private void Awake()
     {
         if (instance != null)
@@ -22,8 +24,11 @@ public class Coordinates : MonoBehaviour
     public void UpdateCoordinates(Vector3 worldPos)
     {
         coordinateText.text = "(" + worldPos.x.ToString("0.0") + ", " + worldPos.z.ToString("0.0") + ")";
+        gridPos = new Vector3((int)(worldPos.x + 0.5f * Mathf.Sign(worldPos.x)), 0, (int)(worldPos.z + 0.5f * Mathf.Sign(worldPos.z)));
     }
 
-    // Getter method
+    // Getter methods
     public static Coordinates Instance { get { return instance; } }
+
+    public Vector3 GridPos { get { return gridPos; } }
 }

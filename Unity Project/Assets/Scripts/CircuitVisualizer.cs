@@ -36,7 +36,6 @@ public class CircuitVisualizer : MonoBehaviour
         }
 
         instance = this;
-        VisualizeCircuit(new NAndGate());
     }
 
     // Generates a mesh corresponding to the name & inputs/outputs of a given circuit
