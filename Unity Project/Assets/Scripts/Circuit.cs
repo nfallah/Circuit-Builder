@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Circuit;
 
 public abstract class Circuit
 {
@@ -88,6 +89,7 @@ public abstract class Circuit
     public void UpdateCircuit(bool powered, Circuit circuit, int inputIndex)
     {
         inputs[inputIndex].Powered = powered;
+        inputs[inputIndex].StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         inputs[inputIndex].ParentCircuit = circuit;
         Update();
         UpdateChildren();
@@ -115,7 +117,7 @@ public abstract class Circuit
     {
         foreach (Output output in outputs)
         {
-            output.StatusRenderer.material = (output.Powered) ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
+            output.StatusRenderer.material = output.Powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         }
     }
 
