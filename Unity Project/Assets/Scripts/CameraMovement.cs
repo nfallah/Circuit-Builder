@@ -1,34 +1,46 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    private static CameraMovement instance;
+
     [SerializeField] Camera playerCamera;
 
     [SerializeField] float movementSpeed, scrollSpeed, minHeight, maxHeight;
 
     [SerializeField] KeyCode upKey, downKey;
 
-    private readonly Plane raycastPlane = new Plane(Vector3.up, Vector3.zero);
+    private Vector3 mousePosCurrent; // Keeps track of the mouse position from the current frame
 
-    private Vector3 mousePos; // Keeps track of the mouse position from the previous frame
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this);
+            throw new Exception("CameraMovement instance already established; terminating.");
+        }
+
+        instance = this;
+    }
 
     private void Start()
     {
         ClampPos();
-        UpdateMousePos();
+        mousePosCurrent = Coordinates.Instance.MousePos;
     }
 
     private void Update()
     {
         float x, y, z;
 
-        Vector3 mousePosPrev = mousePos;
+        Vector3 mousePosPrev = mousePosCurrent;
 
-        UpdateMousePos();
+        mousePosCurrent = Coordinates.Instance.MousePos;
 
         if (Input.GetMouseButton(0))
         {
-            Vector3 mousePosDelta = mousePosPrev - mousePos;
+            Vector3 mousePosDelta = mousePosPrev - mousePosCurrent;
 
             x = mousePosDelta.x;
             z = mousePosDelta.z;
@@ -65,7 +77,7 @@ public class CameraMovement : MonoBehaviour
         // Adds obtained values and updates position
         transform.position += x * Vector3.right + y * -CameraRay.direction + z * Vector3.forward;
         ClampPos();
-        UpdateMousePos();
+        mousePosCurrent = Coordinates.Instance.MousePos;
     }
 
     // Clamps values to ensure the user cannot traverse out of bounds
@@ -77,16 +89,9 @@ public class CameraMovement : MonoBehaviour
         transform.position = pos;
     }
 
-    private void UpdateMousePos()
-    {
-        Ray ray = CameraRay;
+    public static CameraMovement Instance { get { return instance; } }
 
-        if (raycastPlane.Raycast(ray, out float distance))
-        {
-            mousePos = ray.GetPoint(distance);
-            Coordinates.Instance.UpdateCoordinates(mousePos);
-        }
-    }
+    public Camera PlayerCamera { get { return playerCamera; } }
 
     private Ray CameraRay { get { return playerCamera.ScreenPointToRay(Input.mousePosition); } }
 }

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CircuitConnector : MonoBehaviour
 {
     [SerializeField] GameObject wireReference;
 
-    [SerializeField] Material poweredWire, unpoweredWire;
+    [SerializeField] Material poweredMaterial, unpoweredMaterial;
 
     private static CircuitConnector instance;
 
@@ -51,7 +49,7 @@ public class CircuitConnector : MonoBehaviour
     {
         UpdatePosition(currentWire, currentPos, Coordinates.Instance.GridPos);
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && currentWire.activeSelf)
         {
             InstantiateWire(currentConnection, Coordinates.Instance.GridPos);
         }
@@ -78,14 +76,17 @@ public class CircuitConnector : MonoBehaviour
     public void InstantiateWire(Connection connection, Vector3 a)
     {
         currentWire = Instantiate(wireReference, connection.transform);
-        currentPos = new Vector3(a.x, 0, a.z); // change later
+        currentWire.name = "Wire";
+        currentPos = new Vector3(a.x, GridMaintenance.Instance.GridHeight, a.z);
         currentWire.transform.position = currentPos;
+        currentWire.SetActive(false);
     }
 
     // Utilizes an existing wire and updates its start and end positions
     public void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
     {
         wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
+        wire.SetActive(wire.transform.localScale.z != 0);
         wire.transform.LookAt(b);
     }
 

@@ -8,7 +8,9 @@ public class Coordinates : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI coordinateText;
 
-    private Vector3 gridPos;
+    private Plane raycastPlane;
+
+    private Vector3 mousePos;
 
     private void Awake()
     {
@@ -19,16 +21,36 @@ public class Coordinates : MonoBehaviour
         }
 
         instance = this;
-    }
-
-    public void UpdateCoordinates(Vector3 worldPos)
-    {
-        coordinateText.text = "(" + worldPos.x.ToString("0.0") + ", " + worldPos.z.ToString("0.0") + ")";
-        gridPos = new Vector3((int)(worldPos.x + 0.5f * Mathf.Sign(worldPos.x)), 0, (int)(worldPos.z + 0.5f * Mathf.Sign(worldPos.z)));
+        raycastPlane = new Plane(Vector3.down, GridMaintenance.Instance.GridHeight);
     }
 
     // Getter methods
     public static Coordinates Instance { get { return instance; } }
 
-    public Vector3 GridPos { get { return gridPos; } }
+    private Ray CameraRay { get { return CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition); } }
+
+    public Vector3 GridPos
+    {
+        get
+        {
+            return new Vector3((int)(mousePos.x + 0.5f * Mathf.Sign(mousePos.x)), GridMaintenance.Instance.GridHeight, (int)(mousePos.z + 0.5f * Mathf.Sign(mousePos.z)));
+        }
+    }
+
+    public Vector3 MousePos
+    {
+        get
+        {
+            Ray ray = CameraRay;
+
+            if (raycastPlane.Raycast(ray, out float distance))
+            {
+                mousePos = ray.GetPoint(distance);
+                coordinateText.text = "(" + mousePos.x.ToString("0.0") + ", " + mousePos.z.ToString("0.0") + ")";
+                return mousePos;
+            }
+
+            throw new Exception("Unable to obtain new mouse position -- raycast failed.");
+        }
+    }
 }

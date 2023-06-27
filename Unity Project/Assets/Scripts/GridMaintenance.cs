@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class GridMaintenance : MonoBehaviour
 {
+    private static GridMaintenance instance;
+
+    [SerializeField] float gridHeight;
+
     [SerializeField] GameObject gridReference;
 
     private GameObject grid;
@@ -12,11 +17,22 @@ public class GridMaintenance : MonoBehaviour
 
     private Vector3 currentPos;
 
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this);
+            throw new Exception("GridMaintenance instance already established; terminating.");
+        }
+
+        instance = this;
+    }
+
     private void Start()
     {
         grid = Instantiate(gridReference);
         grid.name = "Grid";
-        grid.transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        grid.transform.position = new Vector3(transform.position.x, gridHeight, transform.position.z);
         grid.transform.eulerAngles = Vector3.zero;
         gridMaterial = grid.GetComponent<MeshRenderer>().material;
         currentPos = transform.position;
@@ -25,7 +41,7 @@ public class GridMaintenance : MonoBehaviour
 
     private void Update()
     {
-        grid.transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        grid.transform.position = new Vector3(transform.position.x, gridHeight, transform.position.z);
 
         Vector3 oldPos = currentPos;
 
@@ -38,4 +54,9 @@ public class GridMaintenance : MonoBehaviour
         materialOffset = new Vector2(materialOffset.x % 1, materialOffset.y % 1);
         gridMaterial.SetTextureOffset("_MainTex", materialOffset);
     }
+    
+    // Getter methods
+    public static GridMaintenance Instance { get { return instance; } }
+
+    public float GridHeight { get { return gridHeight; } }
 }

@@ -1666,7 +1666,7 @@ GameObject:
   - component: {fileID: 917113651}
   - component: {fileID: 917113650}
   m_Layer: 0
-  m_Name: Camera [Grid]
+  m_Name: Camera [Grid, Wire]
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1711,7 +1711,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 6144
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1920,7 +1920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d549af36ad2495c4680401b3e151e160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderThickness: 0.075
+  borderThickness: 0.125
   inputSize: 1
   outputSize: 1
   powerSize: 0.4
@@ -2188,7 +2188,7 @@ Camera:
   m_Depth: 3
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2103
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
