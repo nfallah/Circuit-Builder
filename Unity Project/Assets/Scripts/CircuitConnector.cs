@@ -46,12 +46,6 @@ public class CircuitConnector : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        Circuit circuit = new NAndGate();
-        BeginConnectionProcess(false, circuit.Outputs[0].Transform.position);
-    }
-
     private void Update()
     {
         UpdatePosition(currentWire, currentPos, Coordinates.Instance.GridPos);
@@ -71,12 +65,12 @@ public class CircuitConnector : MonoBehaviour
 
     public static void Connect()
     {
-        //Instance.currentConnection.Input.Connection = Instance.currentConnection;
-        //Instance.currentConnection.Output.Connections.Add(Instance.currentConnection);
+        Instance.currentConnection.Input.Connection = Instance.currentConnection;
+        Instance.currentConnection.Output.Connections.Add(Instance.currentConnection);
         Instance.currentConnection.EndingWire.name = "Ending Wire";
         Instance.OptimizeMeshes();
         Instance.currentConnection = null; Instance.currentWire = null;
-        //Circuit.UpdateCircuit(Instance.currentConnection.Input, Instance.currentConnection.Output);
+        Circuit.UpdateCircuit(Instance.currentConnection.Input, Instance.currentConnection.Output);
     }
 
     public static void Disconnect(Connection connection)
