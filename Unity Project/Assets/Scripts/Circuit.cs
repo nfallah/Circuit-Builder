@@ -12,7 +12,7 @@ public abstract class Circuit
 
         private Circuit parentCircuit; // Represents the circuit that this input composes
 
-        private GameObject wire; // Represents the wire attached to this input, if any
+        private CircuitConnector.Connection connection; // Represents the connection related to this input, if any
 
         private MeshRenderer statusRenderer; // Mesh renderer of the material that displays whether the input is powered or not
 
@@ -25,7 +25,7 @@ public abstract class Circuit
 
         public Circuit ParentCircuit { get { return parentCircuit; } set { parentCircuit = value; } }
 
-        public GameObject Wire { get { return wire; } set { wire = value;  } }
+        public CircuitConnector.Connection Connection { get { return connection; } set { connection = value;  } }
 
         public MeshRenderer StatusRenderer { get { return statusRenderer; } set { statusRenderer = value; } }
 
@@ -43,7 +43,7 @@ public abstract class Circuit
 
         private Circuit parentCircuit; // Represents the circuit that this input composes
 
-        private GameObject wire; // Represents the wire going out of this output, if any
+        private List<CircuitConnector.Connection> connections; // Represents the connections related to this output, if any
 
         private List<Input> childInputs = new List<Input>(); // Represents the inputs this output connects to, if any
 
@@ -56,7 +56,7 @@ public abstract class Circuit
 
         public Circuit ParentCircuit { get { return ParentCircuit; } set { ParentCircuit = value; } }
 
-        public GameObject Wire { get { return wire; } set { wire = value; } }
+        public List<CircuitConnector.Connection> Connections { get { return connections; } set { connections = value; } }
 
         public List<Input> ChildInputs { get { return childInputs; } set { childInputs = value; } }
 
@@ -85,6 +85,8 @@ public abstract class Circuit
         for (int i = 0; i < numInputs; i++) { inputs[i] = new Input(this); }
 
         for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
+
+        CircuitVisualizer.Instance.VisualizeCircuit(this);
     }
 
     /*
@@ -98,6 +100,11 @@ public abstract class Circuit
         input.ParentOutput = output;
         input.ParentCircuit.Update();
         input.ParentCircuit.UpdateChildren();
+    }
+
+    public static void UpdateCircuit(Input input, Output output)
+    {
+        UpdateCircuit(output.Powered, input, output);
     }
 
     // Recursively calls and updates all connections instantiated by this circuit

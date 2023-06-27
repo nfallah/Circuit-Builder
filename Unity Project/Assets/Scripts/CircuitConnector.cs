@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class CircuitConnector : MonoBehaviour
 {
+    private static CircuitConnector instance;
+
     [SerializeField] GameObject wireReference;
 
     [SerializeField] Material poweredMaterial, unpoweredMaterial;
-
-    private static CircuitConnector instance;
 
     private Connection currentConnection;
 
@@ -20,6 +20,12 @@ public class CircuitConnector : MonoBehaviour
         private Circuit.Input input;
 
         private Circuit.Output output;
+
+        private GameObject endingWire, startingWire;
+
+        public GameObject EndingWire { get { return endingWire; } set { endingWire = value; } }
+
+        public GameObject StartingWire { get { return startingWire; } set { startingWire = value; } }
 
         public Circuit.Input Input { get { return input; } set { input = value; } }
 
@@ -35,14 +41,13 @@ public class CircuitConnector : MonoBehaviour
         }
 
         instance = this;
-        //enabled = false;
     }
 
     private void Start()
     {
         Circuit circuit = new NAndGate();
         CircuitVisualizer.Instance.VisualizeCircuit(circuit);
-        BeginConnection(circuit.Outputs[0]);
+        BeginConnection(circuit.Outputs[0].Transform.position);
     }
 
     private void Update()
@@ -55,25 +60,14 @@ public class CircuitConnector : MonoBehaviour
         }
     }
 
-    public void BeginConnection(Circuit.Input input)
+    public void BeginConnection(Vector3 pos)
     {
         currentConnection = InstantiateConnection();
-        currentConnection.Input = input;
-        InstantiateWire(currentConnection, input.Transform.position);
-        input.Wire = currentWire;
-        //enabled = true;
+        InstantiateWire(currentConnection, pos);
+        currentConnection.StartingWire = currentWire;
     }
 
-    public void BeginConnection(Circuit.Output output)
-    {
-        currentConnection = InstantiateConnection();
-        currentConnection.Output = output;
-        InstantiateWire(currentConnection, output.Transform.position);
-        output.Wire = currentWire;
-        //enabled = true;
-    }
-
-    public void InstantiateWire(Connection connection, Vector3 a)
+    private void InstantiateWire(Connection connection, Vector3 a)
     {
         currentWire = Instantiate(wireReference, connection.transform);
         currentWire.name = "Wire";
@@ -83,16 +77,28 @@ public class CircuitConnector : MonoBehaviour
     }
 
     // Utilizes an existing wire and updates its start and end positions
-    public void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
+    private void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
     {
         wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
         wire.SetActive(wire.transform.localScale.z != 0);
         wire.transform.LookAt(b);
     }
 
-    public void DestroyConnection(Connection connection)
+    public static void Connect(Connection connection)
     {
-        connection.Input.Wire = null;
+        Circuit.UpdateCircuit(connection.Input, connection.Output);
+        connection.Input.Connection = connection;
+        connection.Output.Connections.Add(connection);
+        connection.EndingWire = Instance.currentWire;
+    }
+
+    public static void Disconnect(Connection connection)
+    {
+        Circuit.UpdateCircuit(false, connection.Input, null);
+        connection.Input.Connection = null;
+        connection.Output.Connections.Remove(connection);
+        Destroy(connection.gameObject);
+
     }
 
     public Connection InstantiateConnection()
