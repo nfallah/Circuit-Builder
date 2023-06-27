@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CircuitConnector : MonoBehaviour
@@ -8,6 +9,8 @@ public class CircuitConnector : MonoBehaviour
     [SerializeField] GameObject wireReference;
 
     [SerializeField] Material poweredMaterial, unpoweredMaterial;
+
+    private bool currentPowerStatus;
 
     private Connection currentConnection;
 
@@ -46,8 +49,7 @@ public class CircuitConnector : MonoBehaviour
     private void Start()
     {
         Circuit circuit = new NAndGate();
-        CircuitVisualizer.Instance.VisualizeCircuit(circuit);
-        BeginConnection(circuit.Outputs[0].Transform.position);
+        BeginConnectionProcess(false, circuit.Outputs[0].Transform.position);
     }
 
     private void Update()
@@ -56,21 +58,63 @@ public class CircuitConnector : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && currentWire.activeSelf)
         {
+            currentConnection.EndingWire = currentWire;
             InstantiateWire(currentConnection, Coordinates.Instance.GridPos);
+        }
+
+        else if (Input.GetMouseButtonDown(1))
+        {
+            Connect();
+            enabled = false;
         }
     }
 
-    public void BeginConnection(Vector3 pos)
+    public static void Connect()
     {
+        //Instance.currentConnection.Input.Connection = Instance.currentConnection;
+        //Instance.currentConnection.Output.Connections.Add(Instance.currentConnection);
+        Instance.currentConnection.EndingWire.name = "Ending Wire";
+        Instance.OptimizeMeshes();
+        Instance.currentConnection = null; Instance.currentWire = null;
+        //Circuit.UpdateCircuit(Instance.currentConnection.Input, Instance.currentConnection.Output);
+    }
+
+    public static void Disconnect(Connection connection)
+    {
+        Circuit.UpdateCircuit(false, connection.Input, null);
+        connection.Input.Connection = null;
+        connection.Output.Connections.Remove(connection);
+        Destroy(connection.gameObject);
+    }
+
+    public static void UpdateConnectionMaterial(Connection connection, bool powered)
+    {
+        if (connection.GetComponent<MeshRenderer>() != null) connection.GetComponent<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
+
+        connection.EndingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
+        connection.StartingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
+    }
+
+    public void BeginConnectionProcess(bool currentPowerStatus, Vector3 pos)
+    {
+        this.currentPowerStatus = currentPowerStatus;
         currentConnection = InstantiateConnection();
         InstantiateWire(currentConnection, pos);
         currentConnection.StartingWire = currentWire;
+        currentWire.name = "Starting Wire";
+    }
+
+    public void EndConnectionProcess()
+    {
+        Destroy(currentConnection.gameObject);
     }
 
     private void InstantiateWire(Connection connection, Vector3 a)
     {
         currentWire = Instantiate(wireReference, connection.transform);
-        currentWire.name = "Wire";
+
+        if (currentPowerStatus) currentWire.GetComponentInChildren<MeshRenderer>().material = poweredMaterial;
+
         currentPos = new Vector3(a.x, GridMaintenance.Instance.GridHeight, a.z);
         currentWire.transform.position = currentPos;
         currentWire.SetActive(false);
@@ -84,21 +128,53 @@ public class CircuitConnector : MonoBehaviour
         wire.transform.LookAt(b);
     }
 
-    public static void Connect(Connection connection)
+    private void OptimizeMeshes()
     {
-        Circuit.UpdateCircuit(connection.Input, connection.Output);
-        connection.Input.Connection = connection;
-        connection.Output.Connections.Add(connection);
-        connection.EndingWire = Instance.currentWire;
-    }
+        if (currentConnection.StartingWire == currentConnection.EndingWire) return;
 
-    public static void Disconnect(Connection connection)
-    {
-        Circuit.UpdateCircuit(false, connection.Input, null);
-        connection.Input.Connection = null;
-        connection.Output.Connections.Remove(connection);
-        Destroy(connection.gameObject);
+        if (currentConnection.transform.childCount == 3)
+        {
+            Destroy(currentWire);
+            return;
+        }
 
+        List<CombineInstance> combineInstances = new List<CombineInstance>();
+
+        foreach (Transform child in currentConnection.transform)
+        {
+            GameObject childObj = child.gameObject;
+
+            if (childObj == currentConnection.StartingWire || childObj == currentConnection.EndingWire || childObj == currentWire) continue;
+
+            MeshFilter meshFilter = childObj.GetComponentInChildren<MeshFilter>();
+            CombineInstance combineInstance = new CombineInstance();
+
+            combineInstance.mesh = meshFilter.mesh;
+            combineInstance.transform = meshFilter.transform.localToWorldMatrix;
+
+            combineInstances.Add(combineInstance);
+        }
+
+        Mesh combinedMesh = new Mesh();
+
+        combinedMesh.CombineMeshes(combineInstances.ToArray());
+
+        foreach (Transform child in currentConnection.transform)
+        {
+            GameObject childObj = child.gameObject;
+
+            if (childObj == currentConnection.StartingWire || childObj == currentConnection.EndingWire) continue;
+
+            Destroy(childObj);
+        }
+
+        MeshFilter combinedMeshFilter = currentConnection.gameObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = currentConnection.gameObject.AddComponent<MeshRenderer>();
+
+        combinedMeshFilter.mesh = combinedMesh;
+        meshRenderer.material = currentPowerStatus ? poweredMaterial : unpoweredMaterial;
+        currentConnection.gameObject.layer = 11;
+        currentConnection.gameObject.AddComponent<MeshCollider>();
     }
 
     public Connection InstantiateConnection()

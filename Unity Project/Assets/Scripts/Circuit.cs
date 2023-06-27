@@ -98,6 +98,7 @@ public abstract class Circuit
         input.Powered = powered;
         input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         input.ParentOutput = output;
+        CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);
         input.ParentCircuit.Update();
         input.ParentCircuit.UpdateChildren();
     }
