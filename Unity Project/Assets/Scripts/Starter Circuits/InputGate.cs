@@ -1,14 +1,21 @@
-﻿public class InputGate : Circuit
+﻿using System.Collections.Generic;
+
+public class InputGate : Circuit
 {
     private bool powered;
 
     public InputGate() : base("INPUT", 0, 1) { }
 
-     private new void UpdateCircuit(bool powered, Circuit circuit, int inputIndex) { }
-
-    protected override void UpdateOutputs()
+    protected override List<Output> UpdateOutputs()
     {
+        bool outputStatus = Outputs[0].Powered;
+        List<Output> outputs = new List<Output>();
+
         Outputs[0].Powered = powered;
+
+        if (outputStatus != Outputs[0].Powered) outputs.Add(Outputs[0]);
+
+        return outputs;
     }
 
     // Setter method

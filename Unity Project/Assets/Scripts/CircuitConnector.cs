@@ -90,6 +90,11 @@ public class CircuitConnector : MonoBehaviour
         wire.transform.LookAt(b);
     }
 
+    public void DestroyConnection(Connection connection)
+    {
+        connection.Input.Wire = null;
+    }
+
     public Connection InstantiateConnection()
     {
         return new GameObject("Connection").AddComponent<Connection>();

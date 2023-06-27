@@ -69,6 +69,8 @@ public abstract class Circuit
 
     private readonly Input[] inputs; // The list of input nodes for this circuit
 
+    private List<Output> outputsToUpdate; // The list of outputs whose powered statuses have changed due to an input change
+
     private readonly Output[] outputs; // The list of output nodes for this circuit
 
     private readonly string circuitName;
@@ -86,8 +88,8 @@ public abstract class Circuit
     }
 
     /*
-     * Updates the output nodes based on a new input specified by a parent circuit (parameters)
-     * Then recursively updates its own child circuits with the same method
+     * Updates a circuit and one of its inputs based on an output from another circuit
+     * Then recursively calls all parent circuits of the input
      */
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
@@ -98,10 +100,10 @@ public abstract class Circuit
         input.ParentCircuit.UpdateChildren();
     }
 
-    // Recursively calls and updates all children of the circuit
+    // Recursively calls and updates all connections instantiated by this circuit
     public void UpdateChildren()
     {
-        foreach (Output output in outputs)
+        foreach (Output output in outputsToUpdate)
         {
             foreach (Input input in output.ChildInputs) UpdateCircuit(output.Powered, input, output);
         }
@@ -109,13 +111,13 @@ public abstract class Circuit
 
     public void Update()
     {
-        UpdateOutputs();
+        outputsToUpdate = UpdateOutputs();
         UpdateStatuses();
     }
 
     private void UpdateStatuses()
     {
-        foreach (Output output in outputs)
+        foreach (Output output in outputsToUpdate)
         {
             output.StatusRenderer.material = output.Powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         }
@@ -124,8 +126,9 @@ public abstract class Circuit
     /*
      * Abstract implementation representing the input/output logic of the circuit
      * Utilizes all inputs to calculate the state of all outputs
+     * Then returns the list of outputs that have changed as a result of an input alteration
      */
-    protected abstract void UpdateOutputs();
+    protected abstract List<Output> UpdateOutputs();
 
     // Getter and setter methods
     public GameObject PhysicalObject { get { return physicalObject; } set { physicalObject = value; } }
