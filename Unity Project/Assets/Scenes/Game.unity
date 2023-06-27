@@ -1772,6 +1772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46b50219101f5dd43803ea14846d0633, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridHeight: 0
   gridReference: {fileID: 6870663239551744017, guid: 70274fd995f598c47bf813b10a0bcfb5,
     type: 3}
 --- !u!1 &973137541
@@ -1961,8 +1962,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wireReference: {fileID: 6437185041449969218, guid: a802353d4bea39a47b255ef8f8a25f7a,
     type: 3}
-  poweredWire: {fileID: 2100000, guid: f8ad5f49f71a39f48a5ea3844a22edb5, type: 2}
-  unpoweredWire: {fileID: 2100000, guid: 3973f509dc909ca429c7f50f2bacbb09, type: 2}
+  poweredMaterial: {fileID: 0}
+  unpoweredMaterial: {fileID: 0}
 --- !u!1 &1108952451
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,8 @@ public abstract class Circuit
     // Represents all required members of an input node
     public class Input
     {
+        public Input(Circuit parentCircuit) { this.parentCircuit = parentCircuit; }
+
         private bool powered; // Represents whether the input is powered by means of the attached circuit
 
         private Circuit parentCircuit; // Represents the circuit that this input composes
@@ -35,6 +37,8 @@ public abstract class Circuit
     // Represents all required members of an output node
     public class Output
     {
+        public Output(Circuit parentCircuit) { this.parentCircuit = parentCircuit; }
+
         private bool powered; // Represents whether a specific output is powered by this current circuit
 
         private Circuit parentCircuit; // Represents the circuit that this input composes
@@ -76,9 +80,9 @@ public abstract class Circuit
         inputs = new Input[numInputs];
         outputs = new Output[numOutputs];
 
-        for (int i = 0; i < numInputs; i++) { inputs[i] = new Input(); }
+        for (int i = 0; i < numInputs; i++) { inputs[i] = new Input(this); }
 
-        for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(); }
+        for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
     }
 
     /*
