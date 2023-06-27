@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static Circuit;
 
 public abstract class Circuit
 {
@@ -9,11 +8,13 @@ public abstract class Circuit
     {
         private bool powered; // Represents whether the input is powered by means of the attached circuit
 
-        private Circuit parentCircuit; // Represents the output of the circuit currently attached as input
+        private Circuit parentCircuit; // Represents the circuit that this input composes
 
         private GameObject wire; // Represents the wire attached to this input, if any
 
         private MeshRenderer statusRenderer; // Mesh renderer of the material that displays whether the input is powered or not
+
+        private Output parentOutput; // Represents the output connecting to this input, if any
 
         private Transform transform; // Represents the in-scene transform of the input
 
@@ -26,6 +27,8 @@ public abstract class Circuit
 
         public MeshRenderer StatusRenderer { get { return statusRenderer; } set { statusRenderer = value; } }
 
+        public Output ParentOutput { get { return parentOutput; } set { parentOutput = value; } }
+
         public Transform Transform { get { return transform; } set { transform = value; } }
     }
 
@@ -34,13 +37,11 @@ public abstract class Circuit
     {
         private bool powered; // Represents whether a specific output is powered by this current circuit
 
+        private Circuit parentCircuit; // Represents the circuit that this input composes
+
         private GameObject wire; // Represents the wire going out of this output, if any
 
-        private int numOutputs; // Serves as a centralized method of checking for the total number of connections from said output
-
-        private List<Circuit> circuits = new List<Circuit>(); // Represents the list of attached circuit(s) from this output
-
-        private List<int> inputIndex = new List<int>(); // Represents the list of which input(s) this output has attached to
+        private List<Input> childInputs = new List<Input>(); // Represents the inputs this output connects to, if any
 
         private MeshRenderer statusRenderer; // Mesh renderer of the material that displays whether the output is powered or not
 
@@ -49,13 +50,11 @@ public abstract class Circuit
         // Getter and setter methods
         public bool Powered { get { return powered; } set { powered = value; } }
 
+        public Circuit ParentCircuit { get { return ParentCircuit; } set { ParentCircuit = value; } }
+
         public GameObject Wire { get { return wire; } set { wire = value; } }
 
-        public int NumOutputs { get { return numOutputs; } set { numOutputs = value; } }
-
-        public List<Circuit> Circuits { get { return circuits; } set { circuits = value; } }
-
-        public List<int> InputIndex { get { return inputIndex; } set { inputIndex = value; } }
+        public List<Input> ChildInputs { get { return childInputs; } set { childInputs = value; } }
 
         public MeshRenderer StatusRenderer { get { return statusRenderer; } set { statusRenderer = value; } }
 
@@ -86,13 +85,13 @@ public abstract class Circuit
      * Updates the output nodes based on a new input specified by a parent circuit (parameters)
      * Then recursively updates its own child circuits with the same method
      */
-    public void UpdateCircuit(bool powered, Circuit circuit, int inputIndex)
+    public static void UpdateCircuit(bool powered, Input input, Output output)
     {
-        inputs[inputIndex].Powered = powered;
-        inputs[inputIndex].StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
-        inputs[inputIndex].ParentCircuit = circuit;
-        Update();
-        UpdateChildren();
+        input.Powered = powered;
+        input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
+        input.ParentOutput = output;
+        input.ParentCircuit.Update();
+        input.ParentCircuit.UpdateChildren();
     }
 
     // Recursively calls and updates all children of the circuit
@@ -100,10 +99,7 @@ public abstract class Circuit
     {
         foreach (Output output in outputs)
         {
-            for (int i = 0; i < output.NumOutputs; i++)
-            {
-                output.Circuits[i].UpdateCircuit(output.Powered, this, output.InputIndex[i]);
-            }
+            foreach (Input input in output.ChildInputs) UpdateCircuit(output.Powered, input, output);
         }
     }
 
