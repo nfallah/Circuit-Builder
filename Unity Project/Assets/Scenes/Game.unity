@@ -1886,6 +1886,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1100941116}
+  - component: {fileID: 1100941120}
   - component: {fileID: 1100941118}
   - component: {fileID: 1100941119}
   - component: {fileID: 1100941117}
@@ -1965,6 +1966,18 @@ MonoBehaviour:
     type: 3}
   poweredMaterial: {fileID: 2100000, guid: f8ad5f49f71a39f48a5ea3844a22edb5, type: 2}
   unpoweredMaterial: {fileID: 2100000, guid: 3973f509dc909ca429c7f50f2bacbb09, type: 2}
+--- !u!114 &1100941120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100941115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 904fba9ab6ff1794aa7b3b455dac35bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1108952451
 GameObject:
   m_ObjectHideFlags: 0
@@ -2675,7 +2688,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1630140206}
   - component: {fileID: 1630140208}
-  - component: {fileID: 1630140207}
   m_Layer: 0
   m_Name: Camera [Wire]
   m_TagString: Untagged
@@ -2697,14 +2709,6 @@ Transform:
   m_Father: {fileID: 917113649}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &1630140207
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1630140205}
-  m_Enabled: 1
 --- !u!20 &1630140208
 Camera:
   m_ObjectHideFlags: 0

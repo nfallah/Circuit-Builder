@@ -6,6 +6,20 @@ public class CircuitVisualizer : MonoBehaviour
 {
     private static CircuitVisualizer instance; // Ensures a singleton state pattern is maintained
 
+    public class InputReference : MonoBehaviour
+    {
+        private Circuit.Input input;
+
+        public Circuit.Input Input { get { return input; } set { input = value; } }
+    }
+
+    public class OutputReference : MonoBehaviour
+    {
+        private Circuit.Output output;
+
+        public Circuit.Output Output { get { return output; } set { output = value; } }
+    }
+
     [SerializeField] float
     borderThickness, // Border surrounding the base of the circuit
     inputSize, // Square dimensions of an input node
@@ -78,7 +92,7 @@ public class CircuitVisualizer : MonoBehaviour
             new Vector3(dimensions.x / 2 + borderThickness, 0, dimensions.y / 2 + borderThickness),
             new Vector3(dimensions.x / 2 + borderThickness, 0, -dimensions.y / 2 - borderThickness)
         };
-        CreateQuad(borderQuad, vertices, borderMaterial);
+        CreateQuad(borderQuad, vertices, borderMaterial, false);
 
         // Power on/off vertices
         Vector3[] powerVertices = new Vector3[]
@@ -105,7 +119,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject inputQuad = new GameObject("Input " + (index + 1));
             GameObject inputQuadPower = new GameObject("Input Status " + (index + 1));
-            Vector3 pos = new Vector3(-dimensions.x / 2, 0, currentHeight - dimensions.y / 2);
+            Vector3 pos = new Vector3(-dimensions.x / 2, 0.001f, currentHeight - dimensions.y / 2);
 
             inputQuad.layer = 9;
             inputQuad.transform.parent = inputQuadPower.transform.parent = physicalObject.transform;
@@ -114,6 +128,10 @@ public class CircuitVisualizer : MonoBehaviour
             CreateQuad(inputQuadPower, powerVertices, powerOffMaterial, false);
             circuit.Inputs[index].Transform = inputQuad.transform;
             circuit.Inputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
+
+            InputReference inputReference = inputQuad.AddComponent<InputReference>();
+
+            inputReference.Input = circuit.Inputs[index];
             index++;
         }
 
@@ -133,7 +151,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject outputQuad = new GameObject("Output " + (index + 1));
             GameObject outputQuadPower = new GameObject("Output Status " + (index + 1));
-            Vector3 pos = new Vector3(dimensions.x / 2, 0, currentHeight - dimensions.y / 2);
+            Vector3 pos = new Vector3(dimensions.x / 2, 0.001f, currentHeight - dimensions.y / 2);
 
             outputQuad.layer = 10;
             outputQuad.transform.parent = outputQuadPower.transform.parent = physicalObject.transform;
@@ -142,6 +160,10 @@ public class CircuitVisualizer : MonoBehaviour
             CreateQuad(outputQuadPower, powerVertices, powerOffMaterial, false);
             circuit.Outputs[index].Transform = outputQuad.transform;
             circuit.Outputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
+
+            OutputReference outputReference = outputQuad.AddComponent<OutputReference>();
+
+            outputReference.Output = circuit.Outputs[index];
             index++;
         }
 
