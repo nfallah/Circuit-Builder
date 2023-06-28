@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class AndGate : Circuit
 {
-    public AndGate() : base("AND", 2, 1) { }
+    public AndGate() : this(Vector2.zero) { }
+
+    public AndGate(Vector2 startingPos) : base("AND", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

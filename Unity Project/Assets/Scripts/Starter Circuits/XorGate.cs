@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class XOrGate : Circuit
 {
-    public XOrGate() : base("XOR", 2, 1) { }
+    public XOrGate() : this(Vector2.zero) { }
+
+    public XOrGate(Vector2 startingPos) : base("XOR", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

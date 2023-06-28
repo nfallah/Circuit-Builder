@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class InputGate : Circuit
 {
     private bool powered;
 
-    public InputGate() : base("INPUT", 0, 1) { }
+    public InputGate() : this(Vector2.zero) { }
+
+    public InputGate(Vector2 startingPos) : base("INPUT", 0, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

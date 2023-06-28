@@ -7,19 +7,29 @@ public class BehaviorManager : MonoBehaviour
 
     private enum StateType { UNRESTRICTED, LOCKED, PAUSED }
 
+    [SerializeField] KeyCode cancelKey;
+
+    private Circuit.Input currentInput;
+
+    private Circuit.Output currentOutput;
+
+    private int ioLayerCheck;
+
     private GameState gameState, unpausedGameState;
 
     private StateType stateType, unpausedStateType;
 
     private void Start()
     {
-        new NAndGate();    
+        new AndGate();
+        new AndGate(new Vector2(20, 10));
+        new NotGate(new Vector2(30, 0));
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         gameState = UpdateGameState();
-        ExecuteGameState();
+        GameStateListener();
     }
 
     private GameState UpdateGameState()
@@ -60,6 +70,7 @@ public class BehaviorManager : MonoBehaviour
 
         if (gameState == GameState.IO_HOVER && Input.GetMouseButtonDown(0))
         {
+            IOPress(hitObject);
             stateType = StateType.LOCKED;
             return GameState.IO_PRESS;
         }
@@ -86,11 +97,62 @@ public class BehaviorManager : MonoBehaviour
         return GameState.GRID_HOVER;
     }
 
-    private void ExecuteGameState()
+    private void IOPress(GameObject hitObject)
+    {
+        bool powerStatus;
+        Vector3 startingPos;
+
+        // Input layer
+        if (hitObject.layer == 9)
+        {
+            currentInput = hitObject.GetComponent<CircuitVisualizer.InputReference>().Input;
+            powerStatus = currentInput.Powered;
+            ioLayerCheck = 10;
+            startingPos = currentInput.Transform.position;
+        }
+
+        else
+        {
+            currentOutput = hitObject.GetComponent<CircuitVisualizer.OutputReference>().Output;
+            powerStatus = currentOutput.Powered;
+            ioLayerCheck = 9;
+            startingPos = currentOutput.Transform.position;
+        }
+
+        CircuitConnector.Instance.BeginConnectionProcess(powerStatus, startingPos);
+    }
+
+    private void GameStateListener()
     {
         switch (gameState)
         {
             case GameState.IO_PRESS:
+                if (Input.GetMouseButtonDown(0) && Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
+                {
+                    // Input layer
+                    if (ioLayerCheck == 9)
+                    {
+                        currentInput = hitInfo.transform.GetComponent<CircuitVisualizer.InputReference>().Input;
+
+                    }
+
+                    // Output layer
+                    else
+                    {
+                        currentOutput = hitInfo.transform.GetComponent<CircuitVisualizer.OutputReference>().Output;
+                    }
+
+                    CircuitConnector.Connect(currentInput, currentOutput);
+                    stateType = StateType.UNRESTRICTED;
+                    currentInput = null; currentOutput = null;
+                }
+
+                else if (Input.GetKeyDown(cancelKey))
+                {
+                    CircuitConnector.Instance.CancelConnectionProcess();
+                    stateType = StateType.UNRESTRICTED;
+                    currentInput = null; currentOutput = null;
+                }
 
                 break;
         }

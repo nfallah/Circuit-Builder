@@ -3,6 +3,8 @@ using UnityEngine;
 
 public abstract class Circuit
 {
+    private static float callTimer = 0.1f;
+
     // Represents all required members of an input node
     public class Input
     {
@@ -43,7 +45,7 @@ public abstract class Circuit
 
         private Circuit parentCircuit; // Represents the circuit that this input composes
 
-        private List<CircuitConnector.Connection> connections; // Represents the connections related to this output, if any
+        private List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>(); // Represents the connections related to this output, if any
 
         private List<Input> childInputs = new List<Input>(); // Represents the inputs this output connects to, if any
 
@@ -65,6 +67,28 @@ public abstract class Circuit
         public Transform Transform { get { return transform; } set { transform = value; } }
     }
 
+    private class UpdateCall
+    {
+        private bool powered;
+
+        private Input input;
+
+        private Output output;
+
+        public UpdateCall(bool powered, Input input, Output output)
+        {
+            this.powered = powered;
+            this.input = input;
+            this.output = output;
+        }
+
+        public bool Powered { get { return powered; } }
+
+        public Input Input { get { return input; } }
+
+        public Output Output { get { return output; } }
+    }
+
     private GameObject physicalObject;
 
     private readonly Input[] inputs; // The list of input nodes for this circuit
@@ -75,8 +99,12 @@ public abstract class Circuit
 
     private readonly string circuitName;
 
+    private Queue<UpdateCall> updateList = new Queue<UpdateCall>();
+
     // Utilized by inherited circuits to determine the specific number of input and output nodes
-    public Circuit(string circuitName, int numInputs, int numOutputs)
+    public Circuit(string circuitName, int numInputs, int numOutputs) : this(circuitName, numInputs, numOutputs, Vector2.zero) {}
+
+    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition)
     {
         this.circuitName = circuitName;
         inputs = new Input[numInputs];
@@ -86,7 +114,7 @@ public abstract class Circuit
 
         for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
 
-        CircuitVisualizer.Instance.VisualizeCircuit(this);
+        CircuitVisualizer.Instance.VisualizeCircuit(this, startingPosition);
     }
 
     /*
@@ -95,6 +123,7 @@ public abstract class Circuit
      */
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
+        Debug.Log("Update!");
         input.Powered = powered;
         input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         input.ParentOutput = output;

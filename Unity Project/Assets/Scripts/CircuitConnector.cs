@@ -10,7 +10,7 @@ public class CircuitConnector : MonoBehaviour
 
     [SerializeField] Material poweredMaterial, unpoweredMaterial;
 
-    private bool currentPowerStatus;
+    private bool cancelled, currentPowerStatus;
 
     private Connection currentConnection;
 
@@ -44,10 +44,17 @@ public class CircuitConnector : MonoBehaviour
         }
 
         instance = this;
+        enabled = false;
     }
 
     private void Update()
     {
+        if (cancelled)
+        {
+            cancelled = enabled = false;
+            return;
+        }
+
         UpdatePosition(currentWire, currentPos, Coordinates.Instance.GridPos);
 
         if (Input.GetMouseButtonDown(0) && currentWire.activeSelf)
@@ -55,22 +62,22 @@ public class CircuitConnector : MonoBehaviour
             currentConnection.EndingWire = currentWire;
             InstantiateWire(currentConnection, Coordinates.Instance.GridPos);
         }
-
-        else if (Input.GetMouseButtonDown(1))
-        {
-            Connect();
-            enabled = false;
-        }
     }
 
-    public static void Connect()
+    public static void Connect(Circuit.Input input, Circuit.Output output)
     {
+        Instance.currentConnection.Input = input;
+        Instance.currentConnection.Output = output;
+        Debug.Log(Instance.currentConnection.Input == null);
+        Debug.Log(Instance.currentConnection.Output == null);
         Instance.currentConnection.Input.Connection = Instance.currentConnection;
         Instance.currentConnection.Output.Connections.Add(Instance.currentConnection);
+        Instance.currentConnection.Output.ChildInputs.Add(input);
         Instance.currentConnection.EndingWire.name = "Ending Wire";
         Instance.OptimizeMeshes();
         Instance.currentConnection = null; Instance.currentWire = null;
-        Circuit.UpdateCircuit(Instance.currentConnection.Input, Instance.currentConnection.Output);
+        Instance.cancelled = true;
+        Circuit.UpdateCircuit(input, output);
     }
 
     public static void Disconnect(Connection connection)
@@ -91,15 +98,18 @@ public class CircuitConnector : MonoBehaviour
 
     public void BeginConnectionProcess(bool currentPowerStatus, Vector3 pos)
     {
+        cancelled = false;
         this.currentPowerStatus = currentPowerStatus;
         currentConnection = InstantiateConnection();
         InstantiateWire(currentConnection, pos);
         currentConnection.StartingWire = currentWire;
         currentWire.name = "Starting Wire";
+        enabled = true;
     }
 
-    public void EndConnectionProcess()
+    public void CancelConnectionProcess()
     {
+        cancelled = true;
         Destroy(currentConnection.gameObject);
     }
 
@@ -171,7 +181,7 @@ public class CircuitConnector : MonoBehaviour
         currentConnection.gameObject.AddComponent<MeshCollider>();
     }
 
-    public Connection InstantiateConnection()
+    private Connection InstantiateConnection()
     {
         return new GameObject("Connection").AddComponent<Connection>();
     }

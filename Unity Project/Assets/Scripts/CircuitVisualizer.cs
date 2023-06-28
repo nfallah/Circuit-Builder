@@ -55,6 +55,11 @@ public class CircuitVisualizer : MonoBehaviour
     // Generates a mesh corresponding to the name & inputs/outputs of a given circuit
     public void VisualizeCircuit(Circuit circuit)
     {
+        VisualizeCircuit(circuit, Vector2.zero);
+    }
+
+    public void VisualizeCircuit(Circuit circuit, Vector2 startingPosition)
+    {
         // Setting dimensions
         int numInputMargins = circuit.Inputs.Length + 1, numOutputMargins = circuit.Outputs.Length + 1;
         float inputHeight = numInputMargins * heightMargins + circuit.Inputs.Length * inputSize;
@@ -65,6 +70,7 @@ public class CircuitVisualizer : MonoBehaviour
         GameObject physicalObject = new GameObject("\"" + circuit.CircuitName + "\" Gate");
         GameObject baseQuad = new GameObject("Base");
 
+        physicalObject.transform.position = new Vector3(startingPosition.x, GridMaintenance.Instance.GridHeight, startingPosition.y);
         baseQuad.layer = 8;
         baseQuad.transform.parent = physicalObject.transform;
         baseQuad.transform.localPosition = Vector3.zero;

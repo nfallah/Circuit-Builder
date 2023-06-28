@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class NotGate : Circuit
 {
-    public NotGate() : base("NOT", 1, 1) {}
+    public NotGate() : this(Vector2.zero) { }
+
+    public NotGate(Vector2 startingPos) : base("NOT", 1, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {
