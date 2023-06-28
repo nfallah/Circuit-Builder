@@ -68,8 +68,6 @@ public class CircuitConnector : MonoBehaviour
     {
         Instance.currentConnection.Input = input;
         Instance.currentConnection.Output = output;
-        Debug.Log(Instance.currentConnection.Input == null);
-        Debug.Log(Instance.currentConnection.Output == null);
         Instance.currentConnection.Input.Connection = Instance.currentConnection;
         Instance.currentConnection.Output.Connections.Add(Instance.currentConnection);
         Instance.currentConnection.Output.ChildInputs.Add(input);

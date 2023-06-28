@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class Circuit
 {
-    private static float callTimer = 0.1f;
+    public static float callTimer = 0.1f; // Measured in seconds
 
     // Represents all required members of an input node
     public class Input
@@ -67,7 +67,7 @@ public abstract class Circuit
         public Transform Transform { get { return transform; } set { transform = value; } }
     }
 
-    private class UpdateCall
+    public class UpdateCall
     {
         private bool powered;
 
@@ -99,8 +99,6 @@ public abstract class Circuit
 
     private readonly string circuitName;
 
-    private Queue<UpdateCall> updateList = new Queue<UpdateCall>();
-
     // Utilized by inherited circuits to determine the specific number of input and output nodes
     public Circuit(string circuitName, int numInputs, int numOutputs) : this(circuitName, numInputs, numOutputs, Vector2.zero) {}
 
@@ -123,11 +121,10 @@ public abstract class Circuit
      */
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
-        Debug.Log("Update!");
         input.Powered = powered;
         input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
-        input.ParentOutput = output;
         CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);
+        input.ParentOutput = output;
         input.ParentCircuit.Update();
         input.ParentCircuit.UpdateChildren();
     }
@@ -137,13 +134,20 @@ public abstract class Circuit
         UpdateCircuit(output.Powered, input, output);
     }
 
-    // Recursively calls and updates all connections instantiated by this circuit
+    // Recursively calls and updates all connectio1ns instantiated by this circuit
     public void UpdateChildren()
     {
+        List<UpdateCall> updateList = new List<UpdateCall>();
+
         foreach (Output output in outputsToUpdate)
         {
-            foreach (Input input in output.ChildInputs) UpdateCircuit(output.Powered, input, output);
+            foreach (Input input in output.ChildInputs)
+            {
+                updateList.Add(new UpdateCall(output.Powered, input, output));
+            }
         }
+
+        CircuitCaller.InitiateUpdateCalls(updateList);
     }
 
     public void Update()
