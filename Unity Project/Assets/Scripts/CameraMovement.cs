@@ -38,7 +38,7 @@ public class CameraMovement : MonoBehaviour
 
         mousePosCurrent = Coordinates.Instance.MousePos;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.UNRESTRICTED)
         {
             Vector3 mousePosDelta = mousePosPrev - mousePosCurrent;
 

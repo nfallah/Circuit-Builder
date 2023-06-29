@@ -83,6 +83,7 @@ public class CircuitConnector : MonoBehaviour
         Circuit.UpdateCircuit(false, connection.Input, null);
         connection.Input.Connection = null;
         connection.Output.Connections.Remove(connection);
+        connection.Output.ChildInputs.Remove(connection.Input);
         Destroy(connection.gameObject);
     }
 

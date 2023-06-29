@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class BehaviorManager : MonoBehaviour
 {
-    private enum GameState { GRID_HOVER, CIRCUIT_MOVEMENT, CIRCUIT_PLACEMENT, IO_HOVER, IO_PRESS, USER_INTERFACE, WIRE_HOVER, WIRE_PRESS }
+    private static BehaviorManager instance;
 
-    private enum StateType { UNRESTRICTED, LOCKED, PAUSED }
+    public enum GameState { GRID_HOVER, CIRCUIT_HOVER, CIRCUIT_MOVEMENT, CIRCUIT_PLACEMENT, IO_HOVER, IO_PRESS, USER_INTERFACE, WIRE_HOVER, WIRE_PRESS }
+
+    public enum StateType { UNRESTRICTED, LOCKED, PAUSED }
 
     [SerializeField] KeyCode cancelKey;
 
@@ -18,6 +21,17 @@ public class BehaviorManager : MonoBehaviour
     private GameState gameState, unpausedGameState;
 
     private StateType stateType, unpausedStateType;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this);
+            throw new Exception("BehaviorManager instance already established; terminating.");
+        }
+
+        instance = this;
+    }
 
     private void Start()
     {
@@ -34,66 +48,90 @@ public class BehaviorManager : MonoBehaviour
 
     private GameState UpdateGameState()
     {
+        // Current state is UI
         if (EventSystem.current.IsPointerOverGameObject())
         {
-            if (gameState == GameState.USER_INTERFACE) return gameState;
+            if (gameState == GameState.USER_INTERFACE) return gameState; // Last state was UI
 
+            // The UI state pauses the previous state rather than overriding it
             unpausedGameState = gameState;
             unpausedStateType = stateType;
             stateType = StateType.PAUSED;
+            CursorManager.SetMouseTexture(true);
             return GameState.USER_INTERFACE;
         }
 
+        // Previous state was not UI, now is
         if (gameState == GameState.USER_INTERFACE)
         {
             gameState = unpausedGameState;
             stateType = unpausedStateType;
         }
 
-        if (stateType == StateType.LOCKED) return gameState;
+        if (stateType == StateType.LOCKED) return gameState; // Locked states must change manually, not automatically
 
         Ray ray = CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.Raycast(ray, out RaycastHit hitInfo))
         {
             stateType = StateType.UNRESTRICTED;
+            CursorManager.SetMouseTexture(true);
             return GameState.GRID_HOVER;
         }
 
         GameObject hitObject = hitInfo.transform.gameObject;
 
-        if (hitObject.layer == 8 && Input.GetMouseButton(0))
+        // Mouse is on top of a circuit & LMB has been pressed
+        if (gameState == GameState.CIRCUIT_HOVER && Input.GetMouseButton(0))
         {
             stateType = StateType.LOCKED;
+            CursorManager.SetMouseTexture(false);
             return GameState.CIRCUIT_MOVEMENT;
         }
 
+        // Mouse is on top of a circuit
+        if (hitObject.layer == 8)
+        {
+            stateType = StateType.UNRESTRICTED;
+            CursorManager.SetMouseTexture(false);
+            return GameState.CIRCUIT_HOVER;
+        }
+
+        // Mouse is on top of any input & LMB has been pressed
         if (gameState == GameState.IO_HOVER && Input.GetMouseButtonDown(0))
         {
             IOPress(hitObject);
             stateType = StateType.LOCKED;
+            CursorManager.SetMouseTexture(true);
             return GameState.IO_PRESS;
         }
 
+        // Mouse is on top of any input or output
         if (hitObject.layer == 9 || hitObject.layer == 10)
         {
             stateType = StateType.UNRESTRICTED;
+            CursorManager.SetMouseTexture(false);
             return GameState.IO_HOVER;
         }
 
-        if (gameState == GameState.WIRE_HOVER && Input.GetMouseButtonDown(0))
+        // Mouse is on top of a wire & RMB has been pressed
+        if (gameState == GameState.WIRE_HOVER && Input.GetMouseButtonDown(1))
         {
             stateType = StateType.LOCKED;
+            CursorManager.SetMouseTexture(true);
             return GameState.WIRE_PRESS;
         }
 
+        // Mouse is on top of a wire
         if (hitObject.layer == 11)
         {
             stateType = StateType.UNRESTRICTED;
+            CursorManager.SetMouseTexture(false);
             return GameState.WIRE_HOVER;
         }
 
         stateType = StateType.UNRESTRICTED;
+        CursorManager.SetMouseTexture(true);
         return GameState.GRID_HOVER;
     }
 
@@ -102,7 +140,7 @@ public class BehaviorManager : MonoBehaviour
         bool powerStatus;
         Vector3 startingPos;
 
-        // Input layer
+        // Input layer was pressed; next press should be on an output layer
         if (hitObject.layer == 9)
         {
             currentInput = hitObject.GetComponent<CircuitVisualizer.InputReference>().Input;
@@ -111,6 +149,7 @@ public class BehaviorManager : MonoBehaviour
             startingPos = currentInput.Transform.position;
         }
 
+        // Output layer was pressed; next press should be on an input layer
         else
         {
             currentOutput = hitObject.GetComponent<CircuitVisualizer.OutputReference>().Output;
@@ -127,13 +166,12 @@ public class BehaviorManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.IO_PRESS:
-                if (Input.GetMouseButtonDown(0) && Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
+                if (Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
                 {
                     // Input layer
                     if (ioLayerCheck == 9)
                     {
                         currentInput = hitInfo.transform.GetComponent<CircuitVisualizer.InputReference>().Input;
-
                     }
 
                     // Output layer
@@ -142,12 +180,30 @@ public class BehaviorManager : MonoBehaviour
                         currentOutput = hitInfo.transform.GetComponent<CircuitVisualizer.OutputReference>().Output;
                     }
 
-                    CircuitConnector.Connect(currentInput, currentOutput);
-                    stateType = StateType.UNRESTRICTED;
-                    currentInput = null; currentOutput = null;
+                    CursorManager.SetMouseTexture(false);
+
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        // Disconnects the current connection to the input if there is one
+                        if (currentInput.ParentOutput != null)
+                        {
+                            CircuitConnector.Disconnect(currentInput.Connection);
+                        }
+
+                        CircuitConnector.Connect(currentInput, currentOutput);
+                        stateType = StateType.UNRESTRICTED;
+                        currentInput = null; currentOutput = null;
+                        return;
+                    }
                 }
 
-                else if (Input.GetKeyDown(cancelKey))
+                else
+                {
+                    CursorManager.SetMouseTexture(true);
+                }
+
+                // Cancels the placement process
+                if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
                 {
                     CircuitConnector.Instance.CancelConnectionProcess();
                     stateType = StateType.UNRESTRICTED;
@@ -155,6 +211,24 @@ public class BehaviorManager : MonoBehaviour
                 }
 
                 break;
+
+            case GameState.CIRCUIT_MOVEMENT:
+
+                // Exit code
+                if (!Input.GetMouseButton(0))
+                {
+                    stateType = StateType.UNRESTRICTED;
+                    return;
+                }
+
+                break;
         }
     }
+
+    // Getter methods
+    public static BehaviorManager Instance { get { return instance; } }
+
+    public GameState CurrentGameState { get { return gameState; } }
+
+    public StateType CurrentStateType { get { return stateType; } }
 }
