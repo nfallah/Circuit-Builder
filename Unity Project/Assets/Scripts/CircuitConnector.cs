@@ -12,11 +12,13 @@ public class CircuitConnector : MonoBehaviour
 
     private bool cancelled, currentPowerStatus;
 
+    private int count;
+
     private Connection currentConnection;
 
     private GameObject currentWire;
 
-    private Vector3 currentPos;
+    private Vector3 startingWirePos, currentPos;
 
     public class Connection : MonoBehaviour
     {
@@ -55,17 +57,25 @@ public class CircuitConnector : MonoBehaviour
             return;
         }
 
-        UpdatePosition(currentWire, currentPos, Coordinates.Instance.GridPos);
+        UpdatePosition(currentWire, currentPos, Coordinates.Instance.ModePos);
 
         if (Input.GetMouseButtonDown(0) && currentWire.activeSelf)
         {
+            count++;
+
+            if (count == 2)
+            {
+                startingWirePos = currentPos;
+            }
+
             currentConnection.EndingWire = currentWire;
-            InstantiateWire(currentConnection, Coordinates.Instance.GridPos);
+            InstantiateWire(currentConnection, Coordinates.Instance.ModePos);
         }
     }
 
     public static void Connect(Circuit.Input input, Circuit.Output output)
     {
+        Instance.count = -1;
         Instance.currentConnection.Input = input;
         Instance.currentConnection.Output = output;
         Instance.currentConnection.Input.Connection = Instance.currentConnection;
@@ -97,6 +107,7 @@ public class CircuitConnector : MonoBehaviour
 
     public void BeginConnectionProcess(bool currentPowerStatus, Vector3 pos)
     {
+        count = 0;
         cancelled = false;
         this.currentPowerStatus = currentPowerStatus;
         currentConnection = InstantiateConnection();
@@ -108,6 +119,7 @@ public class CircuitConnector : MonoBehaviour
 
     public void CancelConnectionProcess()
     {
+        count = -1;
         cancelled = true;
         Destroy(currentConnection.gameObject);
     }
@@ -124,8 +136,14 @@ public class CircuitConnector : MonoBehaviour
     }
 
     // Utilizes an existing wire and updates its start and end positions
-    private void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
+    public static void UpdatePosition(GameObject wire, Vector3 a, Vector3 b)
     {
+        UpdatePosition(wire, a, b, false);
+    }
+
+    public static void UpdatePosition(GameObject wire, Vector3 a, Vector3 b, bool isCentered)
+    {
+        if (isCentered) wire.transform.position = (a + b) / 2;
         wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
         wire.SetActive(wire.transform.localScale.z != 0);
         wire.transform.LookAt(b);
@@ -133,8 +151,17 @@ public class CircuitConnector : MonoBehaviour
 
     private void OptimizeMeshes()
     {
-        if (currentConnection.StartingWire == currentConnection.EndingWire) return;
+        if (currentConnection.StartingWire == currentConnection.EndingWire)
+        {
+            currentConnection.StartingWire.transform.position = (currentConnection.Input.Transform.position + currentConnection.Output.Transform.position) / 2;
+            currentConnection.StartingWire.transform.GetChild(0).transform.localPosition = Vector3.back * 0.5f;
+            return;
+        }
 
+        currentConnection.StartingWire.transform.position = startingWirePos;
+        currentConnection.StartingWire.transform.eulerAngles += Vector3.up * 180;
+
+        // Checks to see whether there are exactly 3 wires, as 2 of them are the starting and ending wires (cannot be merged into a mesh) and the third wire is the placement wire, which will be deleted regardless.
         if (currentConnection.transform.childCount == 3)
         {
             Destroy(currentWire);
@@ -186,4 +213,6 @@ public class CircuitConnector : MonoBehaviour
     }
 
     public static CircuitConnector Instance { get { return instance; } }
+
+    public Connection CurrentConnection { get { return currentConnection; } }
 }

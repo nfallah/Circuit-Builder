@@ -6,11 +6,25 @@ public class Coordinates : MonoBehaviour
 {
     private static Coordinates instance; // Ensures a singleton state pattern is maintained
 
+    public enum SnappingMode { GRID, NONE }
+
+    [SerializeField] KeyCode snapToggleKey;
+
     [SerializeField] TextMeshProUGUI coordinateText;
+
+    private SnappingMode snappingMode;
 
     private Plane raycastPlane;
 
     private Vector3 mousePos;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(snapToggleKey))
+        {
+            snappingMode = snappingMode == SnappingMode.GRID ? SnappingMode.NONE : SnappingMode.GRID;
+        }    
+    }
 
     private void Awake()
     {
@@ -22,6 +36,11 @@ public class Coordinates : MonoBehaviour
 
         instance = this;
         raycastPlane = new Plane(Vector3.down, GridMaintenance.Instance.GridHeight);
+    }
+
+    public static Vector3 NormalToGridPos(Vector3 normalPos)
+    {
+        return new Vector3((int)(normalPos.x + 0.5f * Mathf.Sign(normalPos.x)), GridMaintenance.Instance.GridHeight, (int)(normalPos.z + 0.5f * Mathf.Sign(normalPos.z)));
     }
 
     // Getter methods
@@ -53,4 +72,14 @@ public class Coordinates : MonoBehaviour
             throw new Exception("Unable to obtain new mouse position -- raycast failed.");
         }
     }
+
+    public Vector3 ModePos
+    {
+        get
+        {
+            return snappingMode == SnappingMode.GRID ? GridPos : MousePos;
+        }
+    }
+
+    public SnappingMode CurrentSnappingMode { get { return snappingMode; } }
 }

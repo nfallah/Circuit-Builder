@@ -18,9 +18,13 @@ public class BehaviorManager : MonoBehaviour
 
     private int ioLayerCheck;
 
+    private Circuit currentCircuit;
+
     private GameState gameState, unpausedGameState;
 
     private StateType stateType, unpausedStateType;
+
+    private Vector3 deltaPos, prevDeltaPos, startingOffset, endingOffset, startingPos;
 
     private void Awake()
     {
@@ -84,8 +88,11 @@ public class BehaviorManager : MonoBehaviour
         // Mouse is on top of a circuit & LMB has been pressed
         if (gameState == GameState.CIRCUIT_HOVER && Input.GetMouseButton(0))
         {
+            currentCircuit = hitObject.GetComponentInParent<CircuitReference>().Circuit;
+            CircuitPress();
             stateType = StateType.LOCKED;
             CursorManager.SetMouseTexture(false);
+            Cursor.visible = false;
             return GameState.CIRCUIT_MOVEMENT;
         }
 
@@ -161,6 +168,14 @@ public class BehaviorManager : MonoBehaviour
         CircuitConnector.Instance.BeginConnectionProcess(powerStatus, startingPos);
     }
 
+    private void CircuitPress()
+    {
+        Vector3 mousePos = Coordinates.Instance.MousePos;
+
+        startingPos = currentCircuit.PhysicalObject.transform.position;
+        endingOffset = startingOffset = mousePos;
+    }
+
     private void GameStateListener()
     {
         switch (gameState)
@@ -190,7 +205,20 @@ public class BehaviorManager : MonoBehaviour
                             CircuitConnector.Disconnect(currentInput.Connection);
                         }
 
+                        CircuitConnector.Connection connection = CircuitConnector.Instance.CurrentConnection;
                         CircuitConnector.Connect(currentInput, currentOutput);
+
+                        /* Ensures that if the order of selection was not output -> input, the starting and ending wires are swapped with one another.
+                         * This occurs as the starting wire is also associated with the input, hence the game objects are swapped to maintan this order.
+                         */
+                        if (ioLayerCheck == 10)
+                        {
+                            GameObject temp = connection.StartingWire;
+
+                            connection.StartingWire = connection.EndingWire;
+                            connection.EndingWire = temp;
+                        }
+                        
                         stateType = StateType.UNRESTRICTED;
                         currentInput = null; currentOutput = null;
                         return;
@@ -218,16 +246,49 @@ public class BehaviorManager : MonoBehaviour
                 if (!Input.GetMouseButton(0))
                 {
                     stateType = StateType.UNRESTRICTED;
+                    Cursor.visible = true;
+                    currentCircuit = null;
                     return;
                 }
 
+                endingOffset = Coordinates.Instance.MousePos;
+                prevDeltaPos = deltaPos;
+                deltaPos = endingOffset - startingOffset + startingPos;
+
+                if (Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID) deltaPos = Coordinates.NormalToGridPos(deltaPos);
+
+                currentCircuit.PhysicalObject.transform.position = deltaPos;
+
+                if (prevDeltaPos != deltaPos)
+                {
+                    foreach (Circuit.Input input in currentCircuit.Inputs)
+                    {
+                        if (input.Connection != null)
+                        {
+                            bool isCentered = input.Connection.EndingWire == input.Connection.StartingWire;
+                            Vector3 fromPos = isCentered ? input.Connection.Output.Transform.position : input.Connection.EndingWire.transform.position;
+                            CircuitConnector.UpdatePosition(input.Connection.EndingWire, fromPos, input.Transform.position, isCentered);
+                        }
+                    }
+
+                    foreach (Circuit.Output output in currentCircuit.Outputs)
+                    {
+                        foreach (CircuitConnector.Connection connection in output.Connections)
+                        {
+                            bool isCentered = connection.EndingWire == connection.StartingWire;
+                            Vector3 fromPos = isCentered ? connection.Input.Transform.position : connection.StartingWire.transform.position;
+                            CircuitConnector.UpdatePosition(connection.StartingWire, fromPos, output.Transform.position, isCentered);
+                        }
+                    }
+                }
+                break;
+            case GameState.WIRE_PRESS:
                 break;
         }
     }
 
     // Getter methods
     public static BehaviorManager Instance { get { return instance; } }
-
     public GameState CurrentGameState { get { return gameState; } }
 
     public StateType CurrentStateType { get { return stateType; } }
