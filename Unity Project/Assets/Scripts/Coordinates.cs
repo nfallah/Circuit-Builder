@@ -66,7 +66,7 @@ public class Coordinates : MonoBehaviour
             {
                 mousePos = ray.GetPoint(distance);
                 coordinateText.text = "(" + mousePos.x.ToString("0.0") + ", " + mousePos.z.ToString("0.0") + ")";
-                return mousePos;
+                return new Vector3(mousePos.x, GridMaintenance.Instance.GridHeight, mousePos.z);
             }
 
             throw new Exception("Unable to obtain new mouse position -- raycast failed.");

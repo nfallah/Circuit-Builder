@@ -73,7 +73,7 @@ public class CircuitVisualizer : MonoBehaviour
         physicalObject.transform.position = new Vector3(startingPosition.x, GridMaintenance.Instance.GridHeight, startingPosition.y);
         baseQuad.layer = 8;
         baseQuad.transform.parent = physicalObject.transform;
-        baseQuad.transform.localPosition = Vector3.zero;
+        baseQuad.transform.localPosition = Vector3.up * 0.005f;
 
         Vector3[] vertices = new Vector3[]
 {
@@ -125,7 +125,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject inputQuad = new GameObject("Input " + (index + 1));
             GameObject inputQuadPower = new GameObject("Input Status " + (index + 1));
-            Vector3 pos = new Vector3(-dimensions.x / 2, 0.001f, currentHeight - dimensions.y / 2);
+            Vector3 pos = new Vector3(-dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
 
             inputQuad.layer = 9;
             inputQuad.transform.parent = inputQuadPower.transform.parent = physicalObject.transform;
@@ -157,7 +157,7 @@ public class CircuitVisualizer : MonoBehaviour
         {
             GameObject outputQuad = new GameObject("Output " + (index + 1));
             GameObject outputQuadPower = new GameObject("Output Status " + (index + 1));
-            Vector3 pos = new Vector3(dimensions.x / 2, 0.001f, currentHeight - dimensions.y / 2);
+            Vector3 pos = new Vector3(dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
 
             outputQuad.layer = 10;
             outputQuad.transform.parent = outputQuadPower.transform.parent = physicalObject.transform;
@@ -177,7 +177,7 @@ public class CircuitVisualizer : MonoBehaviour
         GameObject name = new GameObject("Name");
 
         name.transform.parent = physicalObject.transform;
-        name.transform.localPosition = Vector3.right * (inputSize - outputSize) / 4;
+        name.transform.localPosition = Vector3.up * 0.01f + Vector3.right * (inputSize - outputSize) / 4;
         name.transform.eulerAngles = Vector3.right * 90;
 
         Vector2 nameDimensions = new Vector2(dimensions.x - (inputSize + outputSize) / 2 - 2 * textPadding.x, dimensions.y - 2 * textPadding.y);

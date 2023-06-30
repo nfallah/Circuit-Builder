@@ -60,6 +60,7 @@ public class CircuitConnector : MonoBehaviour
         bool staringAtIO = Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == BehaviorManager.Instance.IOLayerCheck;
         Vector3 pos = staringAtIO ? hitInfo.transform.position : Coordinates.Instance.ModePos;
 
+        pos.y = GridMaintenance.Instance.GridHeight;
         UpdatePosition(currentWire, currentPos, pos);
 
         if (Input.GetMouseButtonDown(0) && currentWire.activeSelf && BehaviorManager.Instance.CurrentStateType != BehaviorManager.StateType.PAUSED)
@@ -150,14 +151,30 @@ public class CircuitConnector : MonoBehaviour
         wire.transform.localScale = new Vector3(1, 1, (a - b).magnitude);
         wire.SetActive(wire.transform.localScale.z != 0);
         wire.transform.LookAt(b);
+
+        // Failsafe that ensures the height of the wire does not exceed the global grid height (in case floats are not represented accurately and there is slight rotation)
+        Vector3 temp = wire.transform.position;
+
+        temp.y = GridMaintenance.Instance.GridHeight;
+        wire.transform.position = temp;
     }
 
     private void OptimizeMeshes()
     {
         if (currentConnection.StartingWire == currentConnection.EndingWire)
         {
+            Destroy(currentWire);
             currentConnection.StartingWire.transform.position = (currentConnection.Input.Transform.position + currentConnection.Output.Transform.position) / 2;
             currentConnection.StartingWire.transform.GetChild(0).transform.localPosition = Vector3.back * 0.5f;
+
+            /* Ensures the height of the wire does not exceed the global grid height, keeping raycasting working as intended.
+             * This would otherwise happen as the position of the starting wire is set to the midpoint of the input and output of the connection, which are slightly above the grid height to allow for proper raycasting.
+             * Therefore the height must be manually lowered.
+             */
+            Vector3 temp = currentConnection.StartingWire.transform.position;
+
+            temp.y = GridMaintenance.Instance.GridHeight;
+            currentConnection.StartingWire.transform.position = temp;
             return;
         }
 
