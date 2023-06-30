@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,6 +17,8 @@ public class BehaviorManager : MonoBehaviour
     private Circuit.Input currentInput;
 
     private Circuit.Output currentOutput;
+
+    private bool ioLMB;
 
     private int ioLayerCheck;
 
@@ -107,11 +111,21 @@ public class BehaviorManager : MonoBehaviour
         }
 
         // Mouse is on top of any input & LMB has been pressed
-        if (gameState == GameState.IO_HOVER && Input.GetMouseButtonDown(0))
+        if (gameState == GameState.IO_HOVER && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
         {
-            IOPress(hitObject);
+            ioLMB = Input.GetMouseButtonDown(0);
             stateType = StateType.LOCKED;
-            CursorManager.SetMouseTexture(true);
+
+            if (ioLMB)
+            {
+                IOLMBPress(hitObject);
+                CursorManager.SetMouseTexture(true);
+            }
+            
+            else
+            {
+                IORMBPress(hitObject);
+            }
             return GameState.IO_PRESS;
         }
 
@@ -128,6 +142,7 @@ public class BehaviorManager : MonoBehaviour
         {
             stateType = StateType.LOCKED;
             CursorManager.SetMouseTexture(true);
+            WirePress(hitObject);
             return GameState.WIRE_PRESS;
         }
 
@@ -144,7 +159,7 @@ public class BehaviorManager : MonoBehaviour
         return GameState.GRID_HOVER;
     }
 
-    private void IOPress(GameObject hitObject)
+    private void IOLMBPress(GameObject hitObject)
     {
         bool powerStatus;
         Vector3 startingPos;
@@ -170,6 +185,49 @@ public class BehaviorManager : MonoBehaviour
         CircuitConnector.Instance.BeginConnectionProcess(powerStatus, startingPos);
     }
 
+    private void IORMBPress(GameObject hitObject)
+    {
+        // Input pressed
+        if (hitObject.layer == 9)
+        {
+            Circuit.Input input = hitObject.GetComponent<CircuitVisualizer.InputReference>().Input;
+
+            // If there *is* a connection, disconnect it.
+            if (input.Connection != null) CircuitConnector.Disconnect(input.Connection);
+        }
+
+        // Output pressed
+        else
+        {
+            Circuit.Output output = hitObject.GetComponent<CircuitVisualizer.OutputReference>().Output;
+            List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>(output.Connections);
+
+            foreach (CircuitConnector.Connection connection in connections) CircuitConnector.Disconnect(connection);
+        }
+
+        stateType = StateType.UNRESTRICTED;
+    }
+
+    private void WirePress(GameObject hitObject)
+    {
+        CircuitConnector.Connection connection;
+
+        if (hitObject.transform.parent == null)
+        {
+            connection = hitObject.GetComponent<CircuitConnector.Connection>();
+            Destroy(hitObject.transform);
+        }
+
+        else
+        {
+            connection = hitObject.GetComponentInParent<CircuitConnector.Connection>();
+            Destroy(hitObject.transform.parent.parent.gameObject);
+        }
+
+        CircuitConnector.Disconnect(connection);
+        stateType = StateType.UNRESTRICTED;
+    }
+
     private void CircuitPress()
     {
         Vector3 mousePos = Coordinates.Instance.MousePos;
@@ -183,6 +241,7 @@ public class BehaviorManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.IO_PRESS:
+                if (!ioLMB) return;
                 if (Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
                 {
                     // Input layer

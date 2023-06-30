@@ -29,6 +29,9 @@ public class CircuitCaller : MonoBehaviour
 
         foreach (Circuit.UpdateCall updateCall in updateCalls)
         {
+            // This means that sometime from the call initiation and now, the connection was destroyed and should no longer be pursued.
+            if (updateCall.Input.ParentOutput == null) continue;
+
             Circuit.UpdateCircuit(updateCall.Powered, updateCall.Input, updateCall.Output);
         }
     }
