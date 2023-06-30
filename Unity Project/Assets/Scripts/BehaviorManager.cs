@@ -61,15 +61,17 @@ public class BehaviorManager : MonoBehaviour
             unpausedGameState = gameState;
             unpausedStateType = stateType;
             stateType = StateType.PAUSED;
+            Cursor.visible = true;
             CursorManager.SetMouseTexture(true);
             return GameState.USER_INTERFACE;
         }
 
-        // Previous state was not UI, now is
+        // Previous game state was UI, but current state is not (essentially conditions for unpausing)
         if (gameState == GameState.USER_INTERFACE)
         {
             gameState = unpausedGameState;
             stateType = unpausedStateType;
+            Cursor.visible = unpausedGameState != GameState.CIRCUIT_MOVEMENT;
         }
 
         if (stateType == StateType.LOCKED) return gameState; // Locked states must change manually, not automatically

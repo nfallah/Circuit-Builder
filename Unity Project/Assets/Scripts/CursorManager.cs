@@ -22,12 +22,12 @@ public class CursorManager : MonoBehaviour
     {
         if (useCursorTexture)
         {
-            Cursor.SetCursor(instance.cursorTexture, Vector2.zero, CursorMode.Auto);
+            Cursor.SetCursor(instance.cursorTexture, Vector2.zero, CursorMode.ForceSoftware);
         }
 
         else
         {
-            Cursor.SetCursor(instance.linkTexture, new Vector2(26, 0), CursorMode.Auto);
+            Cursor.SetCursor(instance.linkTexture, new Vector2(12, 0), CursorMode.ForceSoftware);
         }
     }
 }
