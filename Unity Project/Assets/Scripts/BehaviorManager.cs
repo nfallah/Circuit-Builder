@@ -289,7 +289,10 @@ public class BehaviorManager : MonoBehaviour
 
     // Getter methods
     public static BehaviorManager Instance { get { return instance; } }
+
     public GameState CurrentGameState { get { return gameState; } }
+
+    public int IOLayerCheck { get { return ioLayerCheck; } }
 
     public StateType CurrentStateType { get { return stateType; } }
 }
