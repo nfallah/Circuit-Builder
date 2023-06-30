@@ -25,7 +25,7 @@ public class CircuitCaller : MonoBehaviour
 
     private static IEnumerator UpdateCalls(List<Circuit.UpdateCall> updateCalls)
     {
-        yield return new WaitForSeconds(Circuit.callTimer);
+        yield return new WaitForSeconds(Circuit.clockSpeed);
 
         foreach (Circuit.UpdateCall updateCall in updateCalls)
         {

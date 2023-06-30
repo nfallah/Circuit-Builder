@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class Circuit
 {
-    public static float callTimer = 0.1f; // Measured in seconds
+    public static float clockSpeed = 0.075f; // Time it takes for one update call to occur; measured in seconds.
 
     // Represents all required members of an input node
     public class Input

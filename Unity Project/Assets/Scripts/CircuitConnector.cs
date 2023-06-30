@@ -132,7 +132,7 @@ public class CircuitConnector : MonoBehaviour
     {
         currentWire = Instantiate(wireReference, connection.transform);
 
-        if (currentPowerStatus) currentWire.GetComponentInChildren<MeshRenderer>().material = poweredMaterial;
+        //if (currentPowerStatus) currentWire.GetComponentInChildren<MeshRenderer>().material = poweredMaterial;
 
         currentPos = new Vector3(a.x, GridMaintenance.Instance.GridHeight, a.z);
         currentWire.transform.position = currentPos;
@@ -219,10 +219,11 @@ public class CircuitConnector : MonoBehaviour
         }
 
         MeshFilter combinedMeshFilter = currentConnection.gameObject.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = currentConnection.gameObject.AddComponent<MeshRenderer>();
+        currentConnection.gameObject.AddComponent<MeshRenderer>();
 
         combinedMeshFilter.mesh = combinedMesh;
-        meshRenderer.material = currentPowerStatus ? poweredMaterial : unpoweredMaterial;
+        // Not needed as connecting already updated the material.
+        //meshRenderer.material = currentPowerStatus ? poweredMaterial : unpoweredMaterial;
         currentConnection.gameObject.layer = 11;
         currentConnection.gameObject.AddComponent<MeshCollider>();
     }
