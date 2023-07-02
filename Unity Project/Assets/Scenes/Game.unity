@@ -748,6 +748,41 @@ PrefabInstance:
 
 '
       objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1100941123}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SelectBookmark
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5054320141868670049, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.UI.Button, UnityEngine.UI
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5, type: 3}
 --- !u!224 &220269134 stripped
