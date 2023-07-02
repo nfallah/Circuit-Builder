@@ -20,6 +20,9 @@ public class CircuitVisualizer : MonoBehaviour
         public Circuit.Output Output { get { return output; } set { output = value; } }
     }
 
+    // The color associated with starting circuits (non-custom)
+    [SerializeField] Color startingCircuitColor;
+
     [SerializeField] float
     borderThickness, // Border surrounding the base of the circuit
     inputSize, // Square dimensions of an input node
@@ -189,6 +192,7 @@ public class CircuitVisualizer : MonoBehaviour
         text.enableAutoSizing = true;
         text.fontSizeMin = 0;
         text.font = font;
+        text.color = startingCircuitColor;
 
         circuit.PhysicalObject = physicalObject; // Connects new game object to its circuit for future access
 

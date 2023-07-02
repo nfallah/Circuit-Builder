@@ -20,7 +20,7 @@ public class Coordinates : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(snapToggleKey))
+        if (Input.GetKeyDown(snapToggleKey) && BehaviorManager.Instance.CurrentStateType != BehaviorManager.StateType.PAUSED)
         {
             snappingMode = snappingMode == SnappingMode.GRID ? SnappingMode.NONE : SnappingMode.GRID;
         }    
@@ -65,7 +65,7 @@ public class Coordinates : MonoBehaviour
             if (raycastPlane.Raycast(ray, out float distance))
             {
                 mousePos = ray.GetPoint(distance);
-                coordinateText.text = "(" + mousePos.x.ToString("0.0") + ", " + mousePos.z.ToString("0.0") + ")";
+                if (BehaviorManager.Instance.CurrentStateType != BehaviorManager.StateType.PAUSED) coordinateText.text = "(" + mousePos.x.ToString("0.0") + ", " + mousePos.z.ToString("0.0") + ")";
                 return new Vector3(mousePos.x, GridMaintenance.Instance.GridHeight, mousePos.z);
             }
 

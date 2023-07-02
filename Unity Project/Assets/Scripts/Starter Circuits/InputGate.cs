@@ -22,5 +22,5 @@ public class InputGate : Circuit
     }
 
     // Setter method
-    public bool Powered { set { powered = value; Update(); UpdateChildren(); } }
+    public bool Powered { get { return powered; } set { powered = value; Update(); UpdateChildren(); } }
 }

@@ -57,13 +57,15 @@ public class CircuitConnector : MonoBehaviour
             return;
         }
 
+        if (BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.PAUSED) return;
+
         bool staringAtIO = Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == BehaviorManager.Instance.IOLayerCheck;
         Vector3 pos = staringAtIO ? hitInfo.transform.position : Coordinates.Instance.ModePos;
 
         pos.y = GridMaintenance.Instance.GridHeight;
         UpdatePosition(currentWire, currentPos, pos);
 
-        if (Input.GetMouseButtonDown(0) && currentWire.activeSelf && BehaviorManager.Instance.CurrentStateType != BehaviorManager.StateType.PAUSED)
+        if (Input.GetMouseButtonDown(0) && currentWire.activeSelf)
         {
             count++;
 

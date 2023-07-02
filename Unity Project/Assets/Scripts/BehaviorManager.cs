@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -43,6 +42,7 @@ public class BehaviorManager : MonoBehaviour
 
     private void Start()
     {
+        new InputGate();
         new AndGate();
         new AndGate(new Vector2(20, 10));
         new NotGate(new Vector2(30, 0));
@@ -111,7 +111,7 @@ public class BehaviorManager : MonoBehaviour
         }
 
         // Mouse is on top of any input & LMB has been pressed
-        if (gameState == GameState.IO_HOVER && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+        if (gameState == GameState.IO_HOVER && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)))
         {
             ioLMB = Input.GetMouseButtonDown(0);
             stateType = StateType.LOCKED;
@@ -124,7 +124,7 @@ public class BehaviorManager : MonoBehaviour
             
             else
             {
-                IORMBPress(hitObject);
+                IOAlternatePress(hitObject);
             }
             return GameState.IO_PRESS;
         }
@@ -185,10 +185,20 @@ public class BehaviorManager : MonoBehaviour
         CircuitConnector.Instance.BeginConnectionProcess(powerStatus, startingPos);
     }
 
-    private void IORMBPress(GameObject hitObject)
+    private void IOAlternatePress(GameObject hitObject)
     {
+        if (Input.GetMouseButtonDown(2))
+        {
+            if (hitObject.layer == 10 && hitObject.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(InputGate))
+            {
+                InputGate gate = (InputGate)hitObject.GetComponentInParent<CircuitReference>().Circuit;
+                gate.Powered = !gate.Powered;
+            }
+
+        }
+
         // Input pressed
-        if (hitObject.layer == 9)
+        else if (hitObject.layer == 9)
         {
             Circuit.Input input = hitObject.GetComponent<CircuitVisualizer.InputReference>().Input;
 
