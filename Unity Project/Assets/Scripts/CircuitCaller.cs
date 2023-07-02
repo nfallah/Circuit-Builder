@@ -35,4 +35,25 @@ public class CircuitCaller : MonoBehaviour
             Circuit.UpdateCircuit(updateCall.Powered, updateCall.Input, updateCall.Output);
         }
     }
+
+    public static void Destroy(Circuit circuit)
+    {
+        foreach (Circuit.Input input in circuit.Inputs)
+        {
+            if (input.Connection != null)
+            {
+                CircuitConnector.Disconnect(input.Connection);
+            }
+        }
+
+        foreach (Circuit.Output output in circuit.Outputs)
+        {
+            foreach (CircuitConnector.Connection connection in new List<CircuitConnector.Connection>(output.Connections))
+            {
+                CircuitConnector.Disconnect(connection);
+            }
+        }
+
+        Destroy(circuit.PhysicalObject);
+    }
 }

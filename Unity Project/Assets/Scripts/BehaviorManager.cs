@@ -85,13 +85,24 @@ public class BehaviorManager : MonoBehaviour
         GameObject hitObject = hitInfo.transform.gameObject;
 
         // Mouse is on top of a circuit & LMB has been pressed
-        if (gameState == GameState.CIRCUIT_HOVER && Input.GetMouseButtonDown(0))
+        if (gameState == GameState.CIRCUIT_HOVER && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
         {
             currentCircuit = hitObject.GetComponentInParent<CircuitReference>().Circuit;
-            CircuitPress();
-            stateType = StateType.LOCKED;
-            CursorManager.SetMouseTexture(false);
-            Cursor.visible = false;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                CircuitPress();
+                stateType = StateType.LOCKED;
+                CursorManager.SetMouseTexture(false);
+                Cursor.visible = false;
+            }
+
+            else
+            {
+                CircuitCaller.Destroy(currentCircuit);
+                stateType = StateType.UNRESTRICTED;
+            }
+
             return GameState.CIRCUIT_MOVEMENT;
         }
 
@@ -330,7 +341,7 @@ public class BehaviorManager : MonoBehaviour
 
                 currentCircuit.PhysicalObject.transform.position = deltaPos;
 
-                if (prevDeltaPos != deltaPos)
+                if (prevDeltaPos != deltaPos) // Ensures the circuit has moved from its previous position before updating the wire transforms
                 {
                     foreach (Circuit.Input input in currentCircuit.Inputs)
                     {
@@ -358,7 +369,8 @@ public class BehaviorManager : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    CancelCircuitPlacement();
+                    Cursor.visible = true;
+                    currentCircuit = null;
                     stateType = StateType.UNRESTRICTED;
                     LateUpdate();
                     return;
@@ -366,7 +378,9 @@ public class BehaviorManager : MonoBehaviour
 
                 if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
                 {
-                    CancelCircuitPlacement();
+                    Cursor.visible = true;
+                    CircuitCaller.Destroy(currentCircuit);
+                    currentCircuit = null;
                     stateType = StateType.UNRESTRICTED;
                 }
                 break;
@@ -381,13 +395,6 @@ public class BehaviorManager : MonoBehaviour
 
     public void CancelCircuitMovement()
     {
-        Cursor.visible = true;
-        currentCircuit = null;
-    }
-
-    private void CancelCircuitPlacement()
-    {
-        // Also destroy gameobject
         Cursor.visible = true;
         currentCircuit = null;
     }
