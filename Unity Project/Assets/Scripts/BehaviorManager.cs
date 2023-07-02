@@ -17,7 +17,7 @@ public class BehaviorManager : MonoBehaviour
 
     private Circuit.Output currentOutput;
 
-    private bool ioLMB;
+    private bool ioLMB, lockUI;
 
     private int ioLayerCheck;
 
@@ -40,14 +40,6 @@ public class BehaviorManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        new InputGate();
-        new AndGate();
-        new AndGate(new Vector2(20, 10));
-        new NotGate(new Vector2(30, 0));
-    }
-
     private void LateUpdate()
     {
         gameState = UpdateGameState();
@@ -57,7 +49,7 @@ public class BehaviorManager : MonoBehaviour
     private GameState UpdateGameState()
     {
         // Current state is UI
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || lockUI)
         {
             if (gameState == GameState.USER_INTERFACE) return gameState; // Last state was UI
 
@@ -75,7 +67,7 @@ public class BehaviorManager : MonoBehaviour
         {
             gameState = unpausedGameState;
             stateType = unpausedStateType;
-            Cursor.visible = unpausedGameState != GameState.CIRCUIT_MOVEMENT;
+            Cursor.visible = unpausedGameState != GameState.CIRCUIT_MOVEMENT && unpausedGameState != GameState.CIRCUIT_PLACEMENT;
         }
 
         if (stateType == StateType.LOCKED) return gameState; // Locked states must change manually, not automatically
@@ -92,7 +84,7 @@ public class BehaviorManager : MonoBehaviour
         GameObject hitObject = hitInfo.transform.gameObject;
 
         // Mouse is on top of a circuit & LMB has been pressed
-        if (gameState == GameState.CIRCUIT_HOVER && Input.GetMouseButton(0))
+        if (gameState == GameState.CIRCUIT_HOVER && Input.GetMouseButtonDown(0))
         {
             currentCircuit = hitObject.GetComponentInParent<CircuitReference>().Circuit;
             CircuitPress();
@@ -187,6 +179,7 @@ public class BehaviorManager : MonoBehaviour
 
     private void IOAlternatePress(GameObject hitObject)
     {
+        // Middle mouse click, alternates the power status of an input gate (if applicable to this input)
         if (Input.GetMouseButtonDown(2))
         {
             if (hitObject.layer == 10 && hitObject.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(InputGate))
@@ -197,7 +190,7 @@ public class BehaviorManager : MonoBehaviour
 
         }
 
-        // Input pressed
+        // Input RMB pressed
         else if (hitObject.layer == 9)
         {
             Circuit.Input input = hitObject.GetComponent<CircuitVisualizer.InputReference>().Input;
@@ -206,7 +199,7 @@ public class BehaviorManager : MonoBehaviour
             if (input.Connection != null) CircuitConnector.Disconnect(input.Connection);
         }
 
-        // Output pressed
+        // Output RMB pressed
         else
         {
             Circuit.Output output = hitObject.GetComponent<CircuitVisualizer.OutputReference>().Output;
@@ -216,6 +209,12 @@ public class BehaviorManager : MonoBehaviour
         }
 
         stateType = StateType.UNRESTRICTED;
+    }
+
+    public void CircuitPlacement(Circuit currentCircuit)
+    {
+        this.currentCircuit = currentCircuit;
+        currentCircuit.PhysicalObject.transform.position = Coordinates.Instance.MousePos;
     }
 
     private void WirePress(GameObject hitObject)
@@ -303,12 +302,11 @@ public class BehaviorManager : MonoBehaviour
                     CursorManager.SetMouseTexture(true);
                 }
 
-                // Cancels the placement process
+                // Cancels the wire placement process
                 if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
                 {
-                    CircuitConnector.Instance.CancelConnectionProcess();
+                    CancelWirePlacement();
                     stateType = StateType.UNRESTRICTED;
-                    currentInput = null; currentOutput = null;
                 }
 
                 break;
@@ -318,9 +316,8 @@ public class BehaviorManager : MonoBehaviour
                 // Exit code
                 if (!Input.GetMouseButton(0))
                 {
+                    CancelCircuitMovement();
                     stateType = StateType.UNRESTRICTED;
-                    Cursor.visible = true;
-                    currentCircuit = null;
                     return;
                 }
 
@@ -355,9 +352,43 @@ public class BehaviorManager : MonoBehaviour
                     }
                 }
                 break;
-            case GameState.WIRE_PRESS:
+            case GameState.CIRCUIT_PLACEMENT:
+                currentCircuit.PhysicalObject.transform.position = Coordinates.Instance.ModePos;
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    CancelCircuitPlacement();
+                    stateType = StateType.UNRESTRICTED;
+                    LateUpdate();
+                    return;
+                }
+
+                if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
+                {
+                    CancelCircuitPlacement();
+                    stateType = StateType.UNRESTRICTED;
+                }
                 break;
         }
+    }
+
+    public void CancelWirePlacement()
+    {
+        CircuitConnector.Instance.CancelConnectionProcess();
+        currentInput = null; currentOutput = null;
+    }
+
+    public void CancelCircuitMovement()
+    {
+        Cursor.visible = true;
+        currentCircuit = null;
+    }
+
+    private void CancelCircuitPlacement()
+    {
+        // Also destroy gameobject
+        Cursor.visible = true;
+        currentCircuit = null;
     }
 
     // Getter methods
@@ -365,7 +396,13 @@ public class BehaviorManager : MonoBehaviour
 
     public GameState CurrentGameState { get { return gameState; } }
 
+    public GameState UnpausedGameState { get { return unpausedGameState; } set { unpausedGameState = value; } }
+
     public int IOLayerCheck { get { return ioLayerCheck; } }
 
     public StateType CurrentStateType { get { return stateType; } }
+
+    public StateType UnpausedStateType { get { return unpausedStateType; } set { unpausedStateType = value; } }
+
+    public bool LockUI { get { return lockUI; } set { lockUI = value; } }
 }
