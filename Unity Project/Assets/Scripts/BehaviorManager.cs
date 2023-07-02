@@ -212,12 +212,14 @@ public class BehaviorManager : MonoBehaviour
     {
         CircuitConnector.Connection connection;
 
+        // Not starting or ending wire (aka the optimized mesh inbetween)
         if (hitObject.transform.parent == null)
         {
             connection = hitObject.GetComponent<CircuitConnector.Connection>();
-            Destroy(hitObject.transform);
+            Destroy(hitObject.transform.gameObject);
         }
 
+        // Starting and/or ending wire
         else
         {
             connection = hitObject.GetComponentInParent<CircuitConnector.Connection>();
@@ -241,7 +243,7 @@ public class BehaviorManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.IO_PRESS:
-                if (!ioLMB) return;
+                if (!ioLMB) return; // Means RMB was pressed, therefore not necessary to run this code
                 if (Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
                 {
                     // Input layer
