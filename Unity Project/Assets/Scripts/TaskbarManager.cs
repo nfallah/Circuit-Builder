@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ public class TaskbarManager : MonoBehaviour
 
     private void Update()
     { 
-        if (Input.GetKeyDown(cancelKey))
+        if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
         {
             CloseMenu();
         }
@@ -25,6 +26,16 @@ public class TaskbarManager : MonoBehaviour
     {
         currentMenu = addMenu;
         OpenMenu();
+    }
+
+    public void UpdateBookmark(Toggle toggle, int startingCircuitIndex)
+    {
+        Debug.Log(toggle.isOn);
+    }
+
+    public void AddStartingCircuit(int startingCircuitIndex)
+    {
+        AddCircuit(GetStartingCircuit(startingCircuitIndex));
     }
 
     private void AddCircuit(Circuit newCircuit)
@@ -67,44 +78,28 @@ public class TaskbarManager : MonoBehaviour
         addStartingPanel.anchoredPosition = Vector2.zero;
     }
 
-    public void AddInput()
+    private Circuit GetStartingCircuit(int startingCircuitIndex)
     {
-        AddCircuit(new InputGate());
+        switch (startingCircuitIndex)
+        {
+            case 0:
+                return new InputGate();
+            case 1:
+                return new Display();
+            case 2:
+                return new AndGate();
+            case 3:
+                return new NAndGate();
+            case 4:
+                return new NOrGate();
+            case 5:
+                return new NotGate();
+            case 6:
+                return new OrGate();
+            case 7:
+                return new XOrGate();
+            default:
+                throw new Exception("Invalid starting circuit index.");
+        }
     }
-
-    public void AddDisplay()
-    {
-
-    }
-
-    public void AddAnd()
-    {
-        AddCircuit(new AndGate());
-    }
-
-    public void AddNAnd()
-    {
-        AddCircuit(new NAndGate());
-    }
-
-    public void AddNOr()
-    {
-        AddCircuit(new NOrGate());
-    }
-
-    public void AddNot()
-    {
-        AddCircuit(new NotGate());
-    }
-
-    public void AddOr()
-    {
-        AddCircuit(new OrGate());
-    }
-
-    public void AddXor()
-    {
-        AddCircuit(new XOrGate());
-    }
-
 }

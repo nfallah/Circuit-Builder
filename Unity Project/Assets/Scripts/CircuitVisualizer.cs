@@ -31,6 +31,9 @@ public class CircuitVisualizer : MonoBehaviour
     heightMargins, // The distance between each input and output node
     width; // Constant referring to the width of the circuit
 
+    // Reference to the "DISPLAY" prefab, to be utilized as needed when a display circuit is created
+    [SerializeField] GameObject displayRef;
+
     // Represents custom materials for the circuit base & I/O
     [SerializeField] Material baseMaterial, borderMaterial, inputMaterial, outputMaterial, powerOffMaterial, powerOnMaterial;
 
@@ -63,6 +66,37 @@ public class CircuitVisualizer : MonoBehaviour
 
     public void VisualizeCircuit(Circuit circuit, Vector2 startingPosition)
     {
+        // Target circuit is a display; run alternate code
+        if (circuit.GetType() == typeof(Display))
+        {
+            Display display = (Display)circuit;
+            GameObject displayObj = Instantiate(displayRef);
+            DisplayReference displayVals = displayObj.GetComponent<DisplayReference>();
+            Circuit.Input[] inputs = display.Inputs;
+
+            displayObj.name = display.CircuitName;
+            displayObj.transform.position = new Vector3(startingPosition.x, GridMaintenance.Instance.GridHeight, startingPosition.y);
+            display.PhysicalObject = displayObj;
+            display.Pins = displayVals.Pins;
+
+            for (int i = 0; i < 8; i++)
+            {
+                GameObject currentInput = displayVals.Inputs[i];
+                InputReference inputReference = currentInput.AddComponent<InputReference>();
+
+                inputReference.Input = inputs[i];
+                inputs[i].Transform = currentInput.transform;
+                inputs[i].StatusRenderer = displayVals.InputStatuses[i];
+            }
+
+            Destroy(displayVals); // No longer needed after extracing relevant values
+
+            CircuitReference circuitRef = displayObj.AddComponent<CircuitReference>();
+
+            circuitRef.Circuit = circuit;
+            return;
+        }
+
         // Setting dimensions
         int numInputMargins = circuit.Inputs.Length + 1, numOutputMargins = circuit.Outputs.Length + 1;
         float inputHeight = numInputMargins * heightMargins + circuit.Inputs.Length * inputSize;
@@ -93,7 +127,7 @@ public class CircuitVisualizer : MonoBehaviour
 
         borderQuad.layer = 13;
         borderQuad.transform.parent = physicalObject.transform;
-        borderQuad.transform.localPosition = Vector3.zero; ;
+        //borderQuad.transform.localPosition = Vector3.zero;
         vertices = new Vector3[]
         {
             new Vector3(-dimensions.x / 2 - borderThickness, 0, -dimensions.y / 2 - borderThickness),
