@@ -87,16 +87,18 @@ public class TaskbarManager : MonoBehaviour
             case 1:
                 return new Display();
             case 2:
-                return new AndGate();
+                return new Buffer();
             case 3:
-                return new NAndGate();
+                return new AndGate();
             case 4:
-                return new NOrGate();
+                return new NAndGate();
             case 5:
-                return new NotGate();
+                return new NOrGate();
             case 6:
-                return new OrGate();
+                return new NotGate();
             case 7:
+                return new OrGate();
+            case 8:
                 return new XOrGate();
             default:
                 throw new Exception("Invalid starting circuit index.");
