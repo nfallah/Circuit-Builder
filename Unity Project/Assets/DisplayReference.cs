@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DisplayReference : MonoBehaviour
 {
-    [SerializeField] GameObject[] inputs = new GameObject[8];
+    [SerializeField] GameObject[] inputs = new GameObject[8], previewPins = new GameObject[8];
 
     [SerializeField] MeshRenderer[] inputStatuses = new MeshRenderer[8], pins = new MeshRenderer[8];
 
@@ -13,9 +13,12 @@ public class DisplayReference : MonoBehaviour
         if (inputs.Length != 8) Array.Resize(ref inputs, 8);
         if (inputStatuses.Length != 8) Array.Resize(ref inputStatuses, 8);
         if (pins.Length != 8) Array.Resize(ref pins, 8);
+        if (previewPins.Length != 8) Array.Resize(ref previewPins, 8);
     }
 
     public GameObject[] Inputs { get { return inputs; } }
+
+    public GameObject[] PreviewPins { get { return previewPins; } }
 
     public MeshRenderer[] InputStatuses { get { return inputStatuses; } }
 

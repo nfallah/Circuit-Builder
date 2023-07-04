@@ -24,7 +24,11 @@ public class BehaviorManager : MonoBehaviour
 
     private Circuit currentCircuit;
 
+    private GameObject currentPreviewPin;
+
     private GameState gameState, unpausedGameState;
+
+    private Ray ray;
 
     private StateType stateType, unpausedStateType;
 
@@ -39,6 +43,59 @@ public class BehaviorManager : MonoBehaviour
         }
 
         instance = this;
+    }
+
+    private void Update()
+    {
+        if (EventSystem.current.IsPointerOverGameObject() || lockUI)
+        {
+            if (currentPreviewPin != null)
+            {
+                currentPreviewPin.SetActive(false);
+                currentPreviewPin = null;
+            }
+            return;
+        }
+
+        ray = CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (!Physics.Raycast(ray, out RaycastHit hitInfo))
+        {
+            if (currentPreviewPin == null) return;
+            currentPreviewPin.SetActive(false);
+            currentPreviewPin = null;
+            return;
+        }
+
+        GameObject hitObj = hitInfo.transform.gameObject;
+
+        if (hitObj.layer == 9 && hitObj.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(Display))
+        {
+            if (currentPreviewPin == hitObj.transform) return;
+
+            Display display = (Display)hitObj.GetComponentInParent<CircuitReference>().Circuit;
+            int index = -1;
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (display.Inputs[i].Transform.gameObject == hitObj)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (currentPreviewPin != null) currentPreviewPin.SetActive(false);
+
+            currentPreviewPin = display.PreviewPins[index];
+            currentPreviewPin.SetActive(true);
+        }
+
+        else if (currentPreviewPin != null)
+        {
+            currentPreviewPin.SetActive(false);
+            currentPreviewPin = null;
+        }
     }
 
     private void LateUpdate()
@@ -73,7 +130,7 @@ public class BehaviorManager : MonoBehaviour
 
         if (stateType == StateType.LOCKED) return gameState; // Locked states must change manually, not automatically
 
-        Ray ray = CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
+        //Ray ray = CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.Raycast(ray, out RaycastHit hitInfo))
         {

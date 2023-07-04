@@ -78,6 +78,7 @@ public class CircuitVisualizer : MonoBehaviour
             displayObj.transform.position = new Vector3(startingPosition.x, GridMaintenance.Instance.GridHeight, startingPosition.y);
             display.PhysicalObject = displayObj;
             display.Pins = displayVals.Pins;
+            display.PreviewPins = displayVals.PreviewPins;
 
             for (int i = 0; i < 8; i++)
             {
@@ -89,7 +90,7 @@ public class CircuitVisualizer : MonoBehaviour
                 inputs[i].StatusRenderer = displayVals.InputStatuses[i];
             }
 
-            Destroy(displayVals); // No longer needed after extracing relevant values
+            Destroy(displayVals); // Reference script no longer needed after extracing relevant values
 
             CircuitReference circuitRef = displayObj.AddComponent<CircuitReference>();
 
