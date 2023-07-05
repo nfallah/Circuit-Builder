@@ -320,6 +320,12 @@ public class BehaviorManager : MonoBehaviour
     {
         switch (gameState)
         {
+            case GameState.GRID_HOVER:
+                if (Input.GetMouseButtonDown(1) && TaskbarManager.Instance.CurrentMenu == null && TaskbarManager.Instance.ReopenBookmarks)
+                {
+                    TaskbarManager.Instance.OpenBookmarks();
+                }
+                return;
             case GameState.IO_PRESS:
                 if (!ioLMB) return; // Means RMB was pressed, therefore not necessary to run this code
                 if (Physics.Raycast(CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo) && hitInfo.transform.gameObject.layer == ioLayerCheck)
