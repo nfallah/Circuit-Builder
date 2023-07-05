@@ -14,13 +14,15 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] Color startingCircuitColor;
 
-    [SerializeField] GameObject background, addMenu, bookmarksMenu, bookmarksPanel;
+    [SerializeField] GameObject background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
     [SerializeField] KeyCode cancelKey;
 
-    [SerializeField] RectTransform addStartingPanel;
+    [SerializeField] RectTransform addStartingPanel, bookmarksBorder;
+
+    [SerializeField] Vector2 bookmarkSize, bookmarkMaskSize;
 
     private GameObject currentMenu;
 
@@ -40,9 +42,20 @@ public class TaskbarManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
+        // Depending on the current opened menu, the escape controls may alter and thus they are differentiated
+        if (currentMenu == bookmarksMenu)
         {
-            CloseMenu();
+            if (Input.GetMouseButtonDown(1)) UpdateBookmarkPosition();
+
+            else if (Input.GetKeyDown(cancelKey)) CloseMenu();
+        }
+
+        else if (currentMenu == addMenu)
+        {
+            if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
+            {
+                CloseMenu();
+            }
         }
     }
 
@@ -151,9 +164,30 @@ public class TaskbarManager : MonoBehaviour
         if (currentMenu != null) return;
 
         currentMenu = newMenu;
+
+        if (newMenu == bookmarksMenu)
+        {
+            UpdateBookmarkPosition();
+        }
+
         BehaviorManager.Instance.LockUI = true;
         background.SetActive(showBackground); currentMenu.SetActive(true);
         enabled = true;
+    }
+
+    private void UpdateBookmarkPosition()
+    {
+        RectTransform bottomLeftPos = bookmarksScroll.GetComponent<RectTransform>();
+        Vector2 currentPosition = Input.mousePosition;
+        currentPosition.x -= bookmarkSize.x / 2;
+        float downVal = bookmarkMaskSize.y - (bookmarkSize.y / 2 * bookmarks.Count);
+        currentPosition.y -= Mathf.Clamp(downVal, bookmarkMaskSize.y / 2, bookmarkMaskSize.y);
+        bottomLeftPos.anchoredPosition = currentPosition;
+        bookmarksPanel.GetComponent<RectTransform>().anchoredPosition *= Vector2.right; // If large enough to scroll, always starts at top of options list
+        Vector2 borderPosition = currentPosition;
+        borderPosition.y += Mathf.Clamp(0, downVal - bookmarks.Count * bookmarkSize.y / 2, bookmarkMaskSize.y);
+        bookmarksBorder.anchoredPosition = borderPosition;
+        bookmarksBorder.sizeDelta = new Vector2(bookmarkSize.x, Mathf.Clamp(bookmarks.Count * bookmarkSize.y, 0, bookmarkMaskSize.y));
     }
 
     private void CloseMenu()
