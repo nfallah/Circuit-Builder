@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class TaskbarManager : MonoBehaviour
@@ -47,9 +48,17 @@ public class TaskbarManager : MonoBehaviour
         // Depending on the current opened menu, the escape controls may alter and thus they are differentiated
         if (currentMenu == bookmarksMenu)
         {
-            if (Input.GetMouseButtonDown(0) && !bookmarksDown) { bookmarksDown = true; }
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) { bookmarksDown = true; }
 
-            else if (Input.GetMouseButtonUp(0) && bookmarksDown) { CloseMenu(); }
+            else if (Input.GetMouseButtonUp(0) && bookmarksDown)
+            {
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    bookmarksDown = false;
+                }
+
+                else CloseMenu();
+            }
 
             else if (Input.GetMouseButtonDown(1)) UpdateBookmarkPosition();
 
