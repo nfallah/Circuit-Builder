@@ -5,6 +5,7 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TaskbarManager : MonoBehaviour
@@ -72,6 +73,11 @@ public class TaskbarManager : MonoBehaviour
                 CloseMenu();
             }
         }
+    }
+
+    public void OpenOptions()
+    {
+        SceneManager.LoadScene(0);
     }
 
     public void OpenAdd()
