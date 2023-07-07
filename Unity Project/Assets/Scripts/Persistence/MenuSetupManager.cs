@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PersistentComponentsMenu : MonoBehaviour
+public class MenuSetupManager : MonoBehaviour
 {
-    private static PersistentComponentsMenu instance;
+    private static MenuSetupManager instance;
 
     private Type[] componentsToAdd = new Type[]
     {
-        typeof(MenuManager)
+        typeof(MenuLogicManager)
     };
 
     private EditorStructure[] editorStructures = new EditorStructure[3];
@@ -30,8 +31,13 @@ public class PersistentComponentsMenu : MonoBehaviour
         foreach (Type type in componentsToAdd) gameObject.AddComponent(type);
     }
 
+    public void DeleteEditorStructure(int sceneIndex)
+    {
+        editorStructures[sceneIndex] = null;
+    }
+
     /// <summary>
-    /// Extracts existing JSON data from directory to populate editor and preview structures.
+    /// Extracts existing JSON data from the game directory to populate editor and preview structures.
     /// </summary>
     private void ImportJSONInformation()
     {
@@ -39,5 +45,9 @@ public class PersistentComponentsMenu : MonoBehaviour
     }
 
     // Getter methods
-    public static PersistentComponentsMenu Instance { get { return instance; } }
+    public static MenuSetupManager Instance { get { return instance; } }
+
+    public EditorStructure[] EditorStructures { get { return editorStructures; } }
+
+    public List<PreviewStructure> PreviewStructures { get { return previewStructures; } }
 }

@@ -1,18 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PreviewStructure
 {
-    // Start is called before the first frame update
-    void Start()
+    private string name;
+
+    public PreviewStructure(string name)
     {
-        
+        this.name = name;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string Name { get { return name; } }
 }
