@@ -14,7 +14,9 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] Color startingCircuitColor;
 
-    [SerializeField] GameObject background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] float bookmarkScrollThickness;
+
+    [SerializeField] GameObject bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
@@ -26,7 +28,7 @@ public class TaskbarManager : MonoBehaviour
 
     private GameObject currentMenu;
 
-    private bool reopenBookmarks = true;
+    private bool reopenBookmarks = true, bookmarksDown;
 
     private void Awake()
     {
@@ -45,7 +47,11 @@ public class TaskbarManager : MonoBehaviour
         // Depending on the current opened menu, the escape controls may alter and thus they are differentiated
         if (currentMenu == bookmarksMenu)
         {
-            if (Input.GetMouseButtonDown(1)) UpdateBookmarkPosition();
+            if (Input.GetMouseButtonDown(0) && !bookmarksDown) { bookmarksDown = true; }
+
+            else if (Input.GetMouseButtonUp(0) && bookmarksDown) { CloseMenu(); }
+
+            else if (Input.GetMouseButtonDown(1)) UpdateBookmarkPosition();
 
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
@@ -73,6 +79,7 @@ public class TaskbarManager : MonoBehaviour
     {
         if (bookmarks.Count == 0) return;
 
+        bookmarksDown = false;
         OpenMenu(showBackground, bookmarksMenu);
     }
 
@@ -161,18 +168,43 @@ public class TaskbarManager : MonoBehaviour
 
     private void OpenMenu(bool showBackground, GameObject newMenu)
     {
-        if (currentMenu != null) return;
+        if (currentMenu != null && currentMenu != bookmarksMenu) return;
+
+        if (currentMenu == bookmarksMenu) CloseMenu();
 
         currentMenu = newMenu;
 
         if (newMenu == bookmarksMenu)
         {
             UpdateBookmarkPosition();
+            UpdateBookmarkScroll();
         }
 
         BehaviorManager.Instance.LockUI = true;
         background.SetActive(showBackground); currentMenu.SetActive(true);
         enabled = true;
+    }
+
+    private void UpdateBookmarkScroll()
+    {
+        // If the bookmarks menu does not show all bookmarked circuts, the vertical scroll bar should appear
+        bool exceededViewport = bookmarkSize.y * bookmarks.Count > bookmarkMaskSize.y;
+        
+        if (exceededViewport)
+        {
+            // If large enough to scroll, always starts at top of options list
+            bookmarksPanel.GetComponent<RectTransform>().anchoredPosition *= Vector2.right;
+            bookmarksPanel.GetComponent<RectTransform>().sizeDelta = Vector2.right * (bookmarkSize.x + bookmarkScrollThickness);
+            bookmarksBorder.sizeDelta = new Vector2(bookmarkSize.x + bookmarkScrollThickness, Mathf.Clamp(bookmarks.Count * bookmarkSize.y, 0, bookmarkMaskSize.y));
+        }
+
+        else
+        {
+            bookmarksPanel.GetComponent<RectTransform>().sizeDelta = Vector2.right * bookmarkSize.x;
+            bookmarksBorder.sizeDelta = new Vector2(bookmarkSize.x, Mathf.Clamp(bookmarks.Count * bookmarkSize.y, 0, bookmarkMaskSize.y));
+        }
+
+        bookmarkScrollbar.SetActive(exceededViewport);
     }
 
     private void UpdateBookmarkPosition()
@@ -183,11 +215,9 @@ public class TaskbarManager : MonoBehaviour
         float downVal = bookmarkMaskSize.y - (bookmarkSize.y / 2 * bookmarks.Count);
         currentPosition.y -= Mathf.Clamp(downVal, bookmarkMaskSize.y / 2, bookmarkMaskSize.y);
         bottomLeftPos.anchoredPosition = currentPosition;
-        bookmarksPanel.GetComponent<RectTransform>().anchoredPosition *= Vector2.right; // If large enough to scroll, always starts at top of options list
         Vector2 borderPosition = currentPosition;
         borderPosition.y += Mathf.Clamp(0, downVal - bookmarks.Count * bookmarkSize.y / 2, bookmarkMaskSize.y);
         bookmarksBorder.anchoredPosition = borderPosition;
-        bookmarksBorder.sizeDelta = new Vector2(bookmarkSize.x, Mathf.Clamp(bookmarks.Count * bookmarkSize.y, 0, bookmarkMaskSize.y));
     }
 
     private void CloseMenu()
@@ -196,19 +226,16 @@ public class TaskbarManager : MonoBehaviour
         reopenBookmarks = false;
         Invoke("UnlockUI", 0.1f);
         background.SetActive(false); currentMenu.SetActive(false);
+        
+        if (currentMenu == addMenu) addStartingPanel.anchoredPosition = Vector2.zero;
+
         currentMenu = null;
-        ResetScroll();
         enabled = false;
     }
 
     private void UnlockUI()
     {
         reopenBookmarks = true;
-    }
-
-    private void ResetScroll()
-    {
-        addStartingPanel.anchoredPosition = Vector2.zero;
     }
 
     private Circuit GetStartingCircuit(int startingCircuitIndex)
