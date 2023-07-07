@@ -1569,7 +1569,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Objectives
+  m_text: objectives
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
@@ -1603,7 +1603,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 8
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2155,7 +2155,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Save
+  m_text: save
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
@@ -2189,7 +2189,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 8
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -3192,7 +3192,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Menu
+  m_text: menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
@@ -3226,7 +3226,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 8
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -5463,7 +5463,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Add
+  m_text: add
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
@@ -5497,7 +5497,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 8
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

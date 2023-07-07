@@ -4642,7 +4642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd2a6e0b70c8b9c44a22aa8c6afed175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultColor: {r: 0, g: 0, b: 0, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
   saveColor: {r: 1, g: 0.6745098, b: 0.9372549, a: 1}
   cancelKey: 27
   sceneDeletionInterface: {fileID: 360240406}
