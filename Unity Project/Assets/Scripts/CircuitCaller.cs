@@ -54,6 +54,7 @@ public class CircuitCaller : MonoBehaviour
             }
         }
 
+        EditorStructureManager.Instance.Circuits.Remove(circuit.PhysicalObject); // Removes game object for potential serialization
         Destroy(circuit.PhysicalObject);
     }
 }

@@ -29,6 +29,7 @@ public class MenuLogicManager : MonoBehaviour
     public void CreateScene(int sceneIndex, string name)
     {
         MenuSetupManager.Instance.EditorStructures[sceneIndex] = new EditorStructure(name);
+        MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, MenuSetupManager.Instance.EditorStructures[sceneIndex]);
         ImportScene(sceneIndex);
     }
 

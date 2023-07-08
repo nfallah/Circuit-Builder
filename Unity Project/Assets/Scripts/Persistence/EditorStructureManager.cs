@@ -34,13 +34,10 @@ public class EditorStructureManager : MonoBehaviour
     {
         EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[MenuLogicManager.Instance.CurrentSceneIndex];
 
-        editorStructure.InGridMode= inGridMode;
+        editorStructure.InGridMode = inGridMode;
         editorStructure.Circuits = circuits;
         editorStructure.Connections = connections;
-
-        string json = JsonUtility.ToJson(editorStructure);
-
-        Debug.Log(json);
+        MenuSetupManager.Instance.UpdateEditorStructure(MenuLogicManager.Instance.CurrentSceneIndex, editorStructure);
     }
 
     public void Deserialize()

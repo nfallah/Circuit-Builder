@@ -97,6 +97,7 @@ public class MenuInterfaceManager : MonoBehaviour
         CancelCurrentSubmission();
         currentText.text = "new save";
         currentText.color = defaultColor;
+
     }
 
     public void SceneNameSubmission()
