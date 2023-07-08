@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 public class MenuSetupManager : MonoBehaviour
@@ -15,6 +16,8 @@ public class MenuSetupManager : MonoBehaviour
     private EditorStructure[] editorStructures = new EditorStructure[3];
 
     private List<PreviewStructure> previewStructures = new List<PreviewStructure>();
+
+    private string editorFolder = "EditorSaves", previewFolder = "PreviewSaves", save1Name = "SAVE_0", save2Name = "SAVE_1", save3Name = "SAVE_2";
 
     private void Awake()
     {
@@ -41,7 +44,16 @@ public class MenuSetupManager : MonoBehaviour
     /// </summary>
     private void ImportJSONInformation()
     {
+        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder))
+        {
+            Debug.Log("fok");
+            AssetDatabase.CreateFolder("Assets/", editorFolder);
+        }
 
+        if (AssetDatabase.IsValidFolder("Assets/" + previewFolder))
+        {
+            AssetDatabase.CreateFolder("Assets/", previewFolder);
+        }
     }
 
     // Getter methods

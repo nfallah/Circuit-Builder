@@ -2031,7 +2031,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 486756158}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1100941123}
+        m_MethodName: Serialize
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &486756158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4470,6 +4481,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1100941116}
+  - component: {fileID: 1100941124}
   - component: {fileID: 1100941120}
   - component: {fileID: 1100941122}
   - component: {fileID: 1100941118}
@@ -4623,6 +4635,18 @@ MonoBehaviour:
   bookmarksBorder: {fileID: 269653725}
   bookmarkSize: {x: 200, y: 50}
   bookmarkMaskSize: {x: 200, y: 200}
+--- !u!114 &1100941124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100941115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab5191630ca560949b8823f8ef6bbfbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1162301347 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5013561338839114427, guid: f6b8dff193f2f734d8d9e2f8bbab1ec5,

@@ -89,6 +89,7 @@ public class CircuitConnector : MonoBehaviour
         Instance.currentConnection.Output.ChildInputs.Add(input);
         Instance.currentConnection.EndingWire.name = "Ending Wire";
         Instance.OptimizeMeshes();
+        EditorStructureManager.Instance.Connections.Add(Instance.currentConnection.gameObject); // Adds game object for potential serialization
         Instance.currentConnection = null; Instance.currentWire = null;
         Instance.cancelled = true;
         Circuit.UpdateCircuit(input, output);
@@ -96,6 +97,7 @@ public class CircuitConnector : MonoBehaviour
 
     public static void Disconnect(Connection connection)
     {
+        EditorStructureManager.Instance.Connections.Remove(connection.gameObject); // Adds game object for potential serialization
         Circuit.UpdateCircuit(false, connection.Input, null);
         connection.Input.Connection = null;
         connection.Output.Connections.Remove(connection);

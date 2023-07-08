@@ -6,6 +6,8 @@ public class MenuLogicManager : MonoBehaviour
 {
     private static MenuLogicManager instance;
 
+    private int currentSceneIndex;
+
     private void Awake()
     {
         if (instance != null)
@@ -27,13 +29,18 @@ public class MenuLogicManager : MonoBehaviour
     public void CreateScene(int sceneIndex, string name)
     {
         MenuSetupManager.Instance.EditorStructures[sceneIndex] = new EditorStructure(name);
-        SceneManager.LoadScene(1);
+        ImportScene(sceneIndex);
     }
 
     private void ImportScene(int sceneIndex)
     {
+        currentSceneIndex = sceneIndex;
         SceneManager.LoadScene(1);
     }
 
+    // Singleton state reference
     public static MenuLogicManager Instance { get { return instance; } }
+
+    // Getter method
+    public int CurrentSceneIndex { get { return currentSceneIndex; } }
 }

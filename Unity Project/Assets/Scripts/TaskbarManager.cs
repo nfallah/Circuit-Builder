@@ -280,6 +280,11 @@ public class TaskbarManager : MonoBehaviour
         }
     }
 
+    public void Serialize()
+    {
+        EditorStructureManager.Instance.Serialize();
+    }
+
     public static TaskbarManager Instance { get { return instance; } }
 
     public GameObject CurrentMenu { get { return currentMenu; } }
