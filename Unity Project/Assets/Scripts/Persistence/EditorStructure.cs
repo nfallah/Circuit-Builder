@@ -25,7 +25,7 @@ public class EditorStructure
 
     public List<GameObject> Connections { get { return connections; } set { connections = value; } }
 
-    Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
+    public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 
     // Getter method
     public string Name { get { return name; } }

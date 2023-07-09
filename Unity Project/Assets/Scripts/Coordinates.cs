@@ -81,5 +81,5 @@ public class Coordinates : MonoBehaviour
         }
     }
 
-    public SnappingMode CurrentSnappingMode { get { return snappingMode; } }
+    public SnappingMode CurrentSnappingMode { get { return snappingMode; } set { snappingMode = value; } }
 }

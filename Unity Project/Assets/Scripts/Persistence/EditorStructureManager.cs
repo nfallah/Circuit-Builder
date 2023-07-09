@@ -6,13 +6,9 @@ public class EditorStructureManager : MonoBehaviour
 {
     private static EditorStructureManager instance;
 
-    [HideInInspector] bool inGridMode;
-
     [HideInInspector] List<GameObject> circuits = new List<GameObject>(); 
     
     [HideInInspector] List<GameObject> connections = new List<GameObject>();
-
-    [HideInInspector] Vector3 cameraLocation;
 
     private void Awake()
     {
@@ -30,30 +26,39 @@ public class EditorStructureManager : MonoBehaviour
         Deserialize();
     }
 
-    public void Serialize() //todo: grab grid and cameralocation
+    public void Serialize()
     {
         EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[MenuLogicManager.Instance.CurrentSceneIndex];
 
-        editorStructure.InGridMode = inGridMode;
+        editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
         editorStructure.Circuits = circuits;
         editorStructure.Connections = connections;
+        editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(MenuLogicManager.Instance.CurrentSceneIndex, editorStructure);
     }
 
     public void Deserialize()
     {
-        //EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[MenuLogicManager.Instance.CurrentSceneIndex]; // change
+        int sceneIndex = MenuLogicManager.Instance.CurrentSceneIndex;
+        EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[sceneIndex];
 
-        //inGridMode = editorStructure
+        if (MenuLogicManager.Instance.FirstOpen)
+        {
+            bool inGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
+            Vector3 cameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
+
+            editorStructure.InGridMode = inGridMode;
+            editorStructure.CameraLocation = cameraLocation;
+            MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
+            return;
+        }
+
+        Coordinates.Instance.CurrentSnappingMode = editorStructure.InGridMode ? Coordinates.SnappingMode.GRID : Coordinates.SnappingMode.NONE;
+        CameraMovement.Instance.PlayerCamera.transform.position = editorStructure.CameraLocation;
     }
 
     // Singleton state reference
     public static EditorStructureManager Instance { get { return instance; } }
-
-    // Getter and setter methods
-    public bool InGridMode { get { return inGridMode; } set { inGridMode = value; } }
-
-    Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 
     // Getter methods
     public List<GameObject> Circuits { get { return circuits; } }

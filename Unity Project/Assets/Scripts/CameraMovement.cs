@@ -22,11 +22,11 @@ public class CameraMovement : MonoBehaviour
         }
 
         instance = this;
+        ClampPos();
     }
 
     private void Start()
     {
-        ClampPos();
         mousePosCurrent = Coordinates.Instance.MousePos;
     }
 
