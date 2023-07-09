@@ -433,7 +433,7 @@ public class BehaviorManager : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     Cursor.visible = true;
-                    EditorStructureManager.Instance.Circuits.Add(currentCircuit.PhysicalObject); // Adds game object for potential serialization
+                    EditorStructureManager.Instance.Circuits.Add(currentCircuit); // Adds circuit for potential serialization
                     currentCircuit = null;
                     stateType = StateType.UNRESTRICTED;
                     LateUpdate();

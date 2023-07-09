@@ -7,7 +7,9 @@ public class EditorStructure
 {
     [SerializeField] bool inGridMode;
 
-    [SerializeField] List<GameObject> circuits = new List<GameObject>(), connections = new List<GameObject>();
+    [SerializeField] List<GameObject> connections = new List<GameObject>();
+
+    [SerializeField] List<StartingCircuitIdentifier> circuits = new List<StartingCircuitIdentifier>();
 
     [SerializeField] string name;
 
@@ -21,9 +23,9 @@ public class EditorStructure
     // Getter and setter methods
     public bool InGridMode { get { return inGridMode; } set { inGridMode = value; } }
 
-    public List<GameObject> Circuits { get { return circuits; } set { circuits = value; } }
-
     public List<GameObject> Connections { get { return connections; } set { connections = value; } }
+
+    public List<StartingCircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
 
     public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 

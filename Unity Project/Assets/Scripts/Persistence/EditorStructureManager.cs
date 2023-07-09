@@ -6,7 +6,7 @@ public class EditorStructureManager : MonoBehaviour
 {
     private static EditorStructureManager instance;
 
-    [HideInInspector] List<GameObject> circuits = new List<GameObject>(); 
+    [HideInInspector] List<Circuit> circuits = new List<Circuit>(); 
     
     [HideInInspector] List<GameObject> connections = new List<GameObject>();
 
@@ -31,7 +31,15 @@ public class EditorStructureManager : MonoBehaviour
         EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[MenuLogicManager.Instance.CurrentSceneIndex];
 
         editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
-        editorStructure.Circuits = circuits;
+        
+        List<StartingCircuitIdentifier> startingCircuitIdentifiers = new List<StartingCircuitIdentifier>();
+
+        foreach (Circuit circuit in circuits)
+        {
+            startingCircuitIdentifiers.Add(new StartingCircuitIdentifier(circuit));
+        }
+
+        editorStructure.Circuits = startingCircuitIdentifiers;
         editorStructure.Connections = connections;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(MenuLogicManager.Instance.CurrentSceneIndex, editorStructure);
@@ -55,13 +63,19 @@ public class EditorStructureManager : MonoBehaviour
 
         Coordinates.Instance.CurrentSnappingMode = editorStructure.InGridMode ? Coordinates.SnappingMode.GRID : Coordinates.SnappingMode.NONE;
         CameraMovement.Instance.PlayerCamera.transform.position = editorStructure.CameraLocation;
+
+        foreach (StartingCircuitIdentifier startingCircuitIdentifier in editorStructure.Circuits)
+        {
+            Circuits.Add(StartingCircuitIdentifier.RestoreCircuit(startingCircuitIdentifier));
+        }
+
     }
 
     // Singleton state reference
     public static EditorStructureManager Instance { get { return instance; } }
 
     // Getter methods
-    public List<GameObject> Circuits { get { return circuits; } }
+    public List<Circuit> Circuits { get { return circuits; } }
 
     public List<GameObject> Connections { get { return connections; } }
 }

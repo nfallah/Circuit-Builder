@@ -128,7 +128,7 @@ public class CircuitVisualizer : MonoBehaviour
 
         borderQuad.layer = 13;
         borderQuad.transform.parent = physicalObject.transform;
-        //borderQuad.transform.localPosition = Vector3.zero;
+        borderQuad.transform.localPosition = Vector3.zero;
         vertices = new Vector3[]
         {
             new Vector3(-dimensions.x / 2 - borderThickness, 0, -dimensions.y / 2 - borderThickness),
