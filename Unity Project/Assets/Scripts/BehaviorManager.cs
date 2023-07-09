@@ -356,7 +356,7 @@ public class BehaviorManager : MonoBehaviour
                         CircuitConnector.Connect(currentInput, currentOutput);
 
                         /* Ensures that if the order of selection was not output -> input, the starting and ending wires are swapped with one another.
-                         * This occurs as the starting wire is also associated with the input, hence the game objects are swapped to maintan this order.
+                         * This occurs as the starting wire is also associated with the input, hence the game objects are swapped to maintain this order.
                          */
                         if (ioLayerCheck == 10)
                         {
@@ -364,6 +364,14 @@ public class BehaviorManager : MonoBehaviour
 
                             connection.StartingWire = connection.EndingWire;
                             connection.EndingWire = temp;
+
+                            // Ensures the serialization process works as intended by keeping the hierachy order the same regardless of connection order
+                            if (connection.StartingWire != connection.EndingWire)
+                            {
+                                connection.StartingWire.name = "Starting Wire";
+                                connection.EndingWire.name = "Ending Wire";
+                                connection.StartingWire.transform.SetAsFirstSibling();
+                            }
                         }
                         
                         stateType = StateType.UNRESTRICTED;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class EditorStructureManager : MonoBehaviour
@@ -8,7 +9,7 @@ public class EditorStructureManager : MonoBehaviour
 
     [HideInInspector] List<Circuit> circuits = new List<Circuit>(); 
     
-    [HideInInspector] List<GameObject> connections = new List<GameObject>();
+    [HideInInspector] List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>();
 
     private void Awake()
     {
@@ -28,7 +29,8 @@ public class EditorStructureManager : MonoBehaviour
 
     public void Serialize()
     {
-        EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[MenuLogicManager.Instance.CurrentSceneIndex];
+        int sceneIndex = MenuLogicManager.Instance.CurrentSceneIndex;
+        EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[sceneIndex];
 
         editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
         
@@ -42,7 +44,8 @@ public class EditorStructureManager : MonoBehaviour
         editorStructure.Circuits = startingCircuitIdentifiers;
         editorStructure.Connections = connections;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
-        MenuSetupManager.Instance.UpdateEditorStructure(MenuLogicManager.Instance.CurrentSceneIndex, editorStructure);
+        MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
+        MenuSetupManager.Instance.GenerateConnectionPrefabs(sceneIndex, connections);
     }
 
     public void Deserialize()
@@ -69,6 +72,7 @@ public class EditorStructureManager : MonoBehaviour
             Circuits.Add(StartingCircuitIdentifier.RestoreCircuit(startingCircuitIdentifier));
         }
 
+        MenuSetupManager.Instance.RestoreConnections(sceneIndex);
     }
 
     // Singleton state reference
@@ -77,5 +81,5 @@ public class EditorStructureManager : MonoBehaviour
     // Getter methods
     public List<Circuit> Circuits { get { return circuits; } }
 
-    public List<GameObject> Connections { get { return connections; } }
+    public List<CircuitConnector.Connection> Connections { get { return connections; } }
 }

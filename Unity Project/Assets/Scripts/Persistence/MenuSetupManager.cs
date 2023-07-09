@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,6 +20,8 @@ public class MenuSetupManager : MonoBehaviour
     private List<PreviewStructure> previewStructures = new List<PreviewStructure>();
 
     private string editorFolder = "EditorSaves", previewFolder = "PreviewSaves", save1Name = "SAVE_0.json", save2Name = "SAVE_1.json", save3Name = "SAVE_2.json";
+
+    private string editorPrefab1Name = "PREFABS_0", editorPrefab2Name = "PREFABS_1", editorPrefab3Name = "PREFABS_2";
 
     private void Awake()
     {
@@ -39,10 +43,21 @@ public class MenuSetupManager : MonoBehaviour
         editorStructures[sceneIndex] = null;
         
         string editorPath = Application.dataPath + "/" + editorFolder + "/";
+        string prefabPath = "Assets/" + editorFolder + "/";
+
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
 
         if (sceneIndex == 0) editorPath += save1Name; else if (sceneIndex == 1) editorPath += save2Name; else editorPath += save3Name;
 
         File.WriteAllText(editorPath, "");
+        prefabPath += "/";
+
+        string[] filePaths = Directory.GetFiles(prefabPath);
+
+        foreach (string file in filePaths)
+        {
+            FileUtil.DeleteFileOrDirectory(file);
+        }
     }
 
     public void UpdateEditorStructure(int sceneIndex, EditorStructure editorStructure)
@@ -52,6 +67,79 @@ public class MenuSetupManager : MonoBehaviour
         if (sceneIndex == 0) editorPath += save1Name; else if (sceneIndex == 1) editorPath += save2Name; else editorPath += save3Name;
 
         File.WriteAllText(editorPath, JsonUtility.ToJson(editorStructure));
+    }
+
+    public void GenerateConnectionPrefabs(int sceneIndex, List<CircuitConnector.Connection> connections)
+    {
+        if (connections.Count == 0) return;
+
+        string prefabPath = "Assets/" + editorFolder + "/";
+
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
+
+        prefabPath += "/";
+
+        string[] filePaths = Directory.GetFiles(prefabPath);
+        
+        foreach (string file in filePaths)
+        {
+            FileUtil.DeleteFileOrDirectory(file);
+        }
+
+        int index = 0;
+
+        foreach (CircuitConnector.Connection connection in connections)
+        {
+            GameObject temp = Instantiate(connection.gameObject);
+            ConnectionIdentifier connectionIdentifier = temp.AddComponent<ConnectionIdentifier>();
+
+            DestroyImmediate(temp.GetComponent<CircuitConnector.Connection>());
+
+            // Has 3 or more connections, meaning mesh optimization occurs & a mesh must be created.
+            if (temp.GetComponent<MeshFilter>() != null)
+            {
+                AssetDatabase.CreateAsset(temp.GetComponent<MeshFilter>().mesh, prefabPath + "MESH_" + index + ".mesh");
+            }
+
+            if (temp.transform.childCount == 1)
+            {
+                connectionIdentifier.EndingWire = connectionIdentifier.StartingWire = temp.transform.GetChild(0).gameObject;
+            }
+
+            else
+            {
+                connectionIdentifier.EndingWire = temp.transform.GetChild(1).gameObject;
+                connectionIdentifier.StartingWire = temp.transform.GetChild(0).gameObject;
+            }
+
+            // Future note: may not be needed if everything has to be updated
+            // Also create connections here
+            connectionIdentifier.EndingWire.GetComponentInChildren<MeshRenderer>().material = connectionIdentifier.StartingWire.GetComponentInChildren<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
+            PrefabUtility.SaveAsPrefabAsset(temp, prefabPath + "CONNECTION_" + index + ".prefab");
+            DestroyImmediate(temp);
+            index++;
+        }
+    }
+
+    public void RestoreConnections(int sceneIndex)
+    {
+        string prefabPath = "Assets/" + editorFolder + "/";
+
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
+
+        prefabPath += "/";
+
+        string[] filePaths = Directory.GetFiles(prefabPath);
+        List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".prefab")).ToList();
+
+        // Future note: restore connections here
+        // Delete the connectionidentifier after extracing its values
+        foreach (string prefabFilePath in prefabFilePaths)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath);
+
+            Instantiate(prefab);
+        }
     }
 
     /// <summary>
@@ -68,6 +156,21 @@ public class MenuSetupManager : MonoBehaviour
         if (!AssetDatabase.IsValidFolder("Assets/" + previewFolder))
         {
             AssetDatabase.CreateFolder("Assets", previewFolder);
+        }
+
+        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab1Name))
+        {
+            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab1Name);
+        }
+
+        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab2Name))
+        {
+            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab2Name);
+        }
+
+        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab3Name))
+        {
+            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab3Name);
         }
 
         FileAttributes fileAttributes = FileAttributes.Normal;
