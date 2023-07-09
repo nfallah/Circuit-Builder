@@ -124,6 +124,11 @@ public class MenuInterfaceManager : MonoBehaviour
         enabled = false;
     }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     private void BeginInterface(GameObject newInterface)
     {
         if (currentInterface != null) return;
