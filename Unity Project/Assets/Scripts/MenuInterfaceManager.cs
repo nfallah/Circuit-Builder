@@ -118,6 +118,7 @@ public class MenuInterfaceManager : MonoBehaviour
     {
         if (currentInterface == sceneNameInterface) sceneNameInputField.text = sceneNameError.text = "";
 
+        BackgroundParallax.Instance.enabled = true;
         ToggleCurrentInterface(false);
         currentSceneIndex = -1;
         currentInterface = null;
@@ -133,6 +134,7 @@ public class MenuInterfaceManager : MonoBehaviour
     {
         if (currentInterface != null) return;
 
+        BackgroundParallax.Instance.enabled = false;
         currentInterface = newInterface;
         ToggleCurrentInterface(true);
         enabled = true;
