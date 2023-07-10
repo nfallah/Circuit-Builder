@@ -98,6 +98,7 @@ public class MenuSetupManager : MonoBehaviour
             // Has 3 or more connections, meaning mesh optimization occurs & a mesh must be created.
             if (temp.GetComponent<MeshFilter>() != null)
             {
+                temp.GetComponent<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
                 AssetDatabase.CreateAsset(temp.GetComponent<MeshFilter>().mesh, prefabPath + "MESH_" + index + ".mesh");
             }
 
