@@ -9,6 +9,8 @@ public class EditorStructure
 
     [SerializeField] List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>();
 
+    [SerializeField] List<int> bookmarks = new List<int>();
+
     [SerializeField] List<StartingCircuitIdentifier> circuits = new List<StartingCircuitIdentifier>();
 
     [SerializeField] string name;
@@ -24,6 +26,8 @@ public class EditorStructure
     public bool InGridMode { get { return inGridMode; } set { inGridMode = value; } }
 
     public List<CircuitConnector.Connection> Connections { get { return connections; } set { connections = value; } }
+
+    public List<int> Bookmarks { get { return bookmarks; } set { bookmarks = value; } }
 
     public List<StartingCircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
 

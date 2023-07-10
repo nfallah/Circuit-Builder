@@ -45,7 +45,7 @@ public class MenuSetupManager : MonoBehaviour
         string editorPath = Application.dataPath + "/" + editorFolder + "/";
         string prefabPath = "Assets/" + editorFolder + "/";
 
-        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
         if (sceneIndex == 0) editorPath += save1Name; else if (sceneIndex == 1) editorPath += save2Name; else editorPath += save3Name;
 
@@ -75,7 +75,7 @@ public class MenuSetupManager : MonoBehaviour
 
         string prefabPath = "Assets/" + editorFolder + "/";
 
-        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
         prefabPath += "/";
 
@@ -125,7 +125,7 @@ public class MenuSetupManager : MonoBehaviour
     {
         string prefabPath = "Assets/" + editorFolder + "/";
 
-        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab1Name; else prefabPath += editorPrefab1Name;
+        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
         prefabPath += "/";
 

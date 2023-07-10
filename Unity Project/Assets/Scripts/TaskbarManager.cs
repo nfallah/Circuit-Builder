@@ -10,8 +10,6 @@ using UnityEngine.UI;
 
 public class TaskbarManager : MonoBehaviour
 {
-    public static List<Type> bookmarks = new List<Type>();
-
     private static TaskbarManager instance;
 
     [SerializeField] Color startingCircuitColor;
@@ -28,9 +26,11 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] Vector2 bookmarkSize, bookmarkMaskSize;
 
+    private bool currentlyRestoring, reopenBookmarks = true, bookmarksDown;
+
     private GameObject currentMenu;
 
-    private bool reopenBookmarks = true, bookmarksDown;
+    private List<Type> bookmarks = new List<Type>();
 
     private void Awake()
     {
@@ -98,13 +98,36 @@ public class TaskbarManager : MonoBehaviour
         OpenMenu(showBackground, bookmarksMenu);
     }
 
+    public void RestoreBookmarks(List<int> startingCircuitIndeces)
+    {
+        currentlyRestoring = true;
+
+        foreach (int startingCircuitIndex in new List<int>(startingCircuitIndeces))
+        {
+            Toggle toggle = addStartingPanel.GetChild(startingCircuitIndex).GetComponentInChildren<Toggle>();
+
+            toggle.isOn = true;
+            UpdateBookmarkAll(toggle.gameObject);
+        }
+
+        currentlyRestoring = false;
+    }
+
     public void UpdateBookmark(GameObject obj)
+    {
+        if (currentlyRestoring) return;
+        Debug.Log("?");
+        UpdateBookmarkAll(obj);
+    }
+
+    public void UpdateBookmarkAll(GameObject obj)
     {
         bool newStatus = obj.GetComponent<Toggle>().isOn;
         Type type = CircuitType(obj.transform.parent.GetSiblingIndex());
 
         if (newStatus && !bookmarks.Contains(type))
         {
+            EditorStructureManager.Instance.Bookmarks.Add(StartingCircuitIndex(type));
             bookmarks.Add(type);
             GameObject bookmark = Instantiate(bookmarkRef, bookmarksPanel.transform);
             Button button = bookmark.GetComponentInChildren<Button>();
@@ -118,6 +141,7 @@ public class TaskbarManager : MonoBehaviour
         else if (!newStatus && bookmarks.Contains(type))
         {
             int index = bookmarks.IndexOf(type);
+            EditorStructureManager.Instance.Bookmarks.Remove(StartingCircuitIndex(type));
             bookmarks.Remove(type);
             Destroy(bookmarksPanel.transform.GetChild(index).gameObject);
         }
@@ -179,6 +203,29 @@ public class TaskbarManager : MonoBehaviour
             default:
                 throw new Exception("Invalid starting circuit index.");
         }
+    }
+
+    private int StartingCircuitIndex(Type circuitType)
+    {
+        if (circuitType == typeof(InputGate)) return 0;
+
+        else if (circuitType == typeof(Display)) return 1;
+
+        else if (circuitType == typeof(Buffer)) return 2;
+
+        else if (circuitType == typeof(AndGate)) return 3;
+
+        else if (circuitType == typeof(NAndGate)) return 4;
+
+        else if (circuitType == typeof(NOrGate)) return 5;
+
+        else if (circuitType == typeof(NotGate)) return 6;
+
+        else if (circuitType == typeof(OrGate)) return 7;
+
+        else if (circuitType == typeof(XOrGate)) return 8;
+
+        else throw new Exception("Invalid starting circuit type.");
     }
 
     private void OpenMenu(bool showBackground, GameObject newMenu)

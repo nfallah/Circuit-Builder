@@ -7,7 +7,9 @@ public class EditorStructureManager : MonoBehaviour
 {
     private static EditorStructureManager instance;
 
-    [HideInInspector] List<Circuit> circuits = new List<Circuit>(); 
+    [HideInInspector] List<Circuit> circuits = new List<Circuit>();
+
+    [HideInInspector] List<int> bookmarks = new List<int>();
     
     [HideInInspector] List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>();
 
@@ -42,6 +44,7 @@ public class EditorStructureManager : MonoBehaviour
         }
 
         editorStructure.Circuits = startingCircuitIdentifiers;
+        editorStructure.Bookmarks = bookmarks;
         editorStructure.Connections = connections;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
@@ -73,6 +76,7 @@ public class EditorStructureManager : MonoBehaviour
         }
 
         MenuSetupManager.Instance.RestoreConnections(sceneIndex);
+        TaskbarManager.Instance.RestoreBookmarks(editorStructure.Bookmarks);
     }
 
     // Singleton state reference
@@ -80,6 +84,8 @@ public class EditorStructureManager : MonoBehaviour
 
     // Getter methods
     public List<Circuit> Circuits { get { return circuits; } }
+
+    public List<int> Bookmarks { get { return bookmarks; } }
 
     public List<CircuitConnector.Connection> Connections { get { return connections; } }
 }
