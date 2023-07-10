@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,10 +68,8 @@ public class MenuSetupManager : MonoBehaviour
         File.WriteAllText(editorPath, JsonUtility.ToJson(editorStructure));
     }
 
-    public void GenerateConnectionPrefabs(int sceneIndex, List<CircuitConnector.Connection> connections)
+    public void GenerateConnections(int sceneIndex, List<CircuitConnector.Connection> connections)
     {
-        if (connections.Count == 0) return;
-
         string prefabPath = "Assets/" + editorFolder + "/";
 
         if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
@@ -86,10 +83,17 @@ public class MenuSetupManager : MonoBehaviour
             FileUtil.DeleteFileOrDirectory(file);
         }
 
+        if (connections.Count == 0) return;
+
         int index = 0;
 
         foreach (CircuitConnector.Connection connection in connections)
         {
+            int inputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Input.ParentCircuit);
+            int outputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Output.ParentCircuit);
+            int inputIndex = Array.IndexOf(connection.Input.ParentCircuit.Inputs, connection.Input);
+            int outputIndex = Array.IndexOf(connection.Output.ParentCircuit.Outputs, connection.Output);
+
             GameObject temp = Instantiate(connection.gameObject);
             ConnectionIdentifier connectionIdentifier = temp.AddComponent<ConnectionIdentifier>();
 
@@ -113,9 +117,8 @@ public class MenuSetupManager : MonoBehaviour
                 connectionIdentifier.StartingWire = temp.transform.GetChild(0).gameObject;
             }
 
-            // Future note: may not be needed if everything has to be updated
-            // Also create connections here
             connectionIdentifier.EndingWire.GetComponentInChildren<MeshRenderer>().material = connectionIdentifier.StartingWire.GetComponentInChildren<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
+            connectionIdentifier.CircuitConnectorIdentifier = new CircuitConnectorIdentifier(inputCircuitIndex, outputCircuitIndex, inputIndex, outputIndex);
             PrefabUtility.SaveAsPrefabAsset(temp, prefabPath + "CONNECTION_" + index + ".prefab");
             DestroyImmediate(temp);
             index++;
@@ -133,13 +136,16 @@ public class MenuSetupManager : MonoBehaviour
         string[] filePaths = Directory.GetFiles(prefabPath);
         List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".prefab")).ToList();
 
-        // Future note: restore connections here
-        // Delete the connectionidentifier after extracing its values
         foreach (string prefabFilePath in prefabFilePaths)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath);
+            GameObject prefab = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath));
+            ConnectionIdentifier connectionIdentifier = prefab.GetComponent<ConnectionIdentifier>();
+            Circuit.Input input = EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex];
+            Circuit.Output output = EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex];
 
-            Instantiate(prefab);
+            prefab.name = "Connection";
+            CircuitConnector.ConnectRestoration(prefab, input, output, connectionIdentifier.EndingWire, connectionIdentifier.StartingWire);
+            Destroy(connectionIdentifier);
         }
     }
 

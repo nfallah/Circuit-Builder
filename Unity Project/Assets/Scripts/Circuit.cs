@@ -56,7 +56,7 @@ public abstract class Circuit
         // Getter and setter methods
         public bool Powered { get { return powered; } set { powered = value; } }
 
-        public Circuit ParentCircuit { get { return ParentCircuit; } set { ParentCircuit = value; } }
+        public Circuit ParentCircuit { get { return parentCircuit; } set { parentCircuit = value; } }
 
         public List<CircuitConnector.Connection> Connections { get { return connections; } set { connections = value; } }
 

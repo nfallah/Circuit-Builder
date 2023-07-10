@@ -54,10 +54,9 @@ public class EditorStructureManager : MonoBehaviour
 
         editorStructure.Circuits = startingCircuitIdentifiers;
         editorStructure.Bookmarks = bookmarks;
-        editorStructure.Connections = connections;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
-        MenuSetupManager.Instance.GenerateConnectionPrefabs(sceneIndex, connections);
+        MenuSetupManager.Instance.GenerateConnections(sceneIndex, connections);
         TaskbarManager.Instance.CloseMenu();
     }
 
@@ -82,7 +81,7 @@ public class EditorStructureManager : MonoBehaviour
 
         foreach (StartingCircuitIdentifier startingCircuitIdentifier in editorStructure.Circuits)
         {
-            Circuits.Add(StartingCircuitIdentifier.RestoreCircuit(startingCircuitIdentifier));
+            circuits.Add(StartingCircuitIdentifier.RestoreCircuit(startingCircuitIdentifier));
         }
 
         MenuSetupManager.Instance.RestoreConnections(sceneIndex);

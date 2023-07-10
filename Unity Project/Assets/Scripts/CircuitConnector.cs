@@ -79,6 +79,21 @@ public class CircuitConnector : MonoBehaviour
         }
     }
 
+    public static void ConnectRestoration(GameObject prefab, Circuit.Input input, Circuit.Output output, GameObject endingWire, GameObject startingWire)
+    {
+        Connection connection = prefab.AddComponent<Connection>();
+
+        connection.Input = input;
+        connection.Output = output;
+        input.Connection = connection;
+        input.ParentOutput = output;
+        output.Connections.Add(connection);
+        output.ChildInputs.Add(input);
+        connection.EndingWire = endingWire;
+        connection.StartingWire = startingWire;
+        EditorStructureManager.Instance.Connections.Add(connection); // Re-adds connection for potential serialization
+    }
+
     public static void Connect(Circuit.Input input, Circuit.Output output)
     {
         Instance.count = -1;
@@ -136,7 +151,7 @@ public class CircuitConnector : MonoBehaviour
     {
         currentWire = Instantiate(wireReference, connection.transform);
 
-        //if (currentPowerStatus) currentWire.GetComponentInChildren<MeshRenderer>().material = poweredMaterial;
+        // if (currentPowerStatus) currentWire.GetComponentInChildren<MeshRenderer>().material = poweredMaterial;
 
         currentPos = new Vector3(a.x, GridMaintenance.Instance.GridHeight, a.z);
         currentWire.transform.position = currentPos;
