@@ -92,6 +92,8 @@ public class CircuitConnector : MonoBehaviour
         connection.EndingWire = endingWire;
         connection.StartingWire = startingWire;
         EditorStructureManager.Instance.Connections.Add(connection); // Re-adds connection for potential serialization
+        if (output.ParentCircuit.GetType() == typeof(InputGate)) return;
+        Circuit.UpdateCircuit(input, output);
     }
 
     public static void Connect(Circuit.Input input, Circuit.Output output)

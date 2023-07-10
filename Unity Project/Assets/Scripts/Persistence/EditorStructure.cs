@@ -7,6 +7,8 @@ public class EditorStructure
 {
     [SerializeField] bool inGridMode;
 
+    [SerializeField] List<bool> isPoweredInput = new List<bool>();
+
     [SerializeField] List<int> bookmarks = new List<int>();
 
     [SerializeField] List<StartingCircuitIdentifier> circuits = new List<StartingCircuitIdentifier>();
@@ -22,6 +24,8 @@ public class EditorStructure
 
     // Getter and setter methods
     public bool InGridMode { get { return inGridMode; } set { inGridMode = value; } }
+
+    public List<bool> IsPoweredInput { get { return isPoweredInput; } set { isPoweredInput = value; } }
 
     public List<int> Bookmarks { get { return bookmarks; } set { bookmarks = value; } }
 

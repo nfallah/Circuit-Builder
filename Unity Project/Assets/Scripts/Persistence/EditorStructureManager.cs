@@ -45,13 +45,16 @@ public class EditorStructureManager : MonoBehaviour
 
         editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
 
+        List<bool> isPoweredInput = new List<bool>();
         List<StartingCircuitIdentifier> startingCircuitIdentifiers = new List<StartingCircuitIdentifier>();
 
         foreach (Circuit circuit in circuits)
         {
             startingCircuitIdentifiers.Add(new StartingCircuitIdentifier(circuit));
+            isPoweredInput.Add(circuit.GetType() == typeof(InputGate) && ((InputGate)circuit).Powered);
         }
 
+        editorStructure.IsPoweredInput = isPoweredInput;
         editorStructure.Circuits = startingCircuitIdentifiers;
         editorStructure.Bookmarks = bookmarks;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
@@ -85,6 +88,15 @@ public class EditorStructureManager : MonoBehaviour
         }
 
         MenuSetupManager.Instance.RestoreConnections(sceneIndex);
+
+        int index = 0;
+
+        foreach (bool isPoweredInput in editorStructure.IsPoweredInput)
+        {
+            if (isPoweredInput) ((InputGate)circuits[index]).Powered = true; 
+            index++;
+        }
+
         TaskbarManager.Instance.RestoreBookmarks(editorStructure.Bookmarks);
     }
 
