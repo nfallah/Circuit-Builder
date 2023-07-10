@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class EditorStructureManager : MonoBehaviour
@@ -31,11 +31,20 @@ public class EditorStructureManager : MonoBehaviour
 
     public void Serialize()
     {
+        StartCoroutine(SerializeCoroutine());
+    }
+
+    private IEnumerator SerializeCoroutine()
+    {
+        TaskbarManager.Instance.OpenSave();
+
+        yield return null;
+
         int sceneIndex = MenuLogicManager.Instance.CurrentSceneIndex;
         EditorStructure editorStructure = MenuSetupManager.Instance.EditorStructures[sceneIndex];
 
         editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
-        
+
         List<StartingCircuitIdentifier> startingCircuitIdentifiers = new List<StartingCircuitIdentifier>();
 
         foreach (Circuit circuit in circuits)
@@ -49,6 +58,7 @@ public class EditorStructureManager : MonoBehaviour
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
         MenuSetupManager.Instance.GenerateConnectionPrefabs(sceneIndex, connections);
+        TaskbarManager.Instance.CloseMenu();
     }
 
     public void Deserialize()

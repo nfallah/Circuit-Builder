@@ -16,7 +16,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
@@ -80,6 +80,11 @@ public class TaskbarManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void OpenSave()
+    {
+        OpenMenu(true, sceneSaveMenu);
+    }
+
     public void OpenAdd()
     {
         OpenMenu(true, addMenu);
@@ -113,10 +118,10 @@ public class TaskbarManager : MonoBehaviour
         currentlyRestoring = false;
     }
 
+    // This method is specifically for the toggles due to them being called whenever their value is changed, including within code
     public void UpdateBookmark(GameObject obj)
     {
         if (currentlyRestoring) return;
-        Debug.Log("?");
         UpdateBookmarkAll(obj);
     }
 
@@ -282,7 +287,7 @@ public class TaskbarManager : MonoBehaviour
         bookmarksBorder.anchoredPosition = borderPosition;
     }
 
-    private void CloseMenu()
+    public void CloseMenu()
     {
         BehaviorManager.Instance.LockUI = false;
         reopenBookmarks = false;
