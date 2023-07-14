@@ -7,6 +7,14 @@ public class PreviewStructureManager : MonoBehaviour
 {
     private static PreviewStructureManager instance;
 
+    private bool[] reachedCircuits;
+
+    private int circuitCount;
+
+    private List<Circuit.Input> emptyInputs;
+
+    private List<Circuit.Output> emptyOutputs;
+
     private void Awake()
     {
         if (instance != null)
@@ -34,14 +42,24 @@ public class PreviewStructureManager : MonoBehaviour
             yield break;
         }
 
-        // Test #2: the custom circuit must consist of at least 1 circuit
+        // Test #2: the circuit name must be unique
+        foreach (PreviewStructure previewStructure in MenuSetupManager.Instance.PreviewStructures)
+        {
+            if (previewStructure.Name == name)
+            {
+                TaskbarManager.Instance.CircuitSaveError("The custom circuit must have a unique name.");
+                yield break;
+            }
+        }
+
+        // Test #3: the custom circuit must consist of at least 1 circuit
         if (EditorStructureManager.Instance.Circuits.Count == 0)
         {
             TaskbarManager.Instance.CircuitSaveError("The custom circuit must consist of (1) or more circuits.");
             yield break;
         }
 
-        // Test #3: the custom circuit must not include any input gates or display
+        // Test #4: the custom circuit must not include any input gates or display
         foreach (Circuit circuit in EditorStructureManager.Instance.Circuits)
         {
             Type type = circuit.GetType();
@@ -53,25 +71,35 @@ public class PreviewStructureManager : MonoBehaviour
             }
         }
 
-        // Test #4: the custom circuit must be completely connected (DFS)
+        // Test #5: the custom circuit must be completely connected
+        reachedCircuits = new bool[EditorStructureManager.Instance.Circuits.Count];
+        circuitCount = 0;
+        emptyInputs = new List<Circuit.Input>(); emptyOutputs = new List<Circuit.Output>();
+        CircuitConnectionTest(EditorStructureManager.Instance.Circuits[0]);
 
-        // Test #5: the custom circuit must have at least one empty output
-
-        // Test #6: the circuit name must be unique
-        foreach (PreviewStructure previewStructure in MenuSetupManager.Instance.PreviewStructures)
+        if (circuitCount != reachedCircuits.Length)
         {
-            if (previewStructure.Name == name)
-            {
-                TaskbarManager.Instance.CircuitSaveError("The custom circuit must have a unique name.");
-                yield break;
-            }
+            TaskbarManager.Instance.CircuitSaveError("The custom circuit must be entirely connected.");
+            yield break;
         }
 
-        // ASK FOR INPUT AND OUTPUT ORDER HERE
+        // Test #6: the custom circuit must have at least one empty output
+        if (emptyOutputs.Count == 0)
+        {
+            TaskbarManager.Instance.CircuitSaveError("The custom circuit must have (1) or more empty outputs.");
+            yield break;
+        }
+
+        TaskbarManager.Instance.CloseMenu();
+        TaskbarManager.Instance.NullState();
+        IOAssigner.Instance.Initialize(emptyInputs, emptyOutputs);
 
         // ASK FOR INPUT AND OUTPUT ORDER HERE
 
-        TaskbarManager.Instance.OnSuccessfulPreviewVerification();
+
+        // ASK FOR INPUT AND OUTPUT ORDER HERE
+
+        //**********TaskbarManager.Instance.OnSuccessfulPreviewVerification();
 
         // FINALIZE HERE
 
@@ -79,8 +107,39 @@ public class PreviewStructureManager : MonoBehaviour
 
         // FINALIZE HERE
 
-        MenuSetupManager.Instance.PreviewStructures.Add(new PreviewStructure(name));
-        TaskbarManager.Instance.OnSuccessfulPreviewStructure();
+        //**********MenuSetupManager.Instance.PreviewStructures.Add(new PreviewStructure(name));
+        //**********TaskbarManager.Instance.OnSuccessfulPreviewStructure();
+    }
+
+    /// <summary>
+    /// Performs a depth-first search starting at the first placed circuit to determine whether the scene represents a complete graph. <br/>
+    /// At the same time, any circuit input or output without a connection is stored for the next test.
+    /// </summary>
+    private void CircuitConnectionTest(Circuit currentCircuit)
+    {
+        int index = EditorStructureManager.Instance.Circuits.IndexOf(currentCircuit);
+
+        if (reachedCircuits[index]) return;
+
+        reachedCircuits[index] = true;
+        circuitCount++;
+
+        foreach (Circuit.Input input in currentCircuit.Inputs)
+        {
+            if (input.ParentOutput == null) { emptyInputs.Add(input); continue; }
+
+            CircuitConnectionTest(input.ParentOutput.ParentCircuit);
+        }
+
+        foreach (Circuit.Output output in currentCircuit.Outputs)
+        {
+            if (output.ChildInputs.Count == 0) { emptyOutputs.Add(output); continue; }
+
+            foreach (Circuit.Input input in output.ChildInputs)
+            {
+                CircuitConnectionTest(input.ParentCircuit);
+            }
+        }
     }
 
     public static PreviewStructureManager Instance { get { return instance; } }

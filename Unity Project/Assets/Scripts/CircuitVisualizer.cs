@@ -260,7 +260,11 @@ public class CircuitVisualizer : MonoBehaviour
     // Getter methods
     public static CircuitVisualizer Instance { get { return instance; } }
 
+    public Material InputMaterial { get { return inputMaterial; ; } }
+
+    public Material OutputMaterial { get { return outputMaterial; } }
+
     public Material PowerOffMaterial { get { return powerOffMaterial; } }
 
-    public Material PowerOnMaterial { get { return powerOnMaterial;  } }
+    public Material PowerOnMaterial { get { return powerOnMaterial; } }
 }

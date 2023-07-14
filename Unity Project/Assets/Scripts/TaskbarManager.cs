@@ -20,7 +20,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
@@ -28,7 +28,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] RectTransform addStartingPanel, bookmarksBorder;
 
-    [SerializeField] UnityEngine.UI.Toggle circuitToggle;
+    [SerializeField] Toggle circuitToggle;
 
     [SerializeField] Vector2 bookmarkSize, bookmarkMaskSize;
 
@@ -52,6 +52,8 @@ public class TaskbarManager : MonoBehaviour
 
     private void Update()
     {
+        if (currentMenu == nullState) return;
+
         // Depending on the current opened menu, the escape controls may alter and thus they are differentiated
         if (currentMenu == bookmarksMenu)
         {
@@ -72,13 +74,19 @@ public class TaskbarManager : MonoBehaviour
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
 
-        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu || currentMenu == circuitSaveErrorMenu)
+        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu)
         {
             if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
             {
-                CloseMenu();
+                if (currentMenu == circuitSaveErrorMenu) ConfirmError(); else CloseMenu();
             }
         }
+    }
+
+    // Essentially disables the taskbar from functioning; a locked state that must be manually closed via script.
+    public void NullState()
+    {
+        OpenMenu(false, nullState);
     }
 
     public void UpdateSaveToggle()
@@ -108,6 +116,12 @@ public class TaskbarManager : MonoBehaviour
         CloseMenu();
         circuitErrorText.text = errorMessage;
         OpenMenu(true, circuitSaveErrorMenu);
+    }
+
+    public void ConfirmError()
+    {
+        CloseMenu();
+        OpenSave();
     }
 
     public void SaveConfirm()

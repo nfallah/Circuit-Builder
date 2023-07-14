@@ -39,7 +39,7 @@ public class CameraMovement : MonoBehaviour
         mousePosCurrent = Coordinates.Instance.MousePos;
 
         // If the scene is paused, no movement can occur
-        if (BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.PAUSED) return;
+        if (BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.PAUSED && !IOAssigner.Instance.MovementOverride) return;
 
         // Otherwise, movement features are allowed depending on whether the game is unrestricted or locked.
         if (Input.GetMouseButton(0) && BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.UNRESTRICTED && BehaviorManager.Instance.CurrentGameState != BehaviorManager.GameState.CIRCUIT_HOVER)
