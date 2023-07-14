@@ -34,10 +34,8 @@ public class EditorStructureManager : MonoBehaviour
         StartCoroutine(SerializeCoroutine());
     }
 
-    private IEnumerator SerializeCoroutine()
+    public IEnumerator SerializeCoroutine()
     {
-        TaskbarManager.Instance.OpenSave();
-
         yield return null;
 
         int sceneIndex = MenuLogicManager.Instance.CurrentSceneIndex;
@@ -60,6 +58,7 @@ public class EditorStructureManager : MonoBehaviour
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
         MenuSetupManager.Instance.GenerateConnections(sceneIndex, connections);
+
         TaskbarManager.Instance.CloseMenu();
     }
 

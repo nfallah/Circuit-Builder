@@ -12,17 +12,23 @@ public class TaskbarManager : MonoBehaviour
 {
     private static TaskbarManager instance;
 
+    [SerializeField] TextMeshProUGUI notifierText, circuitErrorText;
+
+    [SerializeField] TMP_InputField circuitNameField;
+
     [SerializeField] Color startingCircuitColor;
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
     [SerializeField] KeyCode cancelKey;
 
     [SerializeField] RectTransform addStartingPanel, bookmarksBorder;
+
+    [SerializeField] UnityEngine.UI.Toggle circuitToggle;
 
     [SerializeField] Vector2 bookmarkSize, bookmarkMaskSize;
 
@@ -61,17 +67,29 @@ public class TaskbarManager : MonoBehaviour
                 else CloseMenu();
             }
 
-            else if (Input.GetMouseButtonDown(1)) UpdateBookmarkPosition();
+            else if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject()) UpdateBookmarkPosition();
 
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
 
-        else if (currentMenu == addMenu)
+        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu)
         {
             if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
             {
                 CloseMenu();
             }
+        }
+    }
+
+    public void UpdateSaveToggle()
+    {
+        bool isOn = circuitToggle.isOn;
+
+        circuitNameField.interactable = isOn;
+
+        if (!isOn)
+        {
+            circuitNameField.text = "";
         }
     }
 
@@ -83,6 +101,31 @@ public class TaskbarManager : MonoBehaviour
     public void OpenSave()
     {
         OpenMenu(true, sceneSaveMenu);
+    }
+
+    public void CircuitSaveError(string errorMessage)
+    {
+        CloseMenu();
+        circuitErrorText.text = errorMessage;
+        OpenMenu(true, circuitSaveErrorMenu);
+    }
+
+    public void SaveConfirm()
+    {
+        CloseMenu();
+
+        if (circuitToggle.isOn)
+        {
+            notifierText.text = "verifying...";
+            OpenMenu(true, notifierPanel);
+        }
+
+        else
+        {
+            notifierText.text = "saving scene...";
+            OpenMenu(true, notifierPanel);
+            EditorStructureManager.Instance.Serialize();
+        }
     }
 
     public void OpenAdd()
@@ -109,7 +152,7 @@ public class TaskbarManager : MonoBehaviour
 
         foreach (int startingCircuitIndex in new List<int>(startingCircuitIndeces))
         {
-            Toggle toggle = addStartingPanel.GetChild(startingCircuitIndex).GetComponentInChildren<Toggle>();
+            UnityEngine.UI.Toggle toggle = addStartingPanel.GetChild(startingCircuitIndex).GetComponentInChildren<UnityEngine.UI.Toggle>();
 
             toggle.isOn = true;
             UpdateBookmarkAll(toggle.gameObject);
@@ -127,7 +170,7 @@ public class TaskbarManager : MonoBehaviour
 
     public void UpdateBookmarkAll(GameObject obj)
     {
-        bool newStatus = obj.GetComponent<Toggle>().isOn;
+        bool newStatus = obj.GetComponent<UnityEngine.UI.Toggle>().isOn;
         Type type = CircuitType(obj.transform.parent.GetSiblingIndex());
 
         if (newStatus && !bookmarks.Contains(type))
@@ -135,7 +178,7 @@ public class TaskbarManager : MonoBehaviour
             EditorStructureManager.Instance.Bookmarks.Add(StartingCircuitIndex(type));
             bookmarks.Add(type);
             GameObject bookmark = Instantiate(bookmarkRef, bookmarksPanel.transform);
-            Button button = bookmark.GetComponentInChildren<Button>();
+            UnityEngine.UI.Button button = bookmark.GetComponentInChildren<UnityEngine.UI.Button>();
             TextMeshProUGUI text = bookmark.GetComponentInChildren<TextMeshProUGUI>();
             bookmark.name = text.text = obj.transform.parent.name;
             text.color = startingCircuitColor;
