@@ -4976,6 +4976,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1100941116}
   - component: {fileID: 1100941124}
+  - component: {fileID: 1100941125}
   - component: {fileID: 1100941120}
   - component: {fileID: 1100941122}
   - component: {fileID: 1100941118}
@@ -5146,6 +5147,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab5191630ca560949b8823f8ef6bbfbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1100941125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100941115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 257dcd2d4fb268f4c9d06ab3519e9d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1162301347 stripped
@@ -8908,8 +8921,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SceneDeleteSubmission
+      - m_Target: {fileID: 1100941123}
+        m_MethodName: CloseMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9539,7 +9552,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &4632497674663136901
 GameObject:
   m_ObjectHideFlags: 0

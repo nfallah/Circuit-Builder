@@ -118,6 +118,7 @@ public class TaskbarManager : MonoBehaviour
         {
             notifierText.text = "verifying...";
             OpenMenu(true, notifierPanel);
+            PreviewStructureManager.Instance.VerifyPreviewStructure(circuitNameField.text.ToLower());
         }
 
         else
@@ -136,6 +137,17 @@ public class TaskbarManager : MonoBehaviour
     public void OpenBookmarks()
     {
         OpenBookmarks(false);
+    }
+
+    public void OnSuccessfulPreviewStructure()
+    {
+        circuitNameField.text = "";
+        CloseMenu();
+    }
+
+    public void OnSuccessfulPreviewVerification()
+    {
+        notifierText.text = "creating...";
     }
 
     public void OpenBookmarks(bool showBackground)
