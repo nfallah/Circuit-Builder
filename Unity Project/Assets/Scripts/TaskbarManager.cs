@@ -72,7 +72,7 @@ public class TaskbarManager : MonoBehaviour
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
 
-        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu)
+        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu || currentMenu == circuitSaveErrorMenu)
         {
             if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
             {
