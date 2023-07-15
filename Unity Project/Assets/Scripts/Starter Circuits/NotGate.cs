@@ -5,7 +5,7 @@ public class NotGate : Circuit
 {
     public NotGate() : this(Vector2.zero) { }
 
-    public NotGate(Vector2 startingPos) : base("NOT", 1, 1, startingPos) { }
+    public NotGate(Vector2 startingPos) : base("NOT", 1, 1, startingPos, true) { }
 
     protected override List<Output> UpdateOutputs()
     {

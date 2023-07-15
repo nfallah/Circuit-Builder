@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ public class CircuitVisualizer : MonoBehaviour
     }
 
     // The color associated with starting circuits (non-custom)
-    [SerializeField] Color startingCircuitColor;
+    [SerializeField] Color startingCircuitColor, customCircuitColor;
 
     [SerializeField] float
     borderThickness, // Border surrounding the base of the circuit
@@ -62,6 +63,147 @@ public class CircuitVisualizer : MonoBehaviour
     public void VisualizeCircuit(Circuit circuit)
     {
         VisualizeCircuit(circuit, Vector2.zero);
+    }
+
+    public void VisualizeCustomCircuit(CustomCircuit customCircuit, Vector2 startingPosition)
+    {
+        // Setting dimensions
+        int numInputMargins = customCircuit.EmptyInputs.Count + 1, numOutputMargins = customCircuit.EmptyOutputs.Count + 1;
+        float inputHeight = numInputMargins * heightMargins + customCircuit.EmptyInputs.Count * inputSize;
+        float outputHeight = numOutputMargins * heightMargins + customCircuit.EmptyOutputs.Count * outputSize;
+        Vector2 dimensions = new Vector2(width, Mathf.Max(inputHeight, outputHeight));
+
+        // Creating circuit base
+        GameObject physicalObject = new GameObject("\"" + customCircuit.CircuitName + "\"");
+        GameObject baseQuad = new GameObject("Base");
+
+        physicalObject.transform.position = new Vector3(startingPosition.x, GridMaintenance.Instance.GridHeight, startingPosition.y);
+        baseQuad.layer = 8;
+        baseQuad.transform.parent = physicalObject.transform;
+        baseQuad.transform.localPosition = Vector3.up * 0.005f;
+
+        Vector3[] vertices = new Vector3[]
+        {
+            new Vector3(-dimensions.x / 2, 0, -dimensions.y / 2),
+            new Vector3(-dimensions.x / 2, 0, dimensions.y / 2),
+            new Vector3(dimensions.x / 2, 0, dimensions.y / 2),
+            new Vector3(dimensions.x / 2, 0, -dimensions.y / 2)
+        };
+
+        CreateQuad(baseQuad, vertices, baseMaterial);
+
+        // Creating circuit border
+        GameObject borderQuad = new GameObject("Border");
+
+        borderQuad.layer = 13;
+        borderQuad.transform.parent = physicalObject.transform;
+        borderQuad.transform.localPosition = Vector3.zero;
+        vertices = new Vector3[]
+        {
+            new Vector3(-dimensions.x / 2 - borderThickness, 0, -dimensions.y / 2 - borderThickness),
+            new Vector3(-dimensions.x / 2 - borderThickness, 0, dimensions.y / 2 + borderThickness),
+            new Vector3(dimensions.x / 2 + borderThickness, 0, dimensions.y / 2 + borderThickness),
+            new Vector3(dimensions.x / 2 + borderThickness, 0, -dimensions.y / 2 - borderThickness)
+        };
+        CreateQuad(borderQuad, vertices, borderMaterial, false);
+
+        // Power on/off vertices
+        Vector3[] powerVertices = new Vector3[]
+        {
+            new Vector3(-powerSize / 2, 0, -powerSize / 2),
+            new Vector3(-powerSize / 2, 0, powerSize / 2),
+            new Vector3(powerSize / 2, 0, powerSize / 2),
+            new Vector3(powerSize / 2, 0, -powerSize / 2)
+        };
+
+        // Creating input nodes
+        float inputStepSize = (dimensions.y - customCircuit.EmptyInputs.Count * inputSize) / numInputMargins;
+        int index = 0;
+
+        vertices = new Vector3[]
+        {
+                new Vector3(-inputSize / 2, 0, -inputSize / 2),
+                new Vector3(-inputSize / 2, 0, inputSize / 2),
+                new Vector3(inputSize / 2, 0, inputSize / 2),
+                new Vector3(inputSize / 2, 0, -inputSize / 2)
+        };
+
+        for (float currentHeight = inputStepSize + inputSize / 2; index < customCircuit.EmptyInputs.Count; currentHeight += inputStepSize + inputSize)
+        {
+            GameObject inputQuad = new GameObject("Input " + (index + 1));
+            GameObject inputQuadPower = new GameObject("Input Status " + (index + 1));
+            Vector3 pos = new Vector3(-dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
+
+            inputQuad.layer = 9;
+            inputQuad.transform.parent = inputQuadPower.transform.parent = physicalObject.transform;
+            inputQuad.transform.localPosition = inputQuadPower.transform.localPosition = pos;
+            CreateQuad(inputQuad, vertices, inputMaterial);
+            CreateQuad(inputQuadPower, powerVertices, powerOffMaterial, false);
+            customCircuit.EmptyInputs[index].Transform = inputQuad.transform;
+            customCircuit.EmptyInputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
+
+            InputReference inputReference = inputQuad.AddComponent<InputReference>();
+
+            inputReference.Input = customCircuit.EmptyInputs[index];
+            index++;
+        }
+
+        // Creating output nodes
+        float outputStepSize = (dimensions.y - customCircuit.EmptyOutputs.Count * outputSize) / numOutputMargins;
+
+        index = 0;
+        vertices = new Vector3[]
+        {
+                new Vector3(-outputSize / 2, 0, -outputSize / 2),
+                new Vector3(-outputSize / 2, 0, outputSize / 2),
+                new Vector3(outputSize / 2, 0, outputSize / 2),
+                new Vector3(outputSize / 2, 0, -outputSize / 2)
+        };
+
+        for (float currentHeight = outputStepSize + outputSize / 2; index < customCircuit.EmptyOutputs.Count; currentHeight += outputStepSize + outputSize)
+        {
+            GameObject outputQuad = new GameObject("Output " + (index + 1));
+            GameObject outputQuadPower = new GameObject("Output Status " + (index + 1));
+            Vector3 pos = new Vector3(dimensions.x / 2, 0.01f, currentHeight - dimensions.y / 2);
+
+            outputQuad.layer = 10;
+            outputQuad.transform.parent = outputQuadPower.transform.parent = physicalObject.transform;
+            outputQuad.transform.localPosition = outputQuadPower.transform.localPosition = pos;
+            CreateQuad(outputQuad, vertices, outputMaterial);
+            CreateQuad(outputQuadPower, powerVertices, powerOffMaterial, false);
+            customCircuit.EmptyOutputs[index].Transform = outputQuad.transform;
+            customCircuit.EmptyOutputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
+
+            OutputReference outputReference = outputQuad.AddComponent<OutputReference>();
+
+            outputReference.Output = customCircuit.EmptyOutputs[index];
+            index++;
+        }
+
+        // Adding text component
+        GameObject name = new GameObject("Name");
+
+        name.transform.parent = physicalObject.transform;
+        name.transform.localPosition = Vector3.up * 0.01f + Vector3.right * (inputSize - outputSize) / 4;
+        name.transform.eulerAngles = Vector3.right * 90;
+
+        Vector2 nameDimensions = new Vector2(dimensions.x - (inputSize + outputSize) / 2 - 2 * textPadding.x, dimensions.y - 2 * textPadding.y);
+        TextMeshPro text = name.AddComponent<TextMeshPro>();
+
+        text.text = customCircuit.CircuitName.ToUpper();
+        text.rectTransform.sizeDelta = nameDimensions;
+        text.alignment = TextAlignmentOptions.Center;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 0;
+        text.font = font;
+        text.color = customCircuitColor;
+
+        customCircuit.PhysicalObject = physicalObject; // Connects new game object to its circuit for future access
+
+        CircuitReference circuitReference = physicalObject.AddComponent<CircuitReference>();
+
+        circuitReference.Circuit = customCircuit;
+        // customCircuit.Update();
     }
 
     public void VisualizeCircuit(Circuit circuit, Vector2 startingPosition)

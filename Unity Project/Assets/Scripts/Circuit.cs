@@ -97,12 +97,12 @@ public abstract class Circuit
 
     private readonly Output[] outputs; // The list of output nodes for this circuit
 
-    private readonly string circuitName;
+    private  string circuitName;
 
     // Utilized by inherited circuits to determine the specific number of input and output nodes
-    public Circuit(string circuitName, int numInputs, int numOutputs) : this(circuitName, numInputs, numOutputs, Vector2.zero) {}
+    public Circuit(string circuitName, int numInputs, int numOutputs) : this(circuitName, numInputs, numOutputs, Vector2.zero, true) {}
 
-    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition)
+    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition, bool visualizeCircuit)
     {
         this.circuitName = circuitName;
         inputs = new Input[numInputs];
@@ -112,8 +112,10 @@ public abstract class Circuit
 
         for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
 
-        CircuitVisualizer.Instance.VisualizeCircuit(this, startingPosition);
+        if (visualizeCircuit) CircuitVisualizer.Instance.VisualizeCircuit(this, startingPosition);
     }
+
+    public Circuit() { }
 
     /*
      * Updates a circuit and one of its inputs based on an output from another circuit
@@ -179,5 +181,5 @@ public abstract class Circuit
 
     public Output[] Outputs {  get { return outputs; } }
 
-    public string CircuitName { get { return circuitName; } }
+    public string CircuitName { get { return circuitName; } set { circuitName = value; } }
 }

@@ -11,9 +11,11 @@ public class PreviewStructureManager : MonoBehaviour
 
     private int circuitCount;
 
-    private List<Circuit.Input> emptyInputs;
+    private List<Circuit.Input> emptyInputs, inputs;
 
-    private List<Circuit.Output> emptyOutputs;
+    private List<Circuit.Output> emptyOutputs, outputs;
+
+    private string currentName;
 
     private void Awake()
     {
@@ -31,7 +33,7 @@ public class PreviewStructureManager : MonoBehaviour
         StartCoroutine(VerifyPreviewStructureCoroutine(name));
     }
 
-    public IEnumerator VerifyPreviewStructureCoroutine(string name)
+    private IEnumerator VerifyPreviewStructureCoroutine(string name)
     {
         yield return null;
 
@@ -74,7 +76,8 @@ public class PreviewStructureManager : MonoBehaviour
         // Test #5: the custom circuit must be completely connected
         reachedCircuits = new bool[EditorStructureManager.Instance.Circuits.Count];
         circuitCount = 0;
-        emptyInputs = new List<Circuit.Input>(); emptyOutputs = new List<Circuit.Output>();
+        emptyInputs = new List<Circuit.Input>(); inputs = new List<Circuit.Input>();
+        emptyOutputs = new List<Circuit.Output>(); outputs = new List<Circuit.Output>();
         CircuitConnectionTest(EditorStructureManager.Instance.Circuits[0]);
 
         if (circuitCount != reachedCircuits.Length)
@@ -90,24 +93,17 @@ public class PreviewStructureManager : MonoBehaviour
             yield break;
         }
 
+        currentName = name;
         TaskbarManager.Instance.CloseMenu();
         TaskbarManager.Instance.NullState();
         IOAssigner.Instance.Initialize(emptyInputs, emptyOutputs);
+    }
 
-        // ASK FOR INPUT AND OUTPUT ORDER HERE
-
-
-        // ASK FOR INPUT AND OUTPUT ORDER HERE
-
-        //**********TaskbarManager.Instance.OnSuccessfulPreviewVerification();
-
-        // FINALIZE HERE
-
-
-
-        // FINALIZE HERE
-
-        //**********MenuSetupManager.Instance.PreviewStructures.Add(new PreviewStructure(name));
+    public void CreateCustomCircuit(List<Circuit.Input> orderedInputs, List<Circuit.Output> orderedOutputs, List<string> inputLabels, List<string> outputLabels)
+    {
+        TaskbarManager.Instance.OnSuccessfulPreviewVerification();
+        CustomCircuit customCircuit = new CustomCircuit(currentName, inputs, outputs, orderedInputs, orderedOutputs, inputLabels, outputLabels, Vector2.zero);
+        //**********MenuSetupManager.Instance.PreviewStructures.Add(new PreviewStructure(currentName));
         //**********TaskbarManager.Instance.OnSuccessfulPreviewStructure();
     }
 
@@ -126,6 +122,8 @@ public class PreviewStructureManager : MonoBehaviour
 
         foreach (Circuit.Input input in currentCircuit.Inputs)
         {
+            inputs.Add(input);
+
             if (input.ParentOutput == null) { emptyInputs.Add(input); continue; }
 
             CircuitConnectionTest(input.ParentOutput.ParentCircuit);
@@ -133,6 +131,8 @@ public class PreviewStructureManager : MonoBehaviour
 
         foreach (Circuit.Output output in currentCircuit.Outputs)
         {
+            outputs.Add(output);
+
             if (output.ChildInputs.Count == 0) { emptyOutputs.Add(output); continue; }
 
             foreach (Circuit.Input input in output.ChildInputs)

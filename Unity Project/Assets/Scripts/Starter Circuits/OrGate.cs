@@ -5,7 +5,7 @@ public class OrGate : Circuit
 {
     public OrGate() : this(Vector2.zero) { }
 
-    public OrGate(Vector2 startingPos) : base("OR", 2, 1, startingPos) { }
+    public OrGate(Vector2 startingPos) : base("OR", 2, 1, startingPos, true) { }
 
     protected override List<Output> UpdateOutputs()
     {

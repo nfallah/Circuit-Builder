@@ -176,7 +176,7 @@ public class IOAssigner : MonoBehaviour
         {
             hoverText.gameObject.SetActive(false);
             enabled = false;
-            Debug.Log("Done!");
+            PreviewStructureManager.Instance.CreateCustomCircuit(orderedInputs, orderedOutputs, inputLabels, outputLabels);
         }
 
         else

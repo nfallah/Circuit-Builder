@@ -5,7 +5,7 @@ public class Buffer : Circuit
 {
     public Buffer() : this(Vector2.zero) { }
 
-    public Buffer(Vector2 startingPos) : base("BUFFER", 1, 1, startingPos) { }
+    public Buffer(Vector2 startingPos) : base("BUFFER", 1, 1, startingPos, true) { }
 
     protected override List<Output> UpdateOutputs()
     {
