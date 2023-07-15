@@ -12,7 +12,7 @@ public class TaskbarManager : MonoBehaviour
 {
     private static TaskbarManager instance;
 
-    [SerializeField] TextMeshProUGUI notifierText, circuitErrorText;
+    [SerializeField] TextMeshProUGUI notifierText, circuitErrorText, labelText;
 
     [SerializeField] TMP_InputField circuitNameField;
 
@@ -20,7 +20,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef;
 
@@ -104,6 +104,12 @@ public class TaskbarManager : MonoBehaviour
     public void OpenOptions()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void OpenLabelMenu(bool isInput)
+    {
+        OpenMenu(true, labelMenu);
+        labelText.text = "write a label for the selected " + (isInput ? "input" : "output") + " (optional):";
     }
 
     public void OpenSave()
