@@ -289,7 +289,7 @@ GameObject:
   - component: {fileID: 55682342}
   - component: {fileID: 55682341}
   m_Layer: 5
-  m_Name: '[Button] Objectives'
+  m_Name: '[Button] Guide'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -313,7 +313,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -7.5, y: 0}
-  m_SizeDelta: {x: 240, y: -15}
+  m_SizeDelta: {x: 160, y: -15}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &55682341
 MonoBehaviour:
@@ -1852,7 +1852,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: objectives
+  m_text: guide
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
