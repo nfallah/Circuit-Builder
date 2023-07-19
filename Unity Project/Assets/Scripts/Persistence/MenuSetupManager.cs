@@ -240,7 +240,28 @@ public class MenuSetupManager : MonoBehaviour
             editorStructures[2] = JsonUtility.FromJson<EditorStructure>(File.ReadAllText(editorPath + save3Name));
         }
 
-        //string[] previewFilePaths = Directory.GetFiles(prefabPath);
+        string[] previewFilePaths = AssetDatabase.GetSubFolders("Assets/" + previewFolder);
+
+        foreach (string filePath in previewFilePaths)
+        {
+            string[] previewFiles = Directory.GetFiles(filePath);
+            string jsonFile = previewFiles.FirstOrDefault(s => s.EndsWith(".json"));
+
+            if (jsonFile == null) throw new Exception("Preview structure JSON modified outside the script; terminating.");
+
+            try
+            {
+                PreviewStructure previewStructure = JsonUtility.FromJson<PreviewStructure>(File.ReadAllText(jsonFile));
+
+                previewStructures.Add(previewStructure);
+                PreviewStructureIDs.Add(previewStructure.ID);
+            }
+
+            catch
+            {
+                throw new Exception("Preview structure JSON modified outside the script; terminating.");
+            }
+        }
     }
 
     // Getter methods
