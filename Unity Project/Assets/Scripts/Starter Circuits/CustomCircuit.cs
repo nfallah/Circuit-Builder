@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CustomCircuit : Circuit
 {
+    private PreviewStructure previewStructure;
+
     private List<Circuit> circuitList;
 
     private Input[] inputs;
@@ -17,15 +19,11 @@ public class CustomCircuit : Circuit
 
     private List<string> emptyInputLabels, emptyOutputLabels;
 
-    public CustomCircuit(string circuitName, List<Input> inputs, List<Output> outputs, List<Input> emptyInputs, List<Output> emptyOutputs, List<string> emptyInputLabels, List<string> emptyOutputLabels, Vector2 startingPosition)
+    public CustomCircuit(PreviewStructure previewStructure) : this(previewStructure, Vector2.zero) {}
+
+    public CustomCircuit(PreviewStructure previewStructure, Vector2 startingPos)
     {
-        CircuitName = circuitName;
-        this.inputs = inputs.ToArray();
-        this.outputs = outputs.ToArray();
-        this.emptyInputs = emptyInputs;
-        this.emptyOutputs = emptyOutputs;
-        this.emptyInputLabels = emptyInputLabels; this.emptyOutputLabels = emptyOutputLabels;
-        CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPosition);
+        this.previewStructure = previewStructure;
     }
 
     public new Input[] Inputs { get { return inputs; } }
@@ -38,6 +36,9 @@ public class CustomCircuit : Circuit
 
     protected override List<Output> UpdateOutputs()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
+
+    // Getter method
+    public PreviewStructure PreviewStructure { get { return previewStructure; } }
 }

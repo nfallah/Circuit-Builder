@@ -44,20 +44,20 @@ public class EditorStructureManager : MonoBehaviour
         editorStructure.InGridMode = Coordinates.Instance.CurrentSnappingMode == Coordinates.SnappingMode.GRID;
 
         List<bool> isPoweredInput = new List<bool>();
-        List<StartingCircuitIdentifier> startingCircuitIdentifiers = new List<StartingCircuitIdentifier>();
+        List<CircuitIdentifier> circuitIdentifiers = new List<CircuitIdentifier>();
 
         foreach (Circuit circuit in circuits)
         {
-            startingCircuitIdentifiers.Add(new StartingCircuitIdentifier(circuit));
+            circuitIdentifiers.Add(new CircuitIdentifier(circuit));
             isPoweredInput.Add(circuit.GetType() == typeof(InputGate) && ((InputGate)circuit).Powered);
         }
 
         editorStructure.IsPoweredInput = isPoweredInput;
-        editorStructure.Circuits = startingCircuitIdentifiers;
+        editorStructure.Circuits = circuitIdentifiers;
         editorStructure.Bookmarks = bookmarks;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
-        MenuSetupManager.Instance.GenerateConnections(sceneIndex, connections);
+        MenuSetupManager.Instance.GenerateConnections(true, sceneIndex, connections);
 
         TaskbarManager.Instance.CloseMenu();
     }
@@ -81,9 +81,9 @@ public class EditorStructureManager : MonoBehaviour
         Coordinates.Instance.CurrentSnappingMode = editorStructure.InGridMode ? Coordinates.SnappingMode.GRID : Coordinates.SnappingMode.NONE;
         CameraMovement.Instance.PlayerCamera.transform.position = editorStructure.CameraLocation;
 
-        foreach (StartingCircuitIdentifier startingCircuitIdentifier in editorStructure.Circuits)
+        foreach (CircuitIdentifier circuitIdentifier in editorStructure.Circuits)
         {
-            circuits.Add(StartingCircuitIdentifier.RestoreCircuit(startingCircuitIdentifier));
+            circuits.Add(CircuitIdentifier.RestoreCircuit(circuitIdentifier));
         }
 
         MenuSetupManager.Instance.RestoreConnections(sceneIndex);

@@ -101,10 +101,39 @@ public class PreviewStructureManager : MonoBehaviour
 
     public void CreateCustomCircuit(List<Circuit.Input> orderedInputs, List<Circuit.Output> orderedOutputs, List<string> inputLabels, List<string> outputLabels)
     {
+        StartCoroutine(CreatePreviewStructure(orderedInputs, orderedOutputs, inputLabels, outputLabels));
+    }
+
+    private IEnumerator CreatePreviewStructure(List<Circuit.Input> orderedInputs, List<Circuit.Output> orderedOutputs, List<string> inputLabels, List<string> outputLabels)
+    {
         TaskbarManager.Instance.OnSuccessfulPreviewVerification();
-        CustomCircuit customCircuit = new CustomCircuit(currentName, inputs, outputs, orderedInputs, orderedOutputs, inputLabels, outputLabels, Vector2.zero);
-        //**********MenuSetupManager.Instance.PreviewStructures.Add(new PreviewStructure(currentName));
-        //**********TaskbarManager.Instance.OnSuccessfulPreviewStructure();
+
+        yield return null;
+
+        PreviewStructure previewStructure = new PreviewStructure(currentName);
+        List<CircuitIdentifier> circuitIdentifiers = new List<CircuitIdentifier>();
+        List<int> inputOrders = new List<int>(), outputOrders = new List<int>();
+
+        foreach (Circuit circuit in EditorStructureManager.Instance.Circuits)
+        {
+            circuitIdentifiers.Add(new CircuitIdentifier(circuit));
+
+            foreach (Circuit.Input input in circuit.Inputs) inputOrders.Add(orderedInputs.IndexOf(input));
+
+            foreach (Circuit.Output output in circuit.Outputs) outputOrders.Add(orderedOutputs.IndexOf(output));
+        }
+
+        previewStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
+        previewStructure.Circuits = circuitIdentifiers;
+        previewStructure.InputOrders = inputOrders;
+        previewStructure.OutputOrders = outputOrders;
+        previewStructure.InputLabels = inputLabels;
+        previewStructure.OutputLabels = outputLabels;
+        previewStructure.ID = UniqueID;
+        MenuSetupManager.Instance.PreviewStructures.Add(previewStructure);
+        MenuSetupManager.Instance.GenerateConnections(false, previewStructure.ID, EditorStructureManager.Instance.Connections);
+        MenuSetupManager.Instance.UpdatePreviewStructure(previewStructure);
+        TaskbarManager.Instance.OnSuccessfulPreviewStructure();
     }
 
     /// <summary>
@@ -138,6 +167,25 @@ public class PreviewStructureManager : MonoBehaviour
             foreach (Circuit.Input input in output.ChildInputs)
             {
                 CircuitConnectionTest(input.ParentCircuit);
+            }
+        }
+    }
+
+    private int UniqueID
+    {
+        get
+        {
+            int current = 0;
+
+            while (true)
+            {
+                if (!MenuSetupManager.Instance.PreviewStructureIDs.Contains(current))
+                {
+                    MenuSetupManager.Instance.PreviewStructureIDs.Add(current);
+                    return current;
+                }
+
+                current++;
             }
         }
     }

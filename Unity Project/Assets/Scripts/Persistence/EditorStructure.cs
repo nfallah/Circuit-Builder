@@ -11,7 +11,7 @@ public class EditorStructure
 
     [SerializeField] List<int> bookmarks = new List<int>();
 
-    [SerializeField] List<StartingCircuitIdentifier> circuits = new List<StartingCircuitIdentifier>();
+    [SerializeField] List<CircuitIdentifier> circuits = new List<CircuitIdentifier>();
 
     [SerializeField] string name;
 
@@ -29,7 +29,7 @@ public class EditorStructure
 
     public List<int> Bookmarks { get { return bookmarks; } set { bookmarks = value; } }
 
-    public List<StartingCircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
+    public List<CircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
 
     public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 

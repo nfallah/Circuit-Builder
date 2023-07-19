@@ -109,7 +109,7 @@ public class TaskbarManager : MonoBehaviour
     public void OpenLabelMenu(bool isInput)
     {
         OpenMenu(true, labelMenu);
-        labelText.text = "write a label for the selected " + (isInput ? "input" : "output") + " (optional):";
+        labelText.text = "compose a label for the selected " + (isInput ? "input" : "output");
     }
 
     public void OpenSave()
@@ -167,6 +167,8 @@ public class TaskbarManager : MonoBehaviour
 
     public void OnSuccessfulPreviewVerification()
     {
+        CloseMenu();
+        OpenMenu(true, notifierPanel);
         notifierText.text = "creating...";
     }
 

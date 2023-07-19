@@ -2,28 +2,34 @@
 using UnityEngine;
 
 [Serializable]
-public class StartingCircuitIdentifier
+public class CircuitIdentifier
 {
-    public enum CircuitType { INPUT_GATE, DISPLAY, BUFFER, AND_GATE, NAND_GATE, NOR_GATE, NOT_GATE, OR_GATE, XOR_GATE }
+    public enum CircuitType { CUSTOM_CIRCUIT, INPUT_GATE, DISPLAY, BUFFER, AND_GATE, NAND_GATE, NOR_GATE, NOT_GATE, OR_GATE, XOR_GATE }
 
-    [SerializeField] CircuitType startingCircuitType;
+    [SerializeField] CircuitType circuitType;
 
-    [SerializeField] Vector2 startingCircuitLocation;
+    [SerializeField] int previewStructureID = -1;
 
-    public StartingCircuitIdentifier(Circuit circuit)
+    [SerializeField] Vector2 circuitLocation;
+
+    public CircuitIdentifier(Circuit circuit)
     {
         Vector3 pos = circuit.PhysicalObject.transform.position;
 
-        startingCircuitType = CircuitToCircuitType(circuit);
-        startingCircuitLocation = new Vector2(pos.x, pos.z);
-    }
-    
-    public static Circuit RestoreCircuit(StartingCircuitIdentifier startingCircuitIdentifier)
-    {
-        Vector3 pos = startingCircuitIdentifier.StartingCircuitLocation;
+        circuitType = CircuitToCircuitType(circuit);
+        circuitLocation = new Vector2(pos.x, pos.z);
 
-        switch (startingCircuitIdentifier.StartingCircuitType)
+        if (circuitType == CircuitType.CUSTOM_CIRCUIT) previewStructureID = ((CustomCircuit)circuit).PreviewStructure.ID;
+    }
+
+    public static Circuit RestoreCircuit(CircuitIdentifier circuitIdentifier)
+    {
+        Vector3 pos = circuitIdentifier.circuitLocation;
+
+        switch (circuitIdentifier.circuitType)
         {
+            case CircuitType.CUSTOM_CIRCUIT:
+                return new CustomCircuit(MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitIdentifier.previewStructureID)], pos);
             case CircuitType.INPUT_GATE:
                 return new InputGate(pos);
             case CircuitType.DISPLAY:
@@ -43,13 +49,15 @@ public class StartingCircuitIdentifier
             case CircuitType.XOR_GATE:
                 return new XOrGate(pos);
             default:
-                throw new Exception("Invalid starting circuit type.");
+                throw new Exception("Invalid circuit type.");
         }
     }
 
     private static CircuitType CircuitToCircuitType(Circuit circuit)
     {
         Type type = circuit.GetType();
+
+        if (type == typeof(CustomCircuit)) return CircuitType.CUSTOM_CIRCUIT;
 
         if (type == typeof(InputGate)) return CircuitType.INPUT_GATE;
 
@@ -71,9 +79,4 @@ public class StartingCircuitIdentifier
 
         throw new Exception("Invalid circuit type.");
     }
-
-    // Getter methods
-    public CircuitType StartingCircuitType { get { return startingCircuitType; } }
-
-    public Vector2 StartingCircuitLocation { get { return startingCircuitLocation; } }
 }

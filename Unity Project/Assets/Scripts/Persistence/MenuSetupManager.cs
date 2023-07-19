@@ -16,9 +16,13 @@ public class MenuSetupManager : MonoBehaviour
 
     private EditorStructure[] editorStructures = new EditorStructure[3];
 
+    private FileAttributes fileAttributes = FileAttributes.Normal;
+
+    private List<int> previewStructureIDs = new List<int>();
+
     private List<PreviewStructure> previewStructures = new List<PreviewStructure>();
 
-    private string editorFolder = "EditorSaves", previewFolder = "PreviewSaves", save1Name = "SAVE_0.json", save2Name = "SAVE_1.json", save3Name = "SAVE_2.json";
+    private string editorFolder = "EditorSaves", previewFolder = "PreviewSaves", previewSubdirectory = "CUSTOM_", save1Name = "SAVE_0.json", save2Name = "SAVE_1.json", save3Name = "SAVE_2.json";
 
     private string editorPrefab1Name = "PREFABS_0", editorPrefab2Name = "PREFABS_1", editorPrefab3Name = "PREFABS_2";
 
@@ -68,15 +72,35 @@ public class MenuSetupManager : MonoBehaviour
         File.WriteAllText(editorPath, JsonUtility.ToJson(editorStructure));
     }
 
-    public void GenerateConnections(int sceneIndex, List<CircuitConnector.Connection> connections)
+    public void UpdatePreviewStructure(PreviewStructure previewStructure)
     {
-        string prefabPath = "Assets/" + editorFolder + "/";
+        string previewPath = Application.dataPath + "/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/SAVE.json";
 
-        if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
+        File.WriteAllText(previewPath, JsonUtility.ToJson(previewStructure));
+    }
 
-        prefabPath += "/";
+    public void GenerateConnections(bool isEditor, int generateIndex, List<CircuitConnector.Connection> connections)
+    {
+        string path = "Assets/" + (isEditor ? editorFolder : previewFolder) + "/";
 
-        string[] filePaths = Directory.GetFiles(prefabPath);
+        if (isEditor)
+        {
+            if (generateIndex == 0) path += editorPrefab1Name; else if (generateIndex == 1) path += editorPrefab2Name; else path += editorPrefab3Name;
+        }
+
+        else
+        {
+            path += previewSubdirectory + generateIndex;
+
+            if (!AssetDatabase.IsValidFolder(path))
+            {
+                AssetDatabase.CreateFolder("Assets/" + previewFolder, previewSubdirectory + generateIndex);
+            }
+        }
+
+        path += "/";
+
+        string[] filePaths = Directory.GetFiles(path);
         
         foreach (string file in filePaths)
         {
@@ -103,7 +127,7 @@ public class MenuSetupManager : MonoBehaviour
             if (temp.GetComponent<MeshFilter>() != null)
             {
                 temp.GetComponent<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
-                AssetDatabase.CreateAsset(temp.GetComponent<MeshFilter>().mesh, prefabPath + "MESH_" + index + ".mesh");
+                AssetDatabase.CreateAsset(temp.GetComponent<MeshFilter>().mesh, path + "MESH_" + index + ".mesh");
             }
 
             if (temp.transform.childCount == 1)
@@ -119,7 +143,7 @@ public class MenuSetupManager : MonoBehaviour
 
             connectionIdentifier.EndingWire.GetComponentInChildren<MeshRenderer>().material = connectionIdentifier.StartingWire.GetComponentInChildren<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
             connectionIdentifier.CircuitConnectorIdentifier = new CircuitConnectorIdentifier(inputCircuitIndex, outputCircuitIndex, inputIndex, outputIndex);
-            PrefabUtility.SaveAsPrefabAsset(temp, prefabPath + "CONNECTION_" + index + ".prefab");
+            PrefabUtility.SaveAsPrefabAsset(temp, path + "CONNECTION_" + index + ".prefab");
             DestroyImmediate(temp);
             index++;
         }
@@ -180,7 +204,6 @@ public class MenuSetupManager : MonoBehaviour
             AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab3Name);
         }
 
-        FileAttributes fileAttributes = FileAttributes.Normal;
         string editorPath = Application.dataPath + "/" + editorFolder + "/";
 
         // Ensures the relevant save files are created if they were removed
@@ -216,12 +239,16 @@ public class MenuSetupManager : MonoBehaviour
         {
             editorStructures[2] = JsonUtility.FromJson<EditorStructure>(File.ReadAllText(editorPath + save3Name));
         }
+
+        //string[] previewFilePaths = Directory.GetFiles(prefabPath);
     }
 
     // Getter methods
     public static MenuSetupManager Instance { get { return instance; } }
 
     public EditorStructure[] EditorStructures { get { return editorStructures; } }
+
+    public List<int> PreviewStructureIDs { get { return previewStructureIDs; } }
 
     public List<PreviewStructure> PreviewStructures { get { return previewStructures; } }
 }
