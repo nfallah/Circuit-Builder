@@ -79,7 +79,7 @@ public class CircuitConnector : MonoBehaviour
         }
     }
 
-    public static void ConnectRestoration(GameObject prefab, Circuit.Input input, Circuit.Output output, GameObject endingWire, GameObject startingWire)
+    public static void ConnectRestoration(GameObject prefab, Circuit.Input input, Circuit.Output output, GameObject endingWire, GameObject startingWire, bool isEditor)
     {
         Connection connection = prefab.AddComponent<Connection>();
 
@@ -91,7 +91,7 @@ public class CircuitConnector : MonoBehaviour
         output.ChildInputs.Add(input);
         connection.EndingWire = endingWire;
         connection.StartingWire = startingWire;
-        EditorStructureManager.Instance.Connections.Add(connection); // Re-adds connection for potential serialization
+        if (isEditor) EditorStructureManager.Instance.Connections.Add(connection); // Re-adds connection for potential serialization
         if (output.ParentCircuit.GetType() == typeof(InputGate)) return;
         Circuit.UpdateCircuit(input, output);
     }

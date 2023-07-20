@@ -156,7 +156,16 @@ public class MenuSetupManager : MonoBehaviour
         if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
         prefabPath += "/";
+        RestoreConnections(prefabPath, true);
+    }
 
+    public void RestoreConnections(PreviewStructure previewStructure)
+    {
+        RestoreConnections("Assets/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/", false);
+    }
+
+    private void RestoreConnections(string prefabPath, bool isEditor)
+    {
         string[] filePaths = Directory.GetFiles(prefabPath);
         List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".prefab")).ToList();
 
@@ -164,11 +173,15 @@ public class MenuSetupManager : MonoBehaviour
         {
             GameObject prefab = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath));
             ConnectionIdentifier connectionIdentifier = prefab.GetComponent<ConnectionIdentifier>();
-            Circuit.Input input = EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex];
-            Circuit.Output output = EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex];
+            Circuit.Input input = isEditor ?
+                EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex] :
+                PreviewManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex];
+            Circuit.Output output = isEditor ?
+                EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex] :
+                PreviewManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex];
 
             prefab.name = "Connection";
-            CircuitConnector.ConnectRestoration(prefab, input, output, connectionIdentifier.EndingWire, connectionIdentifier.StartingWire);
+            CircuitConnector.ConnectRestoration(prefab, input, output, connectionIdentifier.EndingWire, connectionIdentifier.StartingWire, isEditor);
             Destroy(connectionIdentifier);
         }
     }

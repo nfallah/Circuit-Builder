@@ -57,4 +57,6 @@ public class MenuLogicManager : MonoBehaviour
     public bool FirstOpen { get { return firstOpen; } }
 
     public int CurrentSceneIndex { get { return currentSceneIndex; } }
+
+    public PreviewStructure CurrentPreviewStructure { get { return currentPreviewStructure; } }
 }

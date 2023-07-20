@@ -172,7 +172,7 @@ public class MenuInterfaceManager : MonoBehaviour
 
     public void SceneNameSubmission()
     {
-        string submission = sceneNameInputField.text.ToLower();
+        string submission = sceneNameInputField.text.ToLower().Trim();
 
         if (submission == string.Empty) sceneNameError.text = "scene name must be non-empty";
 

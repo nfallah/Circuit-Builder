@@ -138,7 +138,7 @@ public class TaskbarManager : MonoBehaviour
         {
             notifierText.text = "verifying...";
             OpenMenu(true, notifierPanel);
-            PreviewStructureManager.Instance.VerifyPreviewStructure(circuitNameField.text.ToLower());
+            PreviewStructureManager.Instance.VerifyPreviewStructure(circuitNameField.text.ToLower().Trim());
         }
 
         else
