@@ -32,7 +32,7 @@ public class BackgroundParallax : MonoBehaviour
         Vector2 prevMousePos = mousePos, mouseDelta;
 
         mousePos = Input.mousePosition;
-        mouseDelta = (mousePos - prevMousePos) * parallaxStrength;
+        mouseDelta = (prevMousePos - mousePos) * parallaxStrength;
         backgroundTransform.offsetMin += mouseDelta;
     }
 

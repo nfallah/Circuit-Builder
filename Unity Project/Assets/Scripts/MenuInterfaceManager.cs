@@ -11,7 +11,7 @@ public class MenuInterfaceManager : MonoBehaviour
 
     [SerializeField] KeyCode cancelKey;
 
-    [SerializeField] GameObject sceneDeletionInterface, sceneNameInterface, transparentBackground;
+    [SerializeField] GameObject optionSelectionInterface, guideInterface, customCircuitsInterface, optionsInterface, sceneDeletionInterface, sceneNameInterface, transparentBackground;
 
     [SerializeField] TMP_InputField sceneNameInputField;
 
@@ -35,12 +35,39 @@ public class MenuInterfaceManager : MonoBehaviour
     private void Start()
     {
         UpdateInterface();
+        CursorManager.SetMouseTexture(true);
         enabled = false;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1)) CancelCurrentSubmission();
+        if (currentInterface != optionsInterface)
+        {
+            if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1)) CancelCurrentSubmission();
+        }
+
+        else
+        {
+            if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
+            {
+                if (optionSelectionInterface.activeSelf)
+                {
+                    CancelCurrentSubmission();
+                }
+
+                else if (customCircuitsInterface.activeSelf)
+                {
+                    customCircuitsInterface.SetActive(false);
+                    optionSelectionInterface.SetActive(true);
+                }
+
+                else
+                {
+                    guideInterface.SetActive(false);
+                    optionSelectionInterface.SetActive(true);
+                }
+            }
+        }
     }
 
     // Called by pressing one of the scene buttons
@@ -72,6 +99,24 @@ public class MenuInterfaceManager : MonoBehaviour
     {
         currentSceneIndex = sceneIndex;
         BeginInterface(sceneNameInterface);
+    }
+
+    public void OpenOptionsInterface()
+    {
+        BeginInterface(optionsInterface);
+        optionSelectionInterface.SetActive(true); customCircuitsInterface.SetActive(false); guideInterface.SetActive(false);
+    }
+
+    public void OpenGuide()
+    {
+        optionSelectionInterface.SetActive(false);
+        guideInterface.SetActive(true);
+    }
+
+    public void OpenCustomCircuits()
+    {
+        optionSelectionInterface.SetActive(false);
+        customCircuitsInterface.SetActive(true);
     }
 
     public void SceneDeleteSubmission()
