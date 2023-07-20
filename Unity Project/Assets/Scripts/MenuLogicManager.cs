@@ -10,6 +10,8 @@ public class MenuLogicManager : MonoBehaviour
 
     private int currentSceneIndex;
 
+    private PreviewStructure currentPreviewStructure;
+
     private void Awake()
     {
         if (instance != null)
@@ -34,6 +36,12 @@ public class MenuLogicManager : MonoBehaviour
     {
         MenuSetupManager.Instance.EditorStructures[sceneIndex] = new EditorStructure(name);
         ImportScene(sceneIndex);
+    }
+
+    public void OpenPreview(PreviewStructure previewStructure)
+    {
+        currentPreviewStructure = previewStructure;
+        SceneManager.LoadScene(2);
     }
 
     private void ImportScene(int sceneIndex)

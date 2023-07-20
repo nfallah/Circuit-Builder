@@ -11,7 +11,7 @@ public class MenuInterfaceManager : MonoBehaviour
 
     [SerializeField] KeyCode cancelKey;
 
-    [SerializeField] GameObject optionSelectionInterface, guideInterface, customCircuitsInterface, optionsInterface, sceneDeletionInterface, sceneNameInterface, transparentBackground;
+    [SerializeField] GameObject customCircuitPanel, customCircuitPrefab, optionSelectionInterface, guideInterface, customCircuitsInterface, optionsInterface, sceneDeletionInterface, sceneNameInterface, transparentBackground;
 
     [SerializeField] TMP_InputField sceneNameInputField;
 
@@ -35,6 +35,7 @@ public class MenuInterfaceManager : MonoBehaviour
     private void Start()
     {
         UpdateInterface();
+        AddCustomBookmarks();
         CursorManager.SetMouseTexture(true);
         enabled = false;
     }
@@ -70,10 +71,34 @@ public class MenuInterfaceManager : MonoBehaviour
         }
     }
 
+    private void AddCustomBookmarks()
+    {
+        List<PreviewStructure> previewStructures = MenuSetupManager.Instance.PreviewStructures;
+
+        foreach (PreviewStructure previewStructure in previewStructures)
+        {
+            GameObject current = Instantiate(customCircuitPrefab, customCircuitPanel.transform);
+
+            current.GetComponentInChildren<TextMeshProUGUI>().text = previewStructure.Name;
+            current.GetComponent<CustomCircuitButtons>().DeleteButton.onClick.AddListener(delegate { DeletePreview(previewStructure); });
+            current.GetComponent<CustomCircuitButtons>().ViewButton.onClick.AddListener(delegate { PreviewScene(previewStructure); });
+        }
+    }
+
     // Called by pressing one of the scene buttons
     public void OpenScene(int sceneIndex)
     {
         MenuLogicManager.Instance.OpenScene(sceneIndex);
+    }
+
+    public void DeletePreview(PreviewStructure previewStructure)
+    {
+        Debug.Log(previewStructure.Name + ": DELETION ATTEMPT!");
+    }
+
+    public void PreviewScene(PreviewStructure previewStructure)
+    {
+        MenuLogicManager.Instance.OpenPreview(previewStructure);
     }
 
     public void UpdateInterface()
