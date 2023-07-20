@@ -9,7 +9,7 @@ public class EditorStructure
 
     [SerializeField] List<bool> isPoweredInput = new List<bool>();
 
-    [SerializeField] List<int> bookmarks = new List<int>();
+    [SerializeField] List<int> bookmarks = new List<int>(), bookmarkIDs = new List<int>();
 
     [SerializeField] List<CircuitIdentifier> circuits = new List<CircuitIdentifier>();
 
@@ -28,6 +28,8 @@ public class EditorStructure
     public List<bool> IsPoweredInput { get { return isPoweredInput; } set { isPoweredInput = value; } }
 
     public List<int> Bookmarks { get { return bookmarks; } set { bookmarks = value; } }
+
+    public List<int> BookmarkIDs { get { return bookmarkIDs; } set { bookmarkIDs = value; } }
 
     public List<CircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
 

@@ -22,6 +22,13 @@ public class PreviewStructure
         this.name = name;
     }
 
+    public class PreviewStructureReference : MonoBehaviour
+    {
+        private int id;
+
+        public int ID { get { return id; } set { id = value; } }
+    }
+
     // Getter and setter methods
     public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 

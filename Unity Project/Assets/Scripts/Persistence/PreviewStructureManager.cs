@@ -133,6 +133,7 @@ public class PreviewStructureManager : MonoBehaviour
         MenuSetupManager.Instance.PreviewStructures.Add(previewStructure);
         MenuSetupManager.Instance.GenerateConnections(false, previewStructure.ID, EditorStructureManager.Instance.Connections);
         MenuSetupManager.Instance.UpdatePreviewStructure(previewStructure);
+        TaskbarManager.Instance.AddCustomCircuitPanel(previewStructure.ID, false);
         TaskbarManager.Instance.OnSuccessfulPreviewStructure();
     }
 

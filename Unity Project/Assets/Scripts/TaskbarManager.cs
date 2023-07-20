@@ -16,17 +16,17 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] TMP_InputField circuitNameField;
 
-    [SerializeField] Color startingCircuitColor;
+    [SerializeField] Color startingCircuitColor, customCircuitColor;
 
     [SerializeField] float bookmarkScrollThickness;
 
     [SerializeField] GameObject labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
-    [SerializeField] GameObject bookmarkRef;
+    [SerializeField] GameObject bookmarkRef, customBookmarkRef;
 
     [SerializeField] KeyCode cancelKey;
 
-    [SerializeField] RectTransform addStartingPanel, bookmarksBorder;
+    [SerializeField] RectTransform addCustomPanel, addStartingPanel, bookmarksBorder;
 
     [SerializeField] Toggle circuitToggle;
 
@@ -37,6 +37,8 @@ public class TaskbarManager : MonoBehaviour
     private GameObject currentMenu;
 
     private List<Type> bookmarks = new List<Type>();
+
+    private List<int> bookmarkIDs = new List<int>();
 
     private void Awake()
     {
@@ -180,19 +182,57 @@ public class TaskbarManager : MonoBehaviour
         OpenMenu(showBackground, bookmarksMenu);
     }
 
-    public void RestoreBookmarks(List<int> startingCircuitIndeces)
+    public void RestoreBookmarks(List<int> circuitIndeces, List<int> circuitIDs)
     {
+        int index = 0;
+
         currentlyRestoring = true;
-
-        foreach (int startingCircuitIndex in new List<int>(startingCircuitIndeces))
+        
+        foreach (int circuitIndex in new List<int>(circuitIndeces))
         {
-            UnityEngine.UI.Toggle toggle = addStartingPanel.GetChild(startingCircuitIndex).GetComponentInChildren<UnityEngine.UI.Toggle>();
+            if (circuitIndex != -1)
+            {
+                Toggle toggle = addStartingPanel.GetChild(circuitIndex).GetComponentInChildren<Toggle>();
 
-            toggle.isOn = true;
-            UpdateBookmarkAll(toggle.gameObject);
+                toggle.isOn = true;
+                UpdateBookmarkAll(toggle.gameObject);
+            }
+
+            else
+            {
+                AddCustomCircuitPanel(circuitIDs[index], true);
+            }
+
+            index++;
         }
 
         currentlyRestoring = false;
+    }
+
+    public void RestoreCustomCircuits()
+    {
+        foreach (PreviewStructure previewStructure in MenuSetupManager.Instance.PreviewStructures)
+        {
+            if (bookmarkIDs.Contains(previewStructure.ID)) continue;
+
+            AddCustomCircuitPanel(previewStructure.ID, false);
+        }
+    }
+
+    public void AddCustomCircuitPanel(int circuitID, bool bookmarked)
+    {
+        GameObject current = Instantiate(customBookmarkRef, addCustomPanel.transform);
+        Toggle toggle = current.GetComponentInChildren<Toggle>();
+        PreviewStructure.PreviewStructureReference reference = current.AddComponent<PreviewStructure.PreviewStructureReference>();
+        current.GetComponentInChildren<TextMeshProUGUI>().text = MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitID)].Name;
+        reference.ID = circuitID;
+        toggle.onValueChanged.AddListener(delegate { UpdateBookmark(reference); });
+
+        if (bookmarked)
+        {
+            toggle.isOn = true;
+            UpdateBookmarkCustom(reference);
+        }
     }
 
     // This method is specifically for the toggles due to them being called whenever their value is changed, including within code
@@ -202,22 +242,29 @@ public class TaskbarManager : MonoBehaviour
         UpdateBookmarkAll(obj);
     }
 
+    public void UpdateBookmark(PreviewStructure.PreviewStructureReference previewStructureReference)
+    {
+        if (currentlyRestoring) return;
+        UpdateBookmarkCustom(previewStructureReference);
+    }
+
     public void UpdateBookmarkAll(GameObject obj)
     {
-        bool newStatus = obj.GetComponent<UnityEngine.UI.Toggle>().isOn;
+        bool newStatus = obj.GetComponent<Toggle>().isOn;
         Type type = CircuitType(obj.transform.parent.GetSiblingIndex());
 
         if (newStatus && !bookmarks.Contains(type))
         {
             EditorStructureManager.Instance.Bookmarks.Add(StartingCircuitIndex(type));
             bookmarks.Add(type);
+            bookmarkIDs.Add(-1);
             GameObject bookmark = Instantiate(bookmarkRef, bookmarksPanel.transform);
-            UnityEngine.UI.Button button = bookmark.GetComponentInChildren<UnityEngine.UI.Button>();
+            Button button = bookmark.GetComponentInChildren<Button>();
             TextMeshProUGUI text = bookmark.GetComponentInChildren<TextMeshProUGUI>();
             bookmark.name = text.text = obj.transform.parent.name;
             text.color = startingCircuitColor;
 
-            button.onClick.AddListener(delegate { AddBookmarkCircuit(type); });
+            button.onClick.AddListener(delegate { AddBookmarkCircuit(StartingCircuitIndex(type), -1); });
         }
 
         else if (!newStatus && bookmarks.Contains(type))
@@ -225,15 +272,75 @@ public class TaskbarManager : MonoBehaviour
             int index = bookmarks.IndexOf(type);
             EditorStructureManager.Instance.Bookmarks.Remove(StartingCircuitIndex(type));
             bookmarks.Remove(type);
+            bookmarkIDs.RemoveAt(index);
             Destroy(bookmarksPanel.transform.GetChild(index).gameObject);
         }
     }
 
-    private void AddBookmarkCircuit(Type type)
+    public void UpdateBookmarkCustom(PreviewStructure.PreviewStructureReference reference)
     {
-        ConstructorInfo[] constructorInfo = type.GetConstructors();
+        bool newStatus = reference.GetComponentInChildren<Toggle>().isOn;
+        int id = reference.GetComponentInChildren<PreviewStructure.PreviewStructureReference>().ID;
 
-        AddCircuit((Circuit)constructorInfo[0].Invoke(new object[] { }));
+        if (newStatus && !bookmarkIDs.Contains(id))
+        {
+            EditorStructureManager.Instance.Bookmarks.Add(-1);
+            bookmarks.Add(typeof(CustomCircuit));
+            bookmarkIDs.Add(id);
+            GameObject bookmark = Instantiate(bookmarkRef, bookmarksPanel.transform);
+            Button button = bookmark.GetComponentInChildren<Button>();
+            TextMeshProUGUI text = bookmark.GetComponentInChildren<TextMeshProUGUI>();
+            bookmark.name = text.text = MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(id)].Name;
+            text.color = customCircuitColor;
+
+            button.onClick.AddListener(delegate { AddBookmarkCircuit(-1, id); });
+        }
+
+        else if (!newStatus && bookmarkIDs.Contains(id))
+        {
+            int index = bookmarkIDs.IndexOf(id);
+            EditorStructureManager.Instance.Bookmarks.RemoveAt(index);
+            bookmarks.RemoveAt(index);
+            bookmarkIDs.Remove(id);
+            Destroy(bookmarksPanel.transform.GetChild(index).gameObject);
+        }
+    }
+
+    private void AddBookmarkCircuit(int circuitType, int circuitID)
+    {
+        switch (circuitType)
+        {
+            case -1:
+                AddCircuit(new CustomCircuit(MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitID)]));
+                return;
+            case 0:
+                AddCircuit(new InputGate());
+                return;
+            case 1:
+                AddCircuit(new Display());
+                return;
+            case 2:
+                AddCircuit(new Buffer());
+                return;
+            case 3:
+                AddCircuit(new AndGate());
+                return;
+            case 4:
+                AddCircuit(new NAndGate());
+                return;
+            case 5:
+                AddCircuit(new NOrGate());
+                return;
+            case 6:
+                AddCircuit(new NotGate());
+                return;
+            case 7:
+                AddCircuit(new OrGate());
+                return;
+            case 8:
+                AddCircuit(new XOrGate());
+                return;
+        }
     }
 
     public void AddStartingCircuit(int startingCircuitIndex)
@@ -264,6 +371,8 @@ public class TaskbarManager : MonoBehaviour
     {
         switch (startingCircuitIndex)
         {
+            case -1:
+                return typeof(CustomCircuit);
             case 0:
                 return typeof(InputGate);
             case 1:
@@ -370,8 +479,8 @@ public class TaskbarManager : MonoBehaviour
         reopenBookmarks = false;
         Invoke("UnlockUI", 0.1f);
         background.SetActive(false); currentMenu.SetActive(false);
-        
-        if (currentMenu == addMenu) addStartingPanel.anchoredPosition = Vector2.zero;
+
+        if (currentMenu == addMenu) addStartingPanel.anchoredPosition = addCustomPanel.anchoredPosition = Vector2.zero;
 
         currentMenu = null;
         enabled = false;
@@ -415,6 +524,8 @@ public class TaskbarManager : MonoBehaviour
     }
 
     public static TaskbarManager Instance { get { return instance; } }
+
+    public List<int> BookmarkIDs { get { return bookmarkIDs; } }
 
     public GameObject CurrentMenu { get { return currentMenu; } }
 

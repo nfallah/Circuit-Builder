@@ -62,6 +62,11 @@ public class MenuLogicManager : MonoBehaviour
             {
                 if (circuitIdentifier.previewStructureID == id) return false;
             }
+
+            foreach (int customCircuitID in editorStructure.BookmarkIDs)
+            {
+                if (customCircuitID == _previewStructure.ID) return false;
+            }
         }
 
         foreach (PreviewStructure previewStructure in MenuSetupManager.Instance.PreviewStructures)

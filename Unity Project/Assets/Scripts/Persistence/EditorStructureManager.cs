@@ -10,7 +10,7 @@ public class EditorStructureManager : MonoBehaviour
     [HideInInspector] List<Circuit> circuits = new List<Circuit>();
 
     [HideInInspector] List<int> bookmarks = new List<int>();
-    
+
     [HideInInspector] List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>();
 
     private void Awake()
@@ -55,6 +55,7 @@ public class EditorStructureManager : MonoBehaviour
         editorStructure.IsPoweredInput = isPoweredInput;
         editorStructure.Circuits = circuitIdentifiers;
         editorStructure.Bookmarks = bookmarks;
+        editorStructure.BookmarkIDs = TaskbarManager.Instance.BookmarkIDs;
         editorStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
         MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
         MenuSetupManager.Instance.GenerateConnections(true, sceneIndex, connections);
@@ -96,7 +97,8 @@ public class EditorStructureManager : MonoBehaviour
             index++;
         }
 
-        TaskbarManager.Instance.RestoreBookmarks(editorStructure.Bookmarks);
+        TaskbarManager.Instance.RestoreBookmarks(editorStructure.Bookmarks, editorStructure.BookmarkIDs);
+        TaskbarManager.Instance.RestoreCustomCircuits();
     }
 
     // Singleton state reference

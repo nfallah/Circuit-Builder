@@ -278,7 +278,6 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (string filePath in previewFilePaths)
         {
-            Debug.Log(filePath);
             string[] previewFiles = Directory.GetFiles(filePath);
             string jsonFile = previewFiles.FirstOrDefault(s => s.EndsWith(".json"));
 
