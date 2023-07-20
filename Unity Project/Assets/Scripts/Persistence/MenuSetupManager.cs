@@ -61,6 +61,8 @@ public class MenuSetupManager : MonoBehaviour
         {
             FileUtil.DeleteFileOrDirectory(file);
         }
+
+        AssetDatabase.Refresh();
     }
 
     public void UpdateEditorStructure(int sceneIndex, EditorStructure editorStructure)
@@ -164,6 +166,25 @@ public class MenuSetupManager : MonoBehaviour
         RestoreConnections("Assets/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/", false);
     }
 
+    public void DeletePreviewStructure(PreviewStructure previewStructure)
+    {
+        int index = previewStructures.IndexOf(previewStructure);
+        string folderPath = "Assets/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID;
+
+        previewStructures.Remove(previewStructure); previewStructureIDs.Remove(previewStructureIDs[index]);
+
+        string[] filePaths = Directory.GetFiles(folderPath + "/");
+
+        foreach (string file in filePaths)
+        {
+            FileUtil.DeleteFileOrDirectory(file);
+        }
+
+        FileUtil.DeleteFileOrDirectory(folderPath + ".meta");
+        FileUtil.DeleteFileOrDirectory(folderPath);
+        AssetDatabase.Refresh();
+    }
+
     private void RestoreConnections(string prefabPath, bool isEditor)
     {
         string[] filePaths = Directory.GetFiles(prefabPath);
@@ -257,6 +278,7 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (string filePath in previewFilePaths)
         {
+            Debug.Log(filePath);
             string[] previewFiles = Directory.GetFiles(filePath);
             string jsonFile = previewFiles.FirstOrDefault(s => s.EndsWith(".json"));
 

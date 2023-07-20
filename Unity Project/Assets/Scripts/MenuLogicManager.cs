@@ -50,6 +50,28 @@ public class MenuLogicManager : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+    public static bool CanDeleteCustomCircuit(PreviewStructure _previewStructure)
+    {
+        int id = _previewStructure.ID;
+
+        foreach (EditorStructure editorStructure in MenuSetupManager.Instance.EditorStructures)
+        {
+            if (editorStructure == null) continue;
+
+            foreach (CircuitIdentifier circuitIdentifier in editorStructure.Circuits)
+            {
+                if (circuitIdentifier.previewStructureID == id) return false;
+            }
+        }
+
+        foreach (PreviewStructure previewStructure in MenuSetupManager.Instance.PreviewStructures)
+        {
+            if (previewStructure.ID == id && previewStructure != _previewStructure) return false;
+        }
+
+        return true;
+    }
+
     // Singleton state reference
     public static MenuLogicManager Instance { get { return instance; } }
 

@@ -187,7 +187,7 @@ public class IOAssigner : MonoBehaviour
 
     private void SetHoverText(TextMode textMode)
     {
-        string text = "hover over and select inputs/outputs to determine their order & label.";
+        string text = "hover over and select inputs/outputs to determine their order & label";
 
         switch (textMode)
         {

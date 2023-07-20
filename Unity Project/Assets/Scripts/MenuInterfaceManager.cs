@@ -80,7 +80,7 @@ public class MenuInterfaceManager : MonoBehaviour
             GameObject current = Instantiate(customCircuitPrefab, customCircuitPanel.transform);
 
             current.GetComponentInChildren<TextMeshProUGUI>().text = previewStructure.Name;
-            current.GetComponent<CustomCircuitButtons>().DeleteButton.onClick.AddListener(delegate { DeletePreview(previewStructure); });
+            current.GetComponent<CustomCircuitButtons>().DeleteButton.onClick.AddListener(delegate { DeletePreview(current, previewStructure); });
             current.GetComponent<CustomCircuitButtons>().ViewButton.onClick.AddListener(delegate { PreviewScene(previewStructure); });
         }
     }
@@ -91,9 +91,18 @@ public class MenuInterfaceManager : MonoBehaviour
         MenuLogicManager.Instance.OpenScene(sceneIndex);
     }
 
-    public void DeletePreview(PreviewStructure previewStructure)
+    public void DeletePreview(GameObject button, PreviewStructure previewStructure)
     {
-        Debug.Log(previewStructure.Name + ": DELETION ATTEMPT!");
+        if (MenuLogicManager.CanDeleteCustomCircuit(previewStructure))
+        {
+            MenuSetupManager.Instance.DeletePreviewStructure(previewStructure);
+            Destroy(button);
+        }
+
+        else
+        {
+            Debug.Log("Epic fail! Add some UI :)");
+        }
     }
 
     public void PreviewScene(PreviewStructure previewStructure)

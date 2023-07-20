@@ -6,9 +6,9 @@ public class CircuitIdentifier
 {
     public enum CircuitType { CUSTOM_CIRCUIT, INPUT_GATE, DISPLAY, BUFFER, AND_GATE, NAND_GATE, NOR_GATE, NOT_GATE, OR_GATE, XOR_GATE }
 
-    [SerializeField] CircuitType circuitType;
+    [SerializeField] public CircuitType circuitType;
 
-    [SerializeField] int previewStructureID = -1;
+    [SerializeField] public int previewStructureID = -1;
 
     [SerializeField] Vector2 circuitLocation;
 
