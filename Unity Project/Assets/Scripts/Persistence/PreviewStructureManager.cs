@@ -118,9 +118,9 @@ public class PreviewStructureManager : MonoBehaviour
         {
             circuitIdentifiers.Add(new CircuitIdentifier(circuit));
 
-            foreach (Circuit.Input input in circuit.Inputs) inputOrders.Add(orderedInputs.IndexOf(input));
+            foreach (Circuit.Input input in circuit.Inputs) { inputs.Add(input); inputOrders.Add(orderedInputs.IndexOf(input)); }
 
-            foreach (Circuit.Output output in circuit.Outputs) outputOrders.Add(orderedOutputs.IndexOf(output));
+            foreach (Circuit.Output output in circuit.Outputs) { outputs.Add(output); outputOrders.Add(orderedOutputs.IndexOf(output)); }
         }
 
         previewStructure.CameraLocation = CameraMovement.Instance.PlayerCamera.transform.position;
@@ -130,6 +130,31 @@ public class PreviewStructureManager : MonoBehaviour
         previewStructure.InputLabels = inputLabels;
         previewStructure.OutputLabels = outputLabels;
         previewStructure.ID = UniqueID;
+
+        List<int> inputConnections = new List<int>();
+        List<OutputLayer> outputConnections = new List<OutputLayer>();
+
+        foreach (Circuit.Input input in inputs)
+        {
+            if (input.Connection == null) { inputConnections.Add(-1); continue; }
+
+            inputConnections.Add(outputs.IndexOf(input.Connection.Output));
+        }
+
+        foreach (Circuit.Output output in outputs)
+        {
+            List<int> temp = new List<int>();
+
+            foreach (CircuitConnector.Connection connection in output.Connections)
+            {
+                temp.Add(inputs.IndexOf(connection.Input));
+            }
+
+            outputConnections.Add(new OutputLayer(temp));
+        }
+
+        previewStructure.InputConnections = inputConnections;
+        previewStructure.OutputConnections = outputConnections;
         MenuSetupManager.Instance.PreviewStructures.Add(previewStructure);
         MenuSetupManager.Instance.GenerateConnections(false, previewStructure.ID, EditorStructureManager.Instance.Connections);
         MenuSetupManager.Instance.UpdatePreviewStructure(previewStructure);
