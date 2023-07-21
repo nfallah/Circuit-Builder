@@ -5,7 +5,7 @@ public class AndGate : Circuit
 {
     public AndGate() : this(Vector2.zero) { }
 
-    public AndGate(Vector2 startingPos) : base("AND", 2, 1, startingPos, true) { }
+    public AndGate(Vector2 startingPos) : base("AND", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

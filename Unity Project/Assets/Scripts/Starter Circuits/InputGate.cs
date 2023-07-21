@@ -7,7 +7,7 @@ public class InputGate : Circuit
 
     public InputGate() : this(Vector2.zero) { }
 
-    public InputGate(Vector2 startingPos) : base("INPUT", 0, 1, startingPos, true) { }
+    public InputGate(Vector2 startingPos) : base("INPUT", 0, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

@@ -6,7 +6,7 @@ public class NOrGate : Circuit
 {
     public NOrGate() : this(Vector2.zero) { }
 
-    public NOrGate(Vector2 startingPos) : base("NOR", 2, 1, startingPos, true) { }
+    public NOrGate(Vector2 startingPos) : base("NOR", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

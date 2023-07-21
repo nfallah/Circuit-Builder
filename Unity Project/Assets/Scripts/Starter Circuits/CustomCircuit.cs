@@ -7,36 +7,72 @@ public class CustomCircuit : Circuit
 {
     private PreviewStructure previewStructure;
 
-    private List<Circuit> circuitList;
+    private List<Circuit> circuitList = new List<Circuit>();
 
-    private Input[] inputs;
+    private List<Input> inputs = new List<Input>(), emptyInputs = new List<Input>();
 
-    private List<Input> emptyInputs;
-
-    private Output[] outputs;
-
-    private List<Output> emptyOutputs;
+    private List<Output> outputs = new List<Output>(), emptyOutputs = new List<Output>();
 
     private List<string> emptyInputLabels, emptyOutputLabels;
 
-    public CustomCircuit(PreviewStructure previewStructure) : this(previewStructure, Vector2.zero) {}
+    public CustomCircuit(PreviewStructure previewStructure) : this(previewStructure, Vector2.zero, true) {}
 
-    public CustomCircuit(PreviewStructure previewStructure, Vector2 startingPos)
+    public CustomCircuit(PreviewStructure previewStructure, Vector2 startingPos, bool isFirst) : base(previewStructure.Name, Vector2.positiveInfinity)
     {
+        if (isFirst) Visible = true;
+
         this.previewStructure = previewStructure;
+        CreateCircuit(startingPos);
     }
 
-    public new Input[] Inputs { get { return inputs; } }
+    private void CreateCircuit(Vector2 startingPos)
+    {
+        foreach (CircuitIdentifier circuitIdentifier in previewStructure.Circuits)
+        {
+            Circuit circuit = CircuitIdentifier.RestoreCircuit(circuitIdentifier, false);
+            circuitList.Add(circuit);
+
+            foreach (Input input in circuit.Inputs) inputs.Add(input);
+
+            foreach (Output output in circuit.Outputs) outputs.Add(output);
+        }
+
+        int inputAmount = previewStructure.InputLabels.Count;
+
+        for (int i = 0; i < inputAmount; i++)
+        {
+            emptyInputs.Add(inputs[previewStructure.InputOrders.IndexOf(i)]);
+        }
+
+        int outputAmount = previewStructure.OutputLabels.Count;
+
+        for (int i = 0; i < outputAmount; i++)
+        {
+            emptyOutputs.Add(outputs[previewStructure.OutputOrders.IndexOf(i)]);
+        }
+
+        Inputs = emptyInputs.ToArray(); Outputs = emptyOutputs.ToArray();
+
+        // Add connections here
+
+        if (!Visible) return;
+
+        CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPos);
+        UpdateOutputs();
+    }
 
     public List<Input> EmptyInputs { get { return emptyInputs; } }
-
-    public new Output[] Outputs { get { return outputs; } }
 
     public List<Output> EmptyOutputs { get { return emptyOutputs; } }
 
     protected override List<Output> UpdateOutputs()
     {
-        throw new NotImplementedException();
+        foreach (Input input in emptyInputs)
+        {
+            UpdateCircuit(false, input, null);
+        }
+
+        return null;
     }
 
     // Getter method

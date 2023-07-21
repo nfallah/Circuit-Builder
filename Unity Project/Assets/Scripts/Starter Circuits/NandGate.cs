@@ -6,7 +6,7 @@ public class NAndGate : Circuit
 {
     public NAndGate() : this(Vector2.zero) { }
 
-    public NAndGate(Vector2 startingPos) : base("NAND", 2, 1, startingPos, true) { }
+    public NAndGate(Vector2 startingPos) : base("NAND", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

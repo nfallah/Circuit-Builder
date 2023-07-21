@@ -126,8 +126,8 @@ public class CircuitConnector : MonoBehaviour
     {
         if (connection.GetComponent<MeshRenderer>() != null) connection.GetComponent<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
 
-        connection.EndingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
-        connection.StartingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
+        if (connection.EndingWire != null) connection.EndingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
+        if (connection.StartingWire != null) connection.StartingWire.GetComponentInChildren<MeshRenderer>().material = powered ? Instance.poweredMaterial : Instance.unpoweredMaterial;
     }
 
     public void BeginConnectionProcess(bool currentPowerStatus, Vector3 pos)

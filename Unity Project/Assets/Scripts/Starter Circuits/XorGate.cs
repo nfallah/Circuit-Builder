@@ -5,7 +5,7 @@ public class XOrGate : Circuit
 {
     public XOrGate() : this(Vector2.zero) { }
 
-    public XOrGate(Vector2 startingPos) : base("XOR", 2, 1, startingPos, true) { }
+    public XOrGate(Vector2 startingPos) : base("XOR", 2, 1, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {

@@ -24,12 +24,17 @@ public class CircuitIdentifier
 
     public static Circuit RestoreCircuit(CircuitIdentifier circuitIdentifier)
     {
-        Vector3 pos = circuitIdentifier.circuitLocation;
+        return RestoreCircuit(circuitIdentifier, true);
+    }
+
+    public static Circuit RestoreCircuit(CircuitIdentifier circuitIdentifier, bool visible)
+    {
+        Vector2 pos = visible ? circuitIdentifier.circuitLocation : Vector2.positiveInfinity;
 
         switch (circuitIdentifier.circuitType)
         {
             case CircuitType.CUSTOM_CIRCUIT:
-                return new CustomCircuit(MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitIdentifier.previewStructureID)], pos);
+                return new CustomCircuit(MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitIdentifier.previewStructureID)], pos, visible);
             case CircuitType.INPUT_GATE:
                 return new InputGate(pos);
             case CircuitType.DISPLAY:

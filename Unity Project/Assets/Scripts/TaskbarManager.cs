@@ -226,6 +226,7 @@ public class TaskbarManager : MonoBehaviour
         PreviewStructure.PreviewStructureReference reference = current.AddComponent<PreviewStructure.PreviewStructureReference>();
         current.GetComponentInChildren<TextMeshProUGUI>().text = MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitID)].Name;
         reference.ID = circuitID;
+        current.GetComponentInChildren<Button>().onClick.AddListener(delegate { AddBookmarkCircuit(-1, reference.ID); });
         toggle.onValueChanged.AddListener(delegate { UpdateBookmark(reference); });
 
         if (bookmarked)

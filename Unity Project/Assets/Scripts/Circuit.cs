@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public abstract class Circuit
 {
@@ -91,29 +92,39 @@ public abstract class Circuit
 
     private GameObject physicalObject;
 
-    private readonly Input[] inputs; // The list of input nodes for this circuit
+    private Input[] inputs; // The list of input nodes for this circuit
 
     private List<Output> outputsToUpdate; // The list of outputs whose powered statuses have changed due to an input change
 
-    private readonly Output[] outputs; // The list of output nodes for this circuit
+    private Output[] outputs; // The list of output nodes for this circuit
 
-    private  string circuitName;
+    private bool visible;
+
+    private string circuitName;
 
     // Utilized by inherited circuits to determine the specific number of input and output nodes
-    public Circuit(string circuitName, int numInputs, int numOutputs) : this(circuitName, numInputs, numOutputs, Vector2.zero, true) {}
+    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition) : this(circuitName, numInputs, numOutputs, startingPosition, true) {}
 
-    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition, bool visualizeCircuit)
+    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition, bool createIO)
     {
         this.circuitName = circuitName;
-        inputs = new Input[numInputs];
-        outputs = new Output[numOutputs];
 
-        for (int i = 0; i < numInputs; i++) { inputs[i] = new Input(this); }
+        if (createIO)
+        {
+            inputs = new Input[numInputs];
+            outputs = new Output[numOutputs];
 
-        for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
+            for (int i = 0; i < numInputs; i++) { inputs[i] = new Input(this); }
 
-        if (visualizeCircuit) CircuitVisualizer.Instance.VisualizeCircuit(this, startingPosition);
+            for (int i = 0; i < numOutputs; i++) { outputs[i] = new Output(this); }
+        }
+
+        visible = startingPosition.x != float.PositiveInfinity && startingPosition.y != float.PositiveInfinity;
+
+        if (visible) CircuitVisualizer.Instance.VisualizeCircuit(this, startingPosition);
     }
+
+    public Circuit(string circuitName, Vector2 startingPosition) : this(circuitName, 0, 0, startingPosition, false) { }
 
     public Circuit() { }
 
@@ -124,8 +135,8 @@ public abstract class Circuit
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
         input.Powered = powered;
-        input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
-        CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);
+        if (input.StatusRenderer != null) input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
+        if (input.Connection != null) CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);
         input.ParentOutput = output;
         input.ParentCircuit.Update();
         input.ParentCircuit.UpdateChildren();
@@ -162,6 +173,8 @@ public abstract class Circuit
     {
         foreach (Output output in outputsToUpdate)
         {
+            if (output.StatusRenderer == null) continue;
+
             output.StatusRenderer.material = output.Powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         }
     }
@@ -173,13 +186,15 @@ public abstract class Circuit
      */
     protected abstract List<Output> UpdateOutputs();
 
+    public bool Visible { get { return visible; } set { visible = value; } }
+
     // Getter and setter methods
     public GameObject PhysicalObject { get { return physicalObject; } set { physicalObject = value; } }
 
     // Getter methods
-    public Input[] Inputs { get { return inputs; } }
+    public Input[] Inputs { get { return inputs; } set { inputs = value; } }
 
-    public Output[] Outputs {  get { return outputs; } }
+    public Output[] Outputs { get { return outputs; } set { outputs = value; } }
 
     public string CircuitName { get { return circuitName; } set { circuitName = value; } }
 }

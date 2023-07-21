@@ -68,9 +68,9 @@ public class CircuitVisualizer : MonoBehaviour
     public void VisualizeCustomCircuit(CustomCircuit customCircuit, Vector2 startingPosition)
     {
         // Setting dimensions
-        int numInputMargins = customCircuit.EmptyInputs.Count + 1, numOutputMargins = customCircuit.EmptyOutputs.Count + 1;
-        float inputHeight = numInputMargins * heightMargins + customCircuit.EmptyInputs.Count * inputSize;
-        float outputHeight = numOutputMargins * heightMargins + customCircuit.EmptyOutputs.Count * outputSize;
+        int numInputMargins = customCircuit.Inputs.Length + 1, numOutputMargins = customCircuit.Outputs.Length + 1;
+        float inputHeight = numInputMargins * heightMargins + customCircuit.Inputs.Length * inputSize;
+        float outputHeight = numOutputMargins * heightMargins + customCircuit.Outputs.Length * outputSize;
         Vector2 dimensions = new Vector2(width, Mathf.Max(inputHeight, outputHeight));
 
         // Creating circuit base
@@ -105,6 +105,7 @@ public class CircuitVisualizer : MonoBehaviour
             new Vector3(dimensions.x / 2 + borderThickness, 0, dimensions.y / 2 + borderThickness),
             new Vector3(dimensions.x / 2 + borderThickness, 0, -dimensions.y / 2 - borderThickness)
         };
+
         CreateQuad(borderQuad, vertices, borderMaterial, false);
 
         // Power on/off vertices
@@ -117,7 +118,7 @@ public class CircuitVisualizer : MonoBehaviour
         };
 
         // Creating input nodes
-        float inputStepSize = (dimensions.y - customCircuit.EmptyInputs.Count * inputSize) / numInputMargins;
+        float inputStepSize = (dimensions.y - customCircuit.Inputs.Length * inputSize) / numInputMargins;
         int index = 0;
 
         vertices = new Vector3[]
@@ -128,7 +129,7 @@ public class CircuitVisualizer : MonoBehaviour
                 new Vector3(inputSize / 2, 0, -inputSize / 2)
         };
 
-        for (float currentHeight = inputStepSize + inputSize / 2; index < customCircuit.EmptyInputs.Count; currentHeight += inputStepSize + inputSize)
+        for (float currentHeight = inputStepSize + inputSize / 2; index < customCircuit.Inputs.Length; currentHeight += inputStepSize + inputSize)
         {
             GameObject inputQuad = new GameObject("Input " + (index + 1));
             GameObject inputQuadPower = new GameObject("Input Status " + (index + 1));
@@ -139,17 +140,17 @@ public class CircuitVisualizer : MonoBehaviour
             inputQuad.transform.localPosition = inputQuadPower.transform.localPosition = pos;
             CreateQuad(inputQuad, vertices, inputMaterial);
             CreateQuad(inputQuadPower, powerVertices, powerOffMaterial, false);
-            customCircuit.EmptyInputs[index].Transform = inputQuad.transform;
-            customCircuit.EmptyInputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
+            customCircuit.Inputs[index].Transform = inputQuad.transform;
+            customCircuit.Inputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
 
             InputReference inputReference = inputQuad.AddComponent<InputReference>();
 
-            inputReference.Input = customCircuit.EmptyInputs[index];
+            inputReference.Input = customCircuit.Inputs[index];
             index++;
         }
 
         // Creating output nodes
-        float outputStepSize = (dimensions.y - customCircuit.EmptyOutputs.Count * outputSize) / numOutputMargins;
+        float outputStepSize = (dimensions.y - customCircuit.Outputs.Length * outputSize) / numOutputMargins;
 
         index = 0;
         vertices = new Vector3[]
@@ -160,7 +161,7 @@ public class CircuitVisualizer : MonoBehaviour
                 new Vector3(outputSize / 2, 0, -outputSize / 2)
         };
 
-        for (float currentHeight = outputStepSize + outputSize / 2; index < customCircuit.EmptyOutputs.Count; currentHeight += outputStepSize + outputSize)
+        for (float currentHeight = outputStepSize + outputSize / 2; index < customCircuit.Outputs.Length; currentHeight += outputStepSize + outputSize)
         {
             GameObject outputQuad = new GameObject("Output " + (index + 1));
             GameObject outputQuadPower = new GameObject("Output Status " + (index + 1));
@@ -171,12 +172,12 @@ public class CircuitVisualizer : MonoBehaviour
             outputQuad.transform.localPosition = outputQuadPower.transform.localPosition = pos;
             CreateQuad(outputQuad, vertices, outputMaterial);
             CreateQuad(outputQuadPower, powerVertices, powerOffMaterial, false);
-            customCircuit.EmptyOutputs[index].Transform = outputQuad.transform;
-            customCircuit.EmptyOutputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
+            customCircuit.Outputs[index].Transform = outputQuad.transform;
+            customCircuit.Outputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
 
             OutputReference outputReference = outputQuad.AddComponent<OutputReference>();
 
-            outputReference.Output = customCircuit.EmptyOutputs[index];
+            outputReference.Output = customCircuit.Outputs[index];
             index++;
         }
 

@@ -9,7 +9,7 @@ public class Display : Circuit
 
     public Display() : this(Vector2.zero) { }
 
-    public Display(Vector2 startingPos) : base("DISPLAY", 8, 0, startingPos, true) { }
+    public Display(Vector2 startingPos) : base("DISPLAY", 8, 0, startingPos) { }
 
     protected override List<Output> UpdateOutputs()
     {
