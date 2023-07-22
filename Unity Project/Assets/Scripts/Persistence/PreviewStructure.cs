@@ -11,9 +11,7 @@ public class PreviewStructure
 
     [SerializeField] List<int> inputOrders, outputOrders;
 
-    [SerializeField] List<int> inputConnections;
-
-    [SerializeField] List<OutputLayer> outputConnections;
+    [SerializeField] List<InternalConnection> connections;
 
     [SerializeField] string name;
 
@@ -44,9 +42,7 @@ public class PreviewStructure
 
     public List<int> OutputOrders { get { return outputOrders; } set { outputOrders = value; } }
 
-    public List<int> InputConnections { get { return inputConnections; } set { inputConnections = value; } }
-
-    public List<OutputLayer> OutputConnections { get { return outputConnections; } set { outputConnections = value; } }
+    public List<InternalConnection> Connections { get { return connections; } set { connections = value; } }
 
     public List<string> InputLabels { get { return inputLabels; } set { inputLabels = value; } }
 

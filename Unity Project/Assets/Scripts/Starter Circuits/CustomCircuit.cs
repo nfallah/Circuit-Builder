@@ -13,7 +13,11 @@ public class CustomCircuit : Circuit
 
     private List<Output> outputs = new List<Output>(), emptyOutputs = new List<Output>();
 
+    private GameObject connections;
+
     private List<string> emptyInputLabels, emptyOutputLabels;
+
+    public List<Output> finalOutputs;
 
     public CustomCircuit(PreviewStructure previewStructure) : this(previewStructure, Vector2.zero, true) {}
 
@@ -30,6 +34,7 @@ public class CustomCircuit : Circuit
         foreach (CircuitIdentifier circuitIdentifier in previewStructure.Circuits)
         {
             Circuit circuit = CircuitIdentifier.RestoreCircuit(circuitIdentifier, false);
+            circuit.customCircuit = this;
             circuitList.Add(circuit);
 
             foreach (Input input in circuit.Inputs) inputs.Add(input);
@@ -53,12 +58,31 @@ public class CustomCircuit : Circuit
 
         Inputs = emptyInputs.ToArray(); Outputs = emptyOutputs.ToArray();
 
-        // Add connections here
+        int index = 0;
+        connections = new GameObject("Connections");
+        finalOutputs = new List<Output>(emptyOutputs);
 
-        if (!Visible) return;
+        if (Visible) CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPos);
 
-        CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPos);
+        foreach (InternalConnection internalConnection in previewStructure.Connections)
+        {
+            CircuitConnector.Connection connection = connections.AddComponent<CircuitConnector.Connection>();
+            Input input = inputs[internalConnection.InputIndex];
+            Output output = outputs[internalConnection.OutputIndex];
+
+            connection.Input = input;
+            connection.Output = output;
+            input.Connection = connection;
+            input.ParentOutput = output;
+            output.Connections.Add(connection);
+            output.ChildInputs.Add(input);
+            UpdateCircuit(input, output);
+            index++;
+        }
+
         UpdateOutputs();
+
+        if (!Visible) { connections.transform.SetParent(customCircuit.connections.transform); }
     }
 
     public List<Input> EmptyInputs { get { return emptyInputs; } }
@@ -75,6 +99,9 @@ public class CustomCircuit : Circuit
         return null;
     }
 
-    // Getter method
+    // Getter methods
     public PreviewStructure PreviewStructure { get { return previewStructure; } }
+
+    
+    public GameObject Connections { get { return connections; } }
 }

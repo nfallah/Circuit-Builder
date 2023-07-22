@@ -131,30 +131,17 @@ public class PreviewStructureManager : MonoBehaviour
         previewStructure.OutputLabels = outputLabels;
         previewStructure.ID = UniqueID;
 
-        List<int> inputConnections = new List<int>();
-        List<OutputLayer> outputConnections = new List<OutputLayer>();
+        List<InternalConnection> inputConnections = new List<InternalConnection>();
 
-        foreach (Circuit.Input input in inputs)
+        foreach (CircuitConnector.Connection connection in EditorStructureManager.Instance.Connections)
         {
-            if (input.Connection == null) { inputConnections.Add(-1); continue; }
-
-            inputConnections.Add(outputs.IndexOf(input.Connection.Output));
+            inputConnections.Add(new InternalConnection(
+                inputs.IndexOf(connection.Input),
+                outputs.IndexOf(connection.Output)
+                ));
         }
 
-        foreach (Circuit.Output output in outputs)
-        {
-            List<int> temp = new List<int>();
-
-            foreach (CircuitConnector.Connection connection in output.Connections)
-            {
-                temp.Add(inputs.IndexOf(connection.Input));
-            }
-
-            outputConnections.Add(new OutputLayer(temp));
-        }
-
-        previewStructure.InputConnections = inputConnections;
-        previewStructure.OutputConnections = outputConnections;
+        previewStructure.Connections = inputConnections;
         MenuSetupManager.Instance.PreviewStructures.Add(previewStructure);
         MenuSetupManager.Instance.GenerateConnections(false, previewStructure.ID, EditorStructureManager.Instance.Connections);
         MenuSetupManager.Instance.UpdatePreviewStructure(previewStructure);
@@ -177,8 +164,6 @@ public class PreviewStructureManager : MonoBehaviour
 
         foreach (Circuit.Input input in currentCircuit.Inputs)
         {
-            inputs.Add(input);
-
             if (input.ParentOutput == null) { emptyInputs.Add(input); continue; }
 
             CircuitConnectionTest(input.ParentOutput.ParentCircuit);
@@ -186,8 +171,6 @@ public class PreviewStructureManager : MonoBehaviour
 
         foreach (Circuit.Output output in currentCircuit.Outputs)
         {
-            outputs.Add(output);
-
             if (output.ChildInputs.Count == 0) { emptyOutputs.Add(output); continue; }
 
             foreach (Circuit.Input input in output.ChildInputs)

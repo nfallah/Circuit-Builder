@@ -14,8 +14,16 @@ public class Buffer : Circuit
 
         Outputs[0].Powered = Inputs[0].Powered;
 
-        if (outputStatus != Outputs[0].Powered) outputs.Add(Outputs[0]);
+        if (outputStatus != Outputs[0].Powered || MaterialNotMatching()) outputs.Add(Outputs[0]);
 
         return outputs;
+    }
+
+    private bool MaterialNotMatching()
+    {
+        if (Outputs[0].StatusRenderer == null) return false;
+
+        return (Outputs[0].Powered && Outputs[0].StatusRenderer.material != CircuitVisualizer.Instance.PowerOnMaterial) ||
+               (!Outputs[0].Powered && Outputs[0].StatusRenderer.material != CircuitVisualizer.Instance.PowerOffMaterial);
     }
 }

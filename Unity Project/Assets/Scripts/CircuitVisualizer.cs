@@ -204,7 +204,7 @@ public class CircuitVisualizer : MonoBehaviour
         CircuitReference circuitReference = physicalObject.AddComponent<CircuitReference>();
 
         circuitReference.Circuit = customCircuit;
-        // customCircuit.Update();
+        customCircuit.Connections.transform.parent = customCircuit.PhysicalObject.transform;
     }
 
     public void VisualizeCircuit(Circuit circuit, Vector2 startingPosition)

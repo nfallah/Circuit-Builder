@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public abstract class Circuit
 {
     public static float clockSpeed = 0.075f; // Time it takes for one update call to occur; measured in seconds.
+
+    public CustomCircuit customCircuit;
 
     // Represents all required members of an input node
     public class Input
@@ -154,6 +157,8 @@ public abstract class Circuit
 
         foreach (Output output in outputsToUpdate)
         {
+            if (customCircuit != null && customCircuit.finalOutputs.Contains(output)) customCircuit.finalOutputs.Remove(output);
+
             foreach (Input input in output.ChildInputs)
             {
                 updateList.Add(new UpdateCall(output.Powered, input, output));
@@ -165,7 +170,12 @@ public abstract class Circuit
 
     public void Update()
     {
+        bool shouldCheckAllOutputs = customCircuit != null && customCircuit.finalOutputs.Count > 0;
+
         outputsToUpdate = UpdateOutputs();
+
+        if (shouldCheckAllOutputs) { outputsToUpdate = Outputs.ToList(); }
+
         UpdateStatuses();
     }
 
