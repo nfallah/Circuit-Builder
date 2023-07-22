@@ -155,6 +155,11 @@ public class PreviewStructureManager : MonoBehaviour
     /// </summary>
     private void CircuitConnectionTest(Circuit currentCircuit)
     {
+        while (currentCircuit.customCircuit != null)
+        {
+            currentCircuit = currentCircuit.customCircuit;
+        }
+
         int index = EditorStructureManager.Instance.Circuits.IndexOf(currentCircuit);
 
         if (reachedCircuits[index]) return;

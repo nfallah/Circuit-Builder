@@ -115,10 +115,48 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (CircuitConnector.Connection connection in connections)
         {
-            int inputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Input.ParentCircuit);
-            int outputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Output.ParentCircuit);
-            int inputIndex = Array.IndexOf(connection.Input.ParentCircuit.Inputs, connection.Input);
-            int outputIndex = Array.IndexOf(connection.Output.ParentCircuit.Outputs, connection.Output);
+            int inputCircuitIndex;
+            int outputCircuitIndex;
+            int inputIndex;
+            int outputIndex;
+
+            if (connection.Input.ParentCircuit.customCircuit != null)
+            {
+                Circuit actualCircuit = connection.Input.ParentCircuit.customCircuit;
+
+                while (actualCircuit.customCircuit != null)
+                {
+                    actualCircuit = actualCircuit.customCircuit;
+                }
+
+                inputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(actualCircuit);
+                inputIndex = Array.IndexOf(actualCircuit.Inputs, connection.Input);
+            }
+
+            else
+            {
+                inputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Input.ParentCircuit);
+                inputIndex = Array.IndexOf(connection.Input.ParentCircuit.Inputs, connection.Input);
+            }
+
+            if (connection.Output.ParentCircuit.customCircuit != null)
+            {
+                Circuit actualCircuit = connection.Output.ParentCircuit.customCircuit;
+
+                while (actualCircuit.customCircuit != null)
+                {
+                    actualCircuit = actualCircuit.customCircuit;
+                }
+
+                outputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(actualCircuit);
+                outputIndex = Array.IndexOf(actualCircuit.Outputs, connection.Output);
+            }
+
+            else
+            {
+                outputCircuitIndex = EditorStructureManager.Instance.Circuits.IndexOf(connection.Output.ParentCircuit);
+                outputIndex = Array.IndexOf(connection.Output.ParentCircuit.Outputs, connection.Output);
+            }
 
             GameObject temp = Instantiate(connection.gameObject);
             ConnectionIdentifier connectionIdentifier = temp.AddComponent<ConnectionIdentifier>();

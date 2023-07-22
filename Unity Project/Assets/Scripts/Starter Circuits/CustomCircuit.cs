@@ -19,22 +19,27 @@ public class CustomCircuit : Circuit
 
     public List<Output> finalOutputs;
 
+    private static CustomCircuit currentCustomCircuit;
+
     public CustomCircuit(PreviewStructure previewStructure) : this(previewStructure, Vector2.zero, true) {}
 
     public CustomCircuit(PreviewStructure previewStructure, Vector2 startingPos, bool isFirst) : base(previewStructure.Name, Vector2.positiveInfinity)
     {
-        if (isFirst) Visible = true;
-
+        if (isFirst) { Visible = true; currentCustomCircuit = this; }
         this.previewStructure = previewStructure;
+        CircuitName = previewStructure.Name;
         CreateCircuit(startingPos);
     }
 
     private void CreateCircuit(Vector2 startingPos)
     {
+        connections = new GameObject("Connections [CUSTOM]");
+
         foreach (CircuitIdentifier circuitIdentifier in previewStructure.Circuits)
         {
             Circuit circuit = CircuitIdentifier.RestoreCircuit(circuitIdentifier, false);
-            circuit.customCircuit = this;
+            if (circuit.GetType() != typeof(CustomCircuit)) circuit.customCircuit = this;
+
             circuitList.Add(circuit);
 
             foreach (Input input in circuit.Inputs) inputs.Add(input);
@@ -59,7 +64,6 @@ public class CustomCircuit : Circuit
         Inputs = emptyInputs.ToArray(); Outputs = emptyOutputs.ToArray();
 
         int index = 0;
-        connections = new GameObject("Connections");
         finalOutputs = new List<Output>(emptyOutputs);
 
         if (Visible) CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPos);
@@ -82,7 +86,16 @@ public class CustomCircuit : Circuit
 
         UpdateOutputs();
 
-        if (!Visible) { connections.transform.SetParent(customCircuit.connections.transform); }
+        if (!Visible)
+        {
+            customCircuit = currentCustomCircuit;
+            connections.transform.SetParent(customCircuit.Connections.transform);
+        }
+
+        else
+        {
+            currentCustomCircuit = null;
+        }
     }
 
     public List<Input> EmptyInputs { get { return emptyInputs; } }
