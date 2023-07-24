@@ -1,6 +1,7 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Coordinates : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class Coordinates : MonoBehaviour
 
     [SerializeField] KeyCode snapToggleKey;
 
+    [SerializeField] float gridTransparencyConstant;
+
+    [SerializeField] Image gridStatus;
+
     [SerializeField] TextMeshProUGUI coordinateText;
 
     private SnappingMode snappingMode;
@@ -18,11 +23,14 @@ public class Coordinates : MonoBehaviour
 
     private Vector3 mousePos;
 
+    private Color gridStatusColor;
+
     private void Update()
     {
         if (Input.GetKeyDown(snapToggleKey) && BehaviorManager.Instance.CurrentStateType != BehaviorManager.StateType.PAUSED)
         {
             snappingMode = snappingMode == SnappingMode.GRID ? SnappingMode.NONE : SnappingMode.GRID;
+            CurrentSnappingMode = snappingMode;
         }    
     }
 
@@ -36,6 +44,7 @@ public class Coordinates : MonoBehaviour
 
         instance = this;
         raycastPlane = new Plane(Vector3.down, GridMaintenance.Instance.GridHeight);
+        gridStatusColor = gridStatus.color;
     }
 
     public static Vector3 NormalToGridPos(Vector3 normalPos)
@@ -81,5 +90,23 @@ public class Coordinates : MonoBehaviour
         }
     }
 
-    public SnappingMode CurrentSnappingMode { get { return snappingMode; } set { snappingMode = value; } }
+    public SnappingMode CurrentSnappingMode { get { return snappingMode; }
+        set
+        {
+            snappingMode = value;
+
+            if (value == SnappingMode.GRID)
+            {
+                gridStatus.color = gridStatusColor;
+            }
+
+            else
+            {
+                Color temp = gridStatusColor;
+
+                temp.a = gridTransparencyConstant;
+                gridStatus.color = temp;
+            }
+        }
+    }
 }
