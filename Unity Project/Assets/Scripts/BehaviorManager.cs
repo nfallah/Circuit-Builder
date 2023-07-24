@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,6 +14,8 @@ public class BehaviorManager : MonoBehaviour
     public enum StateType { UNRESTRICTED, LOCKED, PAUSED }
 
     [SerializeField] KeyCode cancelKey;
+
+    [SerializeField] TextMeshProUGUI ioText;
 
     private Circuit.Input currentInput;
 
@@ -34,6 +37,8 @@ public class BehaviorManager : MonoBehaviour
 
     private Vector3 deltaPos, prevDeltaPos, startingOffset, endingOffset, startingPos;
 
+    private bool doOnce;
+
     private void Awake()
     {
         if (instance != null)
@@ -54,20 +59,52 @@ public class BehaviorManager : MonoBehaviour
                 currentPreviewPin.SetActive(false);
                 currentPreviewPin = null;
             }
+
+            if (doOnce && ioText.text != "") ioText.text = "";
+            doOnce = false;
             return;
         }
 
+        doOnce = true;
         ray = CameraMovement.Instance.PlayerCamera.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.Raycast(ray, out RaycastHit hitInfo))
         {
-            if (currentPreviewPin == null) return;
-            currentPreviewPin.SetActive(false);
-            currentPreviewPin = null;
+            if (currentPreviewPin != null)
+            {
+                currentPreviewPin.SetActive(false);
+                currentPreviewPin = null;
+            }
+
+            if (ioText.text != "") ioText.text = "";
             return;
         }
 
         GameObject hitObj = hitInfo.transform.gameObject;
+
+        if ((hitObj.layer == 9 || hitObj.layer == 10) && hitObj.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(CustomCircuit))
+        {
+            CustomCircuit customCircuit = (CustomCircuit)hitObj.GetComponentInParent<CircuitReference>().Circuit;
+            Debug.Log("Hello??");
+            int index;
+            string label;
+
+            if (hitObj.layer == 9)
+            {
+                index = Array.IndexOf(customCircuit.Inputs, hitObj.GetComponent<CircuitVisualizer.InputReference>().Input);
+                label = customCircuit.PreviewStructure.InputLabels[index];
+            }
+
+            else
+            {
+                index = Array.IndexOf(customCircuit.Outputs, hitObj.GetComponent<CircuitVisualizer.OutputReference>().Output);
+                label = customCircuit.PreviewStructure.OutputLabels[index];
+            }
+
+            ioText.text = label;
+        }
+
+        else if (ioText.text != "") ioText.text = "";
 
         if (hitObj.layer == 9 && hitObj.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(Display))
         {
