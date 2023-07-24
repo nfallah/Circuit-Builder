@@ -78,6 +78,7 @@ public class EditorStructureManager : MonoBehaviour
 
             editorStructure.InGridMode = inGridMode;
             editorStructure.CameraLocation = cameraLocation;
+            TaskbarManager.Instance.RestoreCustomCircuits();
             MenuSetupManager.Instance.UpdateEditorStructure(sceneIndex, editorStructure);
             return;
         }

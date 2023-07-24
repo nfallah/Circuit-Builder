@@ -105,7 +105,7 @@ public class TaskbarManager : MonoBehaviour
 
     public void OpenOptions()
     {
-        if (EditorStructureManager.Instance.DisplaySavePrompt)
+        if (EditorStructureManager.Instance != null && EditorStructureManager.Instance.DisplaySavePrompt)
         {
             OpenMenu(true, saveWarning);
         }
