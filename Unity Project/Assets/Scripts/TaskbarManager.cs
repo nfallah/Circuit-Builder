@@ -20,7 +20,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject saveWarning, labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef, customBookmarkRef;
 
@@ -76,7 +76,7 @@ public class TaskbarManager : MonoBehaviour
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
 
-        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu)
+        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu || currentMenu == saveWarning)
         {
             if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
             {
@@ -105,8 +105,18 @@ public class TaskbarManager : MonoBehaviour
 
     public void OpenOptions()
     {
-        SceneManager.LoadScene(0);
+        if (EditorStructureManager.Instance.DisplaySavePrompt)
+        {
+            OpenMenu(true, saveWarning);
+        }
+
+        else
+        {
+            SceneManager.LoadScene(0);
+        }
     }
+
+    public void OpenMenuScene() { SceneManager.LoadScene(0); }
 
     public void OpenLabelMenu(bool isInput)
     {
@@ -256,6 +266,8 @@ public class TaskbarManager : MonoBehaviour
 
         if (newStatus && !bookmarks.Contains(type))
         {
+            if (!currentlyRestoring) EditorStructureManager.Instance.DisplaySavePrompt = true;
+
             EditorStructureManager.Instance.Bookmarks.Add(StartingCircuitIndex(type));
             bookmarks.Add(type);
             bookmarkIDs.Add(-1);
@@ -270,6 +282,8 @@ public class TaskbarManager : MonoBehaviour
 
         else if (!newStatus && bookmarks.Contains(type))
         {
+            if (!currentlyRestoring) EditorStructureManager.Instance.DisplaySavePrompt = true;
+
             int index = bookmarks.IndexOf(type);
             EditorStructureManager.Instance.Bookmarks.Remove(StartingCircuitIndex(type));
             bookmarks.Remove(type);
@@ -285,6 +299,8 @@ public class TaskbarManager : MonoBehaviour
 
         if (newStatus && !bookmarkIDs.Contains(id))
         {
+            if (!currentlyRestoring) EditorStructureManager.Instance.DisplaySavePrompt = true;
+
             EditorStructureManager.Instance.Bookmarks.Add(-1);
             bookmarks.Add(typeof(CustomCircuit));
             bookmarkIDs.Add(id);
@@ -299,6 +315,8 @@ public class TaskbarManager : MonoBehaviour
 
         else if (!newStatus && bookmarkIDs.Contains(id))
         {
+            if (!currentlyRestoring) EditorStructureManager.Instance.DisplaySavePrompt = true;
+
             int index = bookmarkIDs.IndexOf(id);
             EditorStructureManager.Instance.Bookmarks.RemoveAt(index);
             bookmarks.RemoveAt(index);

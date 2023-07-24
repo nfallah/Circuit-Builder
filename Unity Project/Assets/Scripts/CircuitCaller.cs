@@ -54,6 +54,7 @@ public class CircuitCaller : MonoBehaviour
             }
         }
 
+        EditorStructureManager.Instance.DisplaySavePrompt = true;
         EditorStructureManager.Instance.Circuits.Remove(circuit); // Removes circuit for potential serialization
         Destroy(circuit.PhysicalObject);
     }

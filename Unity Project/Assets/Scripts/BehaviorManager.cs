@@ -85,7 +85,7 @@ public class BehaviorManager : MonoBehaviour
         if ((hitObj.layer == 9 || hitObj.layer == 10) && hitObj.GetComponentInParent<CircuitReference>().Circuit.GetType() == typeof(CustomCircuit))
         {
             CustomCircuit customCircuit = (CustomCircuit)hitObj.GetComponentInParent<CircuitReference>().Circuit;
-            Debug.Log("Hello??");
+
             int index;
             string label;
 
@@ -292,6 +292,7 @@ public class BehaviorManager : MonoBehaviour
             {
                 InputGate gate = (InputGate)hitObject.GetComponentInParent<CircuitReference>().Circuit;
                 gate.Powered = !gate.Powered;
+                EditorStructureManager.Instance.DisplaySavePrompt = true;
             }
 
         }
@@ -383,6 +384,8 @@ public class BehaviorManager : MonoBehaviour
 
                     if (Input.GetMouseButtonDown(0))
                     {
+                        EditorStructureManager.Instance.DisplaySavePrompt = true;
+
                         // Disconnects the current connection to the input if there is one
                         if (currentInput.ParentOutput != null)
                         {
@@ -451,6 +454,8 @@ public class BehaviorManager : MonoBehaviour
 
                 if (prevDeltaPos != deltaPos) // Ensures the circuit has moved from its previous position before updating the wire transforms
                 {
+                    EditorStructureManager.Instance.DisplaySavePrompt = true;
+
                     foreach (Circuit.Input input in currentCircuit.Inputs)
                     {
                         if (input.Connection != null)
@@ -479,6 +484,7 @@ public class BehaviorManager : MonoBehaviour
                 {
                     Cursor.visible = true;
                     EditorStructureManager.Instance.Circuits.Add(currentCircuit); // Adds circuit for potential serialization
+                    EditorStructureManager.Instance.DisplaySavePrompt = true;
                     currentCircuit = null;
                     stateType = StateType.UNRESTRICTED;
                     LateUpdate();

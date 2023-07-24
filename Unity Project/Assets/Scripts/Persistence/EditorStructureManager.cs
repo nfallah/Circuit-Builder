@@ -13,6 +13,8 @@ public class EditorStructureManager : MonoBehaviour
 
     [HideInInspector] List<CircuitConnector.Connection> connections = new List<CircuitConnector.Connection>();
 
+    private bool displaySavePrompt = false;
+
     private void Awake()
     {
         if (instance != null)
@@ -31,6 +33,7 @@ public class EditorStructureManager : MonoBehaviour
 
     public void Serialize()
     {
+        displaySavePrompt = false;
         StartCoroutine(SerializeCoroutine());
     }
 
@@ -105,6 +108,9 @@ public class EditorStructureManager : MonoBehaviour
     public static EditorStructureManager Instance { get { return instance; } }
 
     // Getter methods
+
+    public bool DisplaySavePrompt { get { return displaySavePrompt; } set { displaySavePrompt = value; } }
+
     public List<Circuit> Circuits { get { return circuits; } }
 
     public List<int> Bookmarks { get { return bookmarks; } }

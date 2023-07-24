@@ -114,6 +114,7 @@ public class CircuitConnector : MonoBehaviour
 
     public static void Disconnect(Connection connection)
     {
+        EditorStructureManager.Instance.DisplaySavePrompt = true;
         EditorStructureManager.Instance.Connections.Remove(connection); // Removes connection for potential serialization
         Circuit.UpdateCircuit(false, connection.Input, null);
         connection.Input.Connection = null;
