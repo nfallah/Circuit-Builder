@@ -140,6 +140,9 @@ public class CircuitVisualizer : MonoBehaviour
             inputQuad.transform.localPosition = inputQuadPower.transform.localPosition = pos;
             CreateQuad(inputQuad, vertices, inputMaterial);
             CreateQuad(inputQuadPower, powerVertices, powerOffMaterial, false);
+            Vector3 temp = inputQuadPower.transform.localPosition;
+            temp.y = 0.015f;
+            inputQuadPower.transform.localPosition = temp;
             customCircuit.Inputs[index].Transform = inputQuad.transform;
             customCircuit.Inputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
 
@@ -172,6 +175,9 @@ public class CircuitVisualizer : MonoBehaviour
             outputQuad.transform.localPosition = outputQuadPower.transform.localPosition = pos;
             CreateQuad(outputQuad, vertices, outputMaterial);
             CreateQuad(outputQuadPower, powerVertices, powerOffMaterial, false);
+            Vector3 temp = outputQuadPower.transform.localPosition;
+            temp.y = 0.015f;
+            outputQuadPower.transform.localPosition = temp;
             customCircuit.Outputs[index].Transform = outputQuad.transform;
             customCircuit.Outputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
 
@@ -313,6 +319,9 @@ public class CircuitVisualizer : MonoBehaviour
             inputQuad.transform.localPosition = inputQuadPower.transform.localPosition = pos;
             CreateQuad(inputQuad, vertices, inputMaterial);
             CreateQuad(inputQuadPower, powerVertices, powerOffMaterial, false);
+            Vector3 temp = inputQuadPower.transform.localPosition;
+            temp.y = 0.015f;
+            inputQuadPower.transform.localPosition = temp;
             circuit.Inputs[index].Transform = inputQuad.transform;
             circuit.Inputs[index].StatusRenderer = inputQuadPower.GetComponent<MeshRenderer>();
 
@@ -345,6 +354,9 @@ public class CircuitVisualizer : MonoBehaviour
             outputQuad.transform.localPosition = outputQuadPower.transform.localPosition = pos;
             CreateQuad(outputQuad, vertices, outputMaterial);
             CreateQuad(outputQuadPower, powerVertices, powerOffMaterial, false);
+            Vector3 temp = outputQuadPower.transform.localPosition;
+            temp.y = 0.015f;
+            outputQuadPower.transform.localPosition = temp;
             circuit.Outputs[index].Transform = outputQuad.transform;
             circuit.Outputs[index].StatusRenderer = outputQuadPower.GetComponent<MeshRenderer>();
 
