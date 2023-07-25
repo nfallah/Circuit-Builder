@@ -93,7 +93,9 @@ public class MenuInterfaceManager : MonoBehaviour
 
     public void DeletePreview(GameObject button, PreviewStructure previewStructure)
     {
-        if (MenuLogicManager.CanDeleteCustomCircuit(previewStructure))
+        List<string> errorMessages = MenuLogicManager.CanDeleteCustomCircuit(previewStructure);
+
+        if (errorMessages.Count == 0)
         {
             MenuSetupManager.Instance.DeletePreviewStructure(previewStructure);
             Destroy(button);
@@ -101,7 +103,7 @@ public class MenuInterfaceManager : MonoBehaviour
 
         else
         {
-            Debug.Log("Epic fail! Add some UI :)");
+            foreach (string errorMessage in errorMessages) { Debug.LogError(errorMessage); }
         }
     }
 
