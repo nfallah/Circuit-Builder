@@ -71,7 +71,7 @@ public class MenuLogicManager : MonoBehaviour
 
                 PreviewStructure previewStructure = MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(circuitIdentifier.previewStructureID)];
 
-                if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("- Circuit is directly and/or indirectly referenced by a placed circuit in an editor scene"); break; }
+                if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("Circuit is directly and/or indirectly referenced by a placed circuit in an editor scene"); break; }
             }
 
             foreach (int customCircuitID in editorStructure.BookmarkIDs)
@@ -80,7 +80,7 @@ public class MenuLogicManager : MonoBehaviour
 
                 PreviewStructure previewStructure = MenuSetupManager.Instance.PreviewStructures[MenuSetupManager.Instance.PreviewStructureIDs.IndexOf(customCircuitID)];
 
-                if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("- Circuit is directly and/or indirectly referenced by a bookmark in an editor scene"); break; }
+                if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("Circuit is directly and/or indirectly referenced by a bookmark in an editor scene"); break; }
             }
         }
 
@@ -88,7 +88,7 @@ public class MenuLogicManager : MonoBehaviour
         {
             if (previewStructure == _previewStructure) continue;
 
-            if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("- Circuit is directly and/or indirectly referenced by another custom circuit"); break; }
+            if (instance.invalidCircuits.Contains(previewStructure)) { errorMessages.Add("Circuit is directly and/or indirectly referenced by another custom circuit"); break; }
         }
 
         return errorMessages;

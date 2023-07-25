@@ -9,13 +9,17 @@ public class MenuInterfaceManager : MonoBehaviour
 
     [SerializeField] Color defaultColor, saveColor;
 
+    [SerializeField] float deleteErrorMessageSize;
+
     [SerializeField] KeyCode cancelKey;
 
-    [SerializeField] GameObject customCircuitPanel, customCircuitPrefab, optionSelectionInterface, guideInterface, customCircuitsInterface, optionsInterface, sceneDeletionInterface, sceneNameInterface, transparentBackground;
+    [SerializeField] GameObject deleteErrorInterface, customCircuitPanel, customCircuitPrefab, optionSelectionInterface, guideInterface, customCircuitsInterface, optionsInterface, sceneDeletionInterface, sceneNameInterface, transparentBackground, transparentBackgroundUpper;
 
     [SerializeField] TMP_InputField sceneNameInputField;
 
-    [SerializeField] TextMeshProUGUI save1, save2, save3, sceneNameError;
+    [SerializeField] RectTransform deleteErrorTransform;
+
+    [SerializeField] TextMeshProUGUI deleteErrorText, save1, save2, save3, sceneNameError;
 
     private GameObject currentInterface;
 
@@ -56,16 +60,23 @@ public class MenuInterfaceManager : MonoBehaviour
                     CancelCurrentSubmission();
                 }
 
-                else if (customCircuitsInterface.activeSelf)
+                else if (customCircuitsInterface.activeSelf && !deleteErrorInterface.activeSelf)
                 {
                     customCircuitsInterface.SetActive(false);
                     optionSelectionInterface.SetActive(true);
                 }
 
-                else
+                else if (guideInterface.activeSelf)
                 {
                     guideInterface.SetActive(false);
                     optionSelectionInterface.SetActive(true);
+                }
+
+                else if (deleteErrorInterface.activeSelf)
+                {
+                    transparentBackgroundUpper.SetActive(false);
+                    transparentBackground.SetActive(true);
+                    deleteErrorInterface.SetActive(false);
                 }
             }
         }
@@ -103,8 +114,27 @@ public class MenuInterfaceManager : MonoBehaviour
 
         else
         {
-            foreach (string errorMessage in errorMessages) { Debug.LogError(errorMessage); }
+            transparentBackgroundUpper.SetActive(true);
+            transparentBackground.SetActive(false);
+            deleteErrorInterface.SetActive(true);
+            deleteErrorTransform.sizeDelta = new Vector2(deleteErrorTransform.sizeDelta.x, deleteErrorMessageSize * errorMessages.Count);
+            deleteErrorText.text = "";
+
+            int index = 0;
+
+            foreach (string errorMessage in errorMessages)
+            {
+                index++;
+                deleteErrorText.text += "- " + errorMessage + (index != errorMessages.Count ? "\n\n" : "");
+            }
         }
+    }
+
+    public void OnCircuitDeleteErrorConfirm()
+    {
+        transparentBackgroundUpper.SetActive(false);
+        transparentBackground.SetActive(true);
+        deleteErrorInterface.SetActive(false);
     }
 
     public void PreviewScene(PreviewStructure previewStructure)
