@@ -20,7 +20,7 @@ public class TaskbarManager : MonoBehaviour
 
     [SerializeField] float bookmarkScrollThickness;
 
-    [SerializeField] GameObject saveWarning, labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
+    [SerializeField] GameObject guide, saveWarning, labelMenu, nullState, circuitSaveErrorMenu, notifierPanel, sceneSaveMenu, bookmarkScrollbar, background, addMenu, bookmarksMenu, bookmarksScroll, bookmarksPanel;
 
     [SerializeField] GameObject bookmarkRef, customBookmarkRef;
 
@@ -76,7 +76,7 @@ public class TaskbarManager : MonoBehaviour
             else if (Input.GetKeyDown(cancelKey)) CloseMenu();
         }
 
-        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu || currentMenu == saveWarning)
+        else if (currentMenu == addMenu || currentMenu == sceneSaveMenu || currentMenu == circuitSaveErrorMenu || currentMenu == saveWarning || currentMenu == guide)
         {
             if (Input.GetKeyDown(cancelKey) || Input.GetMouseButtonDown(1))
             {
@@ -122,6 +122,11 @@ public class TaskbarManager : MonoBehaviour
     {
         OpenMenu(true, labelMenu);
         labelText.text = "compose a label for the selected " + (isInput ? "input" : "output");
+    }
+
+    public void OpenGuide()
+    {
+        OpenMenu(true, guide);
     }
 
     public void OpenSave()
