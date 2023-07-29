@@ -2911,7 +2911,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -10, y: 0}
-  m_SizeDelta: {x: -20, y: 675}
+  m_SizeDelta: {x: -20, y: 760}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2072468670775714964
 MonoBehaviour:
@@ -3891,7 +3891,7 @@ RectTransform:
   m_Father: {fileID: 2072468670833961391}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.014814794}
+  m_AnchorMin: {x: 0, y: 0.125}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
@@ -8977,8 +8977,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 480, y: -337.5}
-  m_SizeDelta: {x: 940, y: 675}
+  m_AnchoredPosition: {x: 480, y: -380}
+  m_SizeDelta: {x: 940, y: 760}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2072468671544512271
 CanvasRenderer:
@@ -9009,7 +9009,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'a) Custom Circuit Labels
 
-    
+
 
     To view custom circuit labels, simply
     hover over any input or output pins belonging to a custom circuit, and a corresponding
@@ -9020,11 +9020,11 @@ MonoBehaviour:
 
     b) Interface Control
 
-    
 
-    In most interfaces, you are
-    able to cancel or exit by pressing the right mouse button or the escape key,
-    as well as a corresponding button if there is one.
+
+    In most interfaces, you are able
+    to cancel or exit by pressing the right mouse button or the escape key, as well
+    as a corresponding button if there is one.
 
 '
   m_isRightToLeft: 0
@@ -12213,7 +12213,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2072468670877106859}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9851852
+  m_Size: 0.875
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12727,7 +12727,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 480, y: -487.5}
-  m_SizeDelta: {x: 940, y: 975}
+  m_SizeDelta: {x: 940, y: 1105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2072468672052276645
 CanvasRenderer:
@@ -12761,24 +12761,23 @@ MonoBehaviour:
     will aid not only with organizing scenes but also when creating even more complex
     circuits.
 
-    
 
-    Within this simulation, you are able to create custom
-    circuits that convert a series of complex circuits into only its constituent
-    inputs and outputs. In other words, everything that occurs to calculate the outputs
-    is effectively hidden.
 
-    
+    Within this simulation, you are able to create custom circuits
+    that convert a series of complex circuits into only its constituent inputs and
+    outputs. In other words, everything that occurs to calculate the outputs is effectively
+    hidden.
 
-    To effectively organize a custom circuit,
-    you are also able to compose a descriptive label for each input and output, as
-    well as select the order in which they appear.
 
-    
 
-    If you are interested
-    in creating custom circuits, there is more detailed documentation on this feature
-    in the Controls window.'
+    To effectively organize a custom circuit, you are also able to
+    compose a descriptive label for each input and output, as well as select the
+    order in which they appear.
+
+
+
+    If you are interested in creating custom circuits,
+    there is more detailed documentation on this feature in the Controls window.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
@@ -14635,10 +14634,10 @@ MonoBehaviour:
     think of them as the unique input states that define the output states of your
     circuit.
 
-    
 
-    Within this simulation, you can toggle any input gate on
-    and off by hovering on its output pin and pressing the middle mouse button.
+
+    Within this simulation, you can toggle any input gate on and
+    off by hovering on its output pin and pressing the middle mouse button.
 
 '
   m_isRightToLeft: 0
@@ -14918,10 +14917,10 @@ MonoBehaviour:
     that utilizes displays is a simple adder, where there is a display for both inputs
     as well as its output sum.
 
-    
 
-    Within this simulation, hovering on any
-    input pins belonging to a display will highlight its corresponding component.
+
+    Within this simulation, hovering on any input
+    pins belonging to a display will highlight its corresponding component.
 
 '
   m_isRightToLeft: 0
@@ -16314,11 +16313,10 @@ MonoBehaviour:
   m_text: 'The buffer is an unconventional logic gate whose singular output mirrors
     its input.
 
-    
 
-    Within this simulation, its primary purpose is to utilize
-    the inherent delay in circuit updates to create intentional delays as well as
-    clocks.
+
+    Within this simulation, its primary purpose is to utilize the
+    inherent delay in circuit updates to create intentional delays as well as clocks.
 
 '
   m_isRightToLeft: 0
@@ -17223,7 +17221,7 @@ MonoBehaviour:
     Within this simulator, you can visualize these concepts through the utilization
     of logic gates to create circuits of varying complexities. To assist in these
     endeavors, the following tabs will include detailed explanations of the various
-    building blocks provided to you.\r\n"
+    building blocks provided to you.\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
   m_sharedMaterial: {fileID: -1316070447578256309, guid: d70cbd4b361837b43af880d061805b3c,
