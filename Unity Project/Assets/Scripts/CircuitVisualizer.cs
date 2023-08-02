@@ -59,6 +59,99 @@ public class CircuitVisualizer : MonoBehaviour
         instance = this;
     }
 
+    public ConnectionSerializerRestorer VisualizeConnection(ConnectionSerializer connection)
+    {
+        GameObject parentObj = new GameObject("Connection");
+        Vector3 normalOffset = new Vector3(0, -0.125f, 0.5f);
+        Vector3 pivotOffset = new Vector3(0, 0, -0.5f);
+
+        parentObj.transform.position = Vector3.zero;
+        
+        if (connection.ParentMesh != null)
+        {
+            CreateMesh(parentObj, connection.ParentMesh);
+        }
+
+        if (connection.SingleWired)
+        {
+            // Creating the starting wire
+            GameObject singleWire = new GameObject("Ending Wire");
+            singleWire.transform.parent = parentObj.transform;
+            singleWire.transform.position = connection.EndingMesh.Position;
+            singleWire.transform.eulerAngles = connection.EndingMesh.Rotation;
+            singleWire.transform.localScale = connection.EndingMesh.Scale;
+            GameObject pivot = new GameObject("Pivot");
+            pivot.transform.parent = singleWire.transform;
+            pivot.transform.localPosition = pivotOffset;
+            pivot.transform.localEulerAngles = Vector3.zero;
+            pivot.transform.localScale = Vector3.one;
+            GameObject actual = new GameObject("GameObject");
+            actual.transform.parent = pivot.transform;
+            actual.transform.localPosition = normalOffset;
+            actual.transform.localEulerAngles = Vector3.zero;
+            actual.transform.localScale = Vector3.one;
+            CreateMesh(actual, connection.EndingMesh);
+
+            return new ConnectionSerializerRestorer(connection.CircuitConnectorIdentifier, singleWire, singleWire, parentObj);
+        }
+
+        else
+        {
+            // Creating the starting wire
+            GameObject startingWire = new GameObject("Starting Wire");
+            startingWire.transform.parent = parentObj.transform;
+            startingWire.transform.position = connection.StartingMesh.Position;
+            startingWire.transform.eulerAngles = connection.StartingMesh.Rotation;
+            startingWire.transform.localScale = connection.StartingMesh.Scale;
+            GameObject pivot = new GameObject("Pivot");
+            pivot.transform.parent = startingWire.transform;
+            pivot.transform.localPosition = Vector3.zero;
+            pivot.transform.localEulerAngles = Vector3.zero;
+            pivot.transform.localScale = Vector3.one;
+            GameObject actual = new GameObject("GameObject");
+            actual.transform.parent = pivot.transform;
+            actual.transform.localPosition = normalOffset;
+            actual.transform.localEulerAngles = Vector3.zero;
+            actual.transform.localScale = Vector3.one;
+            CreateMesh(actual, connection.StartingMesh);
+
+            GameObject endingWire = new GameObject("Ending Wire");
+            endingWire.transform.parent = parentObj.transform;
+            endingWire.transform.position = connection.EndingMesh.Position;
+            endingWire.transform.eulerAngles = connection.EndingMesh.Rotation;
+            endingWire.transform.localScale = connection.EndingMesh.Scale;
+            pivot = new GameObject("Pivot");
+            pivot.transform.parent = endingWire.transform;
+            pivot.transform.localPosition = Vector3.zero;
+            pivot.transform.localEulerAngles = Vector3.zero;
+            pivot.transform.localScale = Vector3.one;
+            actual = new GameObject("GameObject");
+            actual.transform.parent = pivot.transform;
+            actual.transform.localPosition = normalOffset;
+            actual.transform.localEulerAngles = Vector3.zero;
+            actual.transform.localScale = Vector3.one;
+            CreateMesh(actual, connection.EndingMesh);
+
+            return new ConnectionSerializerRestorer(connection.CircuitConnectorIdentifier, startingWire, endingWire, parentObj);
+        }
+    }
+
+    private void CreateMesh(GameObject obj, MeshSerializer ms)
+    {
+        MeshFilter meshFilter = obj.AddComponent<MeshFilter>();
+        Mesh mesh = new Mesh();
+        meshFilter.mesh = mesh;
+        mesh.vertices = ms.Vertices;
+        mesh.triangles = ms.Triangles;
+        mesh.uv = ms.UV;
+        mesh.normals = ms.Normals;
+        mesh.RecalculateBounds();
+        MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+        meshRenderer.material = powerOffMaterial;
+        obj.AddComponent<MeshCollider>();
+        obj.layer = 11;
+    }
+
     // Generates a mesh corresponding to the name & inputs/outputs of a given circuit
     public void VisualizeCircuit(Circuit circuit)
     {

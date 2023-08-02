@@ -164,7 +164,7 @@ public class MenuSetupManager : MonoBehaviour
             DestroyImmediate(temp.GetComponent<CircuitConnector.Connection>());
 
             // Has 3 or more connections, meaning mesh optimization occurs & a mesh must be created.
-            if (temp.GetComponent<MeshFilter>() != null)
+            /*if (temp.GetComponent<MeshFilter>() != null)
             {
                 temp.GetComponent<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
                 AssetDatabase.CreateAsset(temp.GetComponent<MeshFilter>().mesh, path + "MESH_" + index + ".mesh");
@@ -179,11 +179,14 @@ public class MenuSetupManager : MonoBehaviour
             {
                 connectionIdentifier.EndingWire = temp.transform.GetChild(1).gameObject;
                 connectionIdentifier.StartingWire = temp.transform.GetChild(0).gameObject;
-            }
+            }*/
 
-            connectionIdentifier.EndingWire.GetComponentInChildren<MeshRenderer>().material = connectionIdentifier.StartingWire.GetComponentInChildren<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
-            connectionIdentifier.CircuitConnectorIdentifier = new CircuitConnectorIdentifier(inputCircuitIndex, outputCircuitIndex, inputIndex, outputIndex);
-            PrefabUtility.SaveAsPrefabAsset(temp, path + "CONNECTION_" + index + ".prefab");
+            //connectionIdentifier.EndingWire.GetComponentInChildren<MeshRenderer>().material = connectionIdentifier.StartingWire.GetComponentInChildren<MeshRenderer>().material = CircuitVisualizer.Instance.PowerOffMaterial;
+            CircuitConnectorIdentifier circuitConnectionIdentifier = new CircuitConnectorIdentifier(inputCircuitIndex, outputCircuitIndex, inputIndex, outputIndex);
+            //connectionIdentifier.CircuitConnectorIdentifier = circuitConnectionIdentifier;
+            // PrefabUtility.SaveAsPrefabAsset(temp, path + "CONNECTION_" + index + ".prefab");
+            // Put solution/replacement here
+            ConnectionSerializer.SerializeConnection(connection, circuitConnectionIdentifier, path + "CONNECTION_" + index + ".json");
             DestroyImmediate(temp);
             index++;
         }
@@ -226,22 +229,28 @@ public class MenuSetupManager : MonoBehaviour
     private void RestoreConnections(string prefabPath, bool isEditor)
     {
         string[] filePaths = Directory.GetFiles(prefabPath);
-        List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".prefab")).ToList();
+        //List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".prefab")).ToList();
+        List<string> prefabFilePaths = filePaths.Where(filePath => filePath.EndsWith(".json")).ToList();
 
         foreach (string prefabFilePath in prefabFilePaths)
         {
-            GameObject prefab = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath));
-            ConnectionIdentifier connectionIdentifier = prefab.GetComponent<ConnectionIdentifier>();
-            Circuit.Input input = isEditor ?
-                EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex] :
-                PreviewManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionIdentifier.CircuitConnectorIdentifier.InputIndex];
-            Circuit.Output output = isEditor ?
-                EditorStructureManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex] :
-                PreviewManager.Instance.Circuits[connectionIdentifier.CircuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionIdentifier.CircuitConnectorIdentifier.OutputIndex];
+            //GameObject prefab = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath));
+            //ConnectionIdentifier connectionIdentifier = prefab.GetComponent<ConnectionIdentifier>();
 
-            prefab.name = "Connection";
-            CircuitConnector.ConnectRestoration(prefab, input, output, connectionIdentifier.EndingWire, connectionIdentifier.StartingWire, isEditor);
-            Destroy(connectionIdentifier);
+            ConnectionSerializerRestorer connectionParent = CircuitVisualizer.Instance.VisualizeConnection(JsonUtility.FromJson<ConnectionSerializer>(File.ReadAllText(prefabFilePath)));
+
+            Circuit.Input input = isEditor ?
+                EditorStructureManager.Instance.Circuits[connectionParent.circuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionParent.circuitConnectorIdentifier.InputIndex] :
+                PreviewManager.Instance.Circuits[connectionParent.circuitConnectorIdentifier.InputCircuitIndex].Inputs[connectionParent.circuitConnectorIdentifier.InputIndex];
+            Circuit.Output output = isEditor ?
+                EditorStructureManager.Instance.Circuits[connectionParent.circuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionParent.circuitConnectorIdentifier.OutputIndex] :
+                PreviewManager.Instance.Circuits[connectionParent.circuitConnectorIdentifier.OutputCircuitIndex].Outputs[connectionParent.circuitConnectorIdentifier.OutputIndex];
+
+            //prefab.name = "Connection";
+            //CircuitConnector.ConnectRestoration(prefab, input, output, connectionIdentifier.EndingWire, connectionIdentifier.StartingWire, isEditor);
+            //Destroy(connectionIdentifier);
+            connectionParent.parentObject.name = "Connection";
+            CircuitConnector.ConnectRestoration(connectionParent.parentObject, input, output, connectionParent.endingWire, connectionParent.startingWire, isEditor);
         }
     }
 
