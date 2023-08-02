@@ -37,7 +37,6 @@ public class MenuSetupManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(this);
         ImportJSONInformation();
-
         foreach (Type type in componentsToAdd) gameObject.AddComponent(type);
     }
 
@@ -45,8 +44,8 @@ public class MenuSetupManager : MonoBehaviour
     {
         editorStructures[sceneIndex] = null;
         
-        string editorPath = Application.dataPath + "/" + editorFolder + "/";
-        string prefabPath = "Assets/" + editorFolder + "/";
+        string editorPath = Application.persistentDataPath + "/" + editorFolder + "/";
+        string prefabPath = Application.persistentDataPath + "/" + editorFolder + "/";
 
         if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
@@ -59,15 +58,15 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (string file in filePaths)
         {
-            FileUtil.DeleteFileOrDirectory(file);
+            File.Delete(file);
         }
 
-        AssetDatabase.Refresh();
+        //AssetDatabase.Refresh();
     }
 
     public void UpdateEditorStructure(int sceneIndex, EditorStructure editorStructure)
     {
-        string editorPath = Application.dataPath + "/" + editorFolder + "/";
+        string editorPath = Application.persistentDataPath + "/" + editorFolder + "/";
 
         if (sceneIndex == 0) editorPath += save1Name; else if (sceneIndex == 1) editorPath += save2Name; else editorPath += save3Name;
 
@@ -76,14 +75,14 @@ public class MenuSetupManager : MonoBehaviour
 
     public void UpdatePreviewStructure(PreviewStructure previewStructure)
     {
-        string previewPath = Application.dataPath + "/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/SAVE.json";
+        string previewPath = Application.persistentDataPath + "/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/SAVE.json";
 
         File.WriteAllText(previewPath, JsonUtility.ToJson(previewStructure));
     }
 
     public void GenerateConnections(bool isEditor, int generateIndex, List<CircuitConnector.Connection> connections)
     {
-        string path = "Assets/" + (isEditor ? editorFolder : previewFolder) + "/";
+        string path = Application.persistentDataPath + "/" + (isEditor ? editorFolder : previewFolder) + "/";
 
         if (isEditor)
         {
@@ -94,19 +93,19 @@ public class MenuSetupManager : MonoBehaviour
         {
             path += previewSubdirectory + generateIndex;
 
-            if (!AssetDatabase.IsValidFolder(path))
+            if (!Directory.Exists(path))
             {
-                AssetDatabase.CreateFolder("Assets/" + previewFolder, previewSubdirectory + generateIndex);
+                Directory.CreateDirectory(Application.persistentDataPath + "/" + previewFolder + "/" + previewSubdirectory + generateIndex);
             }
         }
 
-        path += "/";
+        //path += "/"; NEEDED???
 
         string[] filePaths = Directory.GetFiles(path);
         
         foreach (string file in filePaths)
         {
-            FileUtil.DeleteFileOrDirectory(file);
+            File.Delete(file);
         }
 
         if (connections.Count == 0) return;
@@ -158,10 +157,10 @@ public class MenuSetupManager : MonoBehaviour
                 outputIndex = Array.IndexOf(connection.Output.ParentCircuit.Outputs, connection.Output);
             }
 
-            GameObject temp = Instantiate(connection.gameObject);
-            ConnectionIdentifier connectionIdentifier = temp.AddComponent<ConnectionIdentifier>();
+            //GameObject temp = Instantiate(connection.gameObject);
+            //ConnectionIdentifier connectionIdentifier = temp.AddComponent<ConnectionIdentifier>();
 
-            DestroyImmediate(temp.GetComponent<CircuitConnector.Connection>());
+            //DestroyImmediate(temp.GetComponent<CircuitConnector.Connection>());
 
             // Has 3 or more connections, meaning mesh optimization occurs & a mesh must be created.
             /*if (temp.GetComponent<MeshFilter>() != null)
@@ -186,15 +185,15 @@ public class MenuSetupManager : MonoBehaviour
             //connectionIdentifier.CircuitConnectorIdentifier = circuitConnectionIdentifier;
             // PrefabUtility.SaveAsPrefabAsset(temp, path + "CONNECTION_" + index + ".prefab");
             // Put solution/replacement here
-            ConnectionSerializer.SerializeConnection(connection, circuitConnectionIdentifier, path + "CONNECTION_" + index + ".json");
-            DestroyImmediate(temp);
+            ConnectionSerializer.SerializeConnection(connection, circuitConnectionIdentifier, path + "/CONNECTION_" + index + ".json");
+            //DestroyImmediate(temp);
             index++;
         }
     }
 
     public void RestoreConnections(int sceneIndex)
     {
-        string prefabPath = "Assets/" + editorFolder + "/";
+        string prefabPath = Application.persistentDataPath + "/" + editorFolder + "/";
 
         if (sceneIndex == 0) prefabPath += editorPrefab1Name; else if (sceneIndex == 1) prefabPath += editorPrefab2Name; else prefabPath += editorPrefab3Name;
 
@@ -204,13 +203,13 @@ public class MenuSetupManager : MonoBehaviour
 
     public void RestoreConnections(PreviewStructure previewStructure)
     {
-        RestoreConnections("Assets/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/", false);
+        RestoreConnections(Application.persistentDataPath + "/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID + "/", false);
     }
 
     public void DeletePreviewStructure(PreviewStructure previewStructure)
     {
         int index = previewStructures.IndexOf(previewStructure);
-        string folderPath = "Assets/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID;
+        string folderPath = Application.persistentDataPath + "/" + previewFolder + "/" + previewSubdirectory + previewStructure.ID;
 
         previewStructures.Remove(previewStructure); previewStructureIDs.Remove(previewStructureIDs[index]);
 
@@ -218,12 +217,12 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (string file in filePaths)
         {
-            FileUtil.DeleteFileOrDirectory(file);
+            File.Delete(file);
         }
 
-        FileUtil.DeleteFileOrDirectory(folderPath + ".meta");
-        FileUtil.DeleteFileOrDirectory(folderPath);
-        AssetDatabase.Refresh();
+        //FileUtil.DeleteFileOrDirectory(folderPath + ".meta");
+        Directory.Delete(folderPath);
+        //AssetDatabase.Refresh();
     }
 
     private void RestoreConnections(string prefabPath, bool isEditor)
@@ -234,6 +233,8 @@ public class MenuSetupManager : MonoBehaviour
 
         foreach (string prefabFilePath in prefabFilePaths)
         {
+            if (prefabFilePath.EndsWith("SAVE.json")) continue;
+
             //GameObject prefab = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(prefabFilePath));
             //ConnectionIdentifier connectionIdentifier = prefab.GetComponent<ConnectionIdentifier>();
 
@@ -260,32 +261,32 @@ public class MenuSetupManager : MonoBehaviour
     private void ImportJSONInformation()
     {
         // Ensures the relevant save folders are created if they were removed
-        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + editorFolder))
         {
-            AssetDatabase.CreateFolder("Assets", editorFolder);
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + editorFolder);
         }
 
-        if (!AssetDatabase.IsValidFolder("Assets/" + previewFolder))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + previewFolder))
         {
-            AssetDatabase.CreateFolder("Assets", previewFolder);
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + previewFolder);
         }
 
-        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab1Name))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab1Name))
         {
-            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab1Name);
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab1Name);
         }
 
-        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab2Name))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab2Name))
         {
-            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab2Name);
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab2Name);
         }
 
-        if (!AssetDatabase.IsValidFolder("Assets/" + editorFolder + "/" + editorPrefab3Name))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab3Name))
         {
-            AssetDatabase.CreateFolder("Assets/" + editorFolder, editorPrefab3Name);
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + editorFolder + "/" + editorPrefab3Name);
         }
 
-        string editorPath = Application.dataPath + "/" + editorFolder + "/";
+        string editorPath = Application.persistentDataPath + "/" + editorFolder + "/";
 
         // Ensures the relevant save files are created if they were removed
         if (!File.Exists(editorPath + save1Name))
@@ -321,12 +322,12 @@ public class MenuSetupManager : MonoBehaviour
             editorStructures[2] = JsonUtility.FromJson<EditorStructure>(File.ReadAllText(editorPath + save3Name));
         }
 
-        string[] previewFilePaths = AssetDatabase.GetSubFolders("Assets/" + previewFolder);
+        string[] previewFilePaths = Directory.GetDirectories(Application.persistentDataPath + "/" + previewFolder);
 
         foreach (string filePath in previewFilePaths)
         {
             string[] previewFiles = Directory.GetFiles(filePath);
-            string jsonFile = previewFiles.FirstOrDefault(s => s.EndsWith(".json"));
+            string jsonFile = previewFiles.FirstOrDefault(s => s.EndsWith("SAVE.json"));
 
             if (jsonFile == null) throw new Exception("Preview structure JSON modified outside the script; terminating.");
 
