@@ -1,16 +1,22 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// BackgroundParallax captures any mouse movement and proportionally moves an assigned background to emulate a parallax effect.
+/// </summary>
 public class BackgroundParallax : MonoBehaviour
 {
-    private static BackgroundParallax instance;
+    private static BackgroundParallax instance; // Singleton state reference
 
-    [SerializeField] float parallaxStrength;
+    [SerializeField]
+    float parallaxStrength; // Controls how much the captured mouse movement alters the background.
 
-    [SerializeField] RectTransform backgroundTransform;
+    [SerializeField]
+    RectTransform backgroundTransform; // The background that the parallax is applied on.
 
-    private Vector2 mousePos;
+    private Vector2 mousePos; // Stores prior mouse positions
 
+    // Enforces a singleton state pattern
     private void Awake()
     {
         if (instance != null)
@@ -22,13 +28,11 @@ public class BackgroundParallax : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        mousePos = Input.mousePosition;
-    }
+    private void Start() { mousePos = Input.mousePosition; }
 
     private void Update()
     {
+        // Captures the difference in mouse position between frames, proportionally moving the background.
         Vector2 prevMousePos = mousePos, mouseDelta;
 
         mousePos = Input.mousePosition;
@@ -36,6 +40,6 @@ public class BackgroundParallax : MonoBehaviour
         backgroundTransform.offsetMin += mouseDelta;
     }
 
-    // Single state reference
+    // Getter method
     public static BackgroundParallax Instance { get { return instance; } }
 }
