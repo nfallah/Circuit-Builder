@@ -1,17 +1,36 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// CircuitIdentifier provides circuit serialization and deserialization by storing relevant enum values.
+/// </summary>
 [Serializable]
 public class CircuitIdentifier
 {
+    /// <summary>
+    /// CircuitType is the serialized representation of any circuit located within a scene.
+    /// </summary>
     public enum CircuitType { CUSTOM_CIRCUIT, INPUT_GATE, DISPLAY, BUFFER, AND_GATE, NAND_GATE, NOR_GATE, NOT_GATE, OR_GATE, XOR_GATE }
 
-    [SerializeField] public CircuitType circuitType;
+    /// <summary>
+    /// The circuit type to be serialized by this CircuitIdentifier instance.
+    /// </summary>
+    [SerializeField]
+    public CircuitType circuitType;
 
-    [SerializeField] public int previewStructureID = -1;
+    /// <summary>
+    /// Contains a valid custom circuit ID if the referenced CircuitType value is <seealso cref="CircuitType.CUSTOM_CIRCUIT"/>.
+    /// </summary>
+    [SerializeField]
+    public int previewStructureID = -1;
 
-    [SerializeField] Vector2 circuitLocation;
+    /// <summary>
+    /// The location of the circuit within the scene.
+    /// </summary>
+    [SerializeField]
+    Vector2 circuitLocation;
 
+    /// <param name="circuit">The circuit to serialize.</param>
     public CircuitIdentifier(Circuit circuit)
     {
         Vector3 pos = circuit.PhysicalObject.transform.position;
@@ -19,14 +38,26 @@ public class CircuitIdentifier
         circuitType = CircuitToCircuitType(circuit);
         circuitLocation = new Vector2(pos.x, pos.z);
 
+        // If the circuit is a custom one, store its ID
         if (circuitType == CircuitType.CUSTOM_CIRCUIT) previewStructureID = ((CustomCircuit)circuit).PreviewStructure.ID;
     }
 
+    /// <summary>
+    /// Instantiates and returns a <see cref="Circuit"/> based on the provided CircuitIdentifier (using default visibility settings).
+    /// </summary>
+    /// <param name="circuitIdentifier">The CircuitIdentifier to access and reference.</param>
+    /// <returns>The instantiated <seealso cref="Circuit"/>.</returns>
     public static Circuit RestoreCircuit(CircuitIdentifier circuitIdentifier)
     {
         return RestoreCircuit(circuitIdentifier, true);
     }
 
+    /// <summary>
+    /// Instantiates and returns a <see cref="Circuit"/> based on the provided CircuitIdentifier.
+    /// </summary>
+    /// <param name="circuitIdentifier">The CircuitIdentifier to access and reference.</param>
+    /// <param name="visible">False if the circuit is located inside of a custom circuit, otherwise true.</param>
+    /// <returns>The instantiated <seealso cref="Circuit"/>.</returns>
     public static Circuit RestoreCircuit(CircuitIdentifier circuitIdentifier, bool visible)
     {
         Vector2 pos = visible ? circuitIdentifier.circuitLocation : Vector2.positiveInfinity;
@@ -58,6 +89,11 @@ public class CircuitIdentifier
         }
     }
 
+    /// <summary>
+    /// Converts the provided <see cref="Circuit"/> to a valid <seealso cref="CircuitType"/> for serialization.
+    /// </summary>
+    /// <param name="circuit">The circuit to convert.</param>
+    /// <returns>The converted <seealso cref="CircuitType"/>.</returns>
     private static CircuitType CircuitToCircuitType(Circuit circuit)
     {
         Type type = circuit.GetType();
