@@ -1,6 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// MeshSerializer serves as a wrapper class for containing all relevant mesh and transform values for serialization and deserialization of wires.
+/// </summary>
 [Serializable]
 public class MeshSerializer
 {
@@ -16,15 +19,20 @@ public class MeshSerializer
     [SerializeField]
     Vector3[] normals, vertices;
 
+    /// <summary>
+    /// Extracts mesh and transform values pertaining to a wire.
+    /// </summary>
+    /// <param name="mesh">The mesh to extract relevant values from.</param>
+    /// <param name="parentTransform">The parent transform of the GameObject containing the mesh (could be itself).</param>
     public MeshSerializer(Mesh mesh, Transform parentTransform)
     {
-        vertices = mesh.vertices;
         triangles = mesh.triangles;
+        uv = mesh.uv;
         position = parentTransform.position;
         rotation = parentTransform.eulerAngles;
         scale = parentTransform.localScale;
-        uv = mesh.uv;
         normals = mesh.normals;
+        vertices = mesh.vertices;
     }
 
     // Getter methods

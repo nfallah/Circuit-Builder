@@ -152,7 +152,7 @@ public class CircuitVisualizer : MonoBehaviour
         obj.layer = 11;
     }
 
-    // Generates a mesh corresponding to the name & inputs/outputs of a given circuit
+    // Generates a mesh corresponding to the name and inputs/outputs of a given circuit
     public void VisualizeCircuit(Circuit circuit)
     {
         VisualizeCircuit(circuit, Vector2.zero);

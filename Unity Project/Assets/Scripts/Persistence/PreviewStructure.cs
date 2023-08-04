@@ -2,28 +2,63 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// PreviewStructure contains all serializable values to restore a preview scene.
+/// </summary>
 [Serializable]
 public class PreviewStructure
 {
-    [SerializeField] List<CircuitIdentifier> circuits = new List<CircuitIdentifier>();
+    /// <summary>
+    /// The list of circuit identifiers pertaining to each circuit within the scene.
+    /// </summary>
+    [SerializeField]
+    List<CircuitIdentifier> circuits = new List<CircuitIdentifier>();
 
-    [SerializeField] int id;
+    /// <summary>
+    /// The unique ID assigned to this preview structure.<br/><br/>
+    /// Functionally, this ID is utilized to access the specific folder under which the connection and save information of the preview structure is.
+    /// </summary>
+    [SerializeField]
+    int id;
 
-    [SerializeField] List<int> inputOrders, outputOrders;
+    /// <summary>
+    /// The order in which empty inputs and outputs were selected by the user.<br/><br/>
+    /// Functionally, a visualized custom circuit will output these inputs and outputs in their selected order (bottom to top).
+    /// </summary>
+    [SerializeField]
+    List<int> inputOrders,
+        outputOrders;
 
-    [SerializeField] List<InternalConnection> connections;
+    /// <summary>
+    /// Identifying list of connections that exist within the custom circuit.
+    /// </summary>
+    [SerializeField]
+    List<InternalConnection> connections;
 
-    [SerializeField] string name;
+    /// <summary>
+    /// Name of the custom circuit.
+    /// </summary>
+    [SerializeField]
+    string name;
 
-    [SerializeField] List<string> inputLabels, outputLabels;
+    /// <summary>
+    /// The corresponding user-assigned label for each empty input/output.
+    /// </summary>
+    [SerializeField]
+    List<string> inputLabels,
+        outputLabels;
 
-    [SerializeField] Vector3 cameraLocation;
+    /// <summary>
+    /// Location of the camera within the editor scene.
+    /// </summary>
+    [SerializeField]
+    Vector3 cameraLocation;
 
-    public PreviewStructure(string name)
-    {
-        this.name = name;
-    }
+    public PreviewStructure(string name) { this.name = name; }
 
+    /// <summary>
+    /// Internal class utilized to obtain the custom circuit ID via in-scene raycasting.
+    /// </summary>
     public class PreviewStructureReference : MonoBehaviour
     {
         private int id;
@@ -32,8 +67,6 @@ public class PreviewStructure
     }
 
     // Getter and setter methods
-    public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
-
     public List<CircuitIdentifier> Circuits { get { return circuits; } set { circuits = value; } }
 
     public int ID { get { return id; } set { id = value; } }
@@ -47,6 +80,8 @@ public class PreviewStructure
     public List<string> InputLabels { get { return inputLabels; } set { inputLabels = value; } }
 
     public List<string> OutputLabels { get { return outputLabels; } set { outputLabels = value; } }
+
+    public Vector3 CameraLocation { get { return cameraLocation; } set { cameraLocation = value; } }
 
     // Getter method
     public string Name { get { return name; } }
