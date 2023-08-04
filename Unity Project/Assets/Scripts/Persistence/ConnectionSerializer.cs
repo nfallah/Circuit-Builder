@@ -43,7 +43,7 @@ public class ConnectionSerializer
     private ConnectionSerializer() { }
 
     /// <summary>
-    /// Instantiates and populates a <seealso cref="ConnectionSerializer"/> with the assigned values and saves to the provided path.
+    /// Instantiates and populates a <seealso cref="ConnectionSerializer"/> with the assigned values; saves to the provided path.
     /// </summary>
     /// <param name="connection">The connection to serialize.</param>
     /// <param name="circuitConnectorIdentifier">The obtained <seealso cref="CircuitConnectorIdentifier"/> representing this connection.</param>
