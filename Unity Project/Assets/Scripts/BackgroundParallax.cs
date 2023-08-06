@@ -6,15 +6,25 @@ using UnityEngine;
 /// </summary>
 public class BackgroundParallax : MonoBehaviour
 {
-    private static BackgroundParallax instance; // Singleton state reference
+    // Singleton state reference
+    private static BackgroundParallax instance;
 
+    /// <summary>
+    /// Controls how much the captured mouse movement alters the background.
+    /// </summary>
     [SerializeField]
-    float parallaxStrength; // Controls how much the captured mouse movement alters the background.
+    float parallaxStrength;
 
+    /// <summary>
+    /// The background that the parallax is applied on.
+    /// </summary>
     [SerializeField]
-    RectTransform backgroundTransform; // The background that the parallax is applied on.
+    RectTransform backgroundTransform;
 
-    private Vector2 mousePos; // Stores prior mouse positions
+    /// <summary>
+    /// Stores prior mouse positions to calculate the delta movement between frames.
+    /// </summary>
+    private Vector2 mousePos;
 
     // Enforces a singleton state pattern
     private void Awake()
