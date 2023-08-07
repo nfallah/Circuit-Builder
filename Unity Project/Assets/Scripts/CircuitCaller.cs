@@ -48,15 +48,23 @@ public class CircuitCaller : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Ensures that an update call pertaining to a custom circuit only runs if its custom circuit is not deleted.
+    /// </summary>
+    /// <param name="updateCall">The update call to test.</param>
+    /// <returns>Whether this update call should be utilized.</returns>
     private static bool CustomCircuitTest(Circuit.UpdateCall updateCall)
     {
         // In preview scene, therefore not necessary to run the test
         if (EditorStructureManager.Instance == null) return true;
 
+        // If the input of an update call is under a parent circuit, it is guaranteed that its output is as well.
         bool isInternalConnection = updateCall.Input.ParentCircuit.customCircuit != null;
 
+        // Connection does not pertain to the inside of a custom circuit.
         if (!isInternalConnection) return true;
 
+        // Otherwise, obtain the top-most custom circuit and check to see if it is still within the scene.
         CustomCircuit customCircuitParent = updateCall.Input.ParentCircuit.customCircuit;
 
         while (customCircuitParent.customCircuit != null) customCircuitParent = customCircuitParent.customCircuit;
@@ -88,6 +96,7 @@ public class CircuitCaller : MonoBehaviour
             }
         }
 
+        // Ensures all remaining calls within the custom circuit are skipped
         if (circuit.GetType() == typeof(CustomCircuit)) ((CustomCircuit)circuit).ShouldDereference = true;
 
         EditorStructureManager.Instance.DisplaySavePrompt = true; // Destroying a circuit triggers the save prompt
