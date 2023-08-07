@@ -106,7 +106,7 @@ public abstract class Circuit
     private string circuitName;
 
     // Utilized by inherited circuits to determine the specific number of input and output nodes
-    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition) : this(circuitName, numInputs, numOutputs, startingPosition, true) {}
+    public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition) : this(circuitName, numInputs, numOutputs, startingPosition, true) { }
 
     public Circuit(string circuitName, int numInputs, int numOutputs, Vector2 startingPosition, bool createIO)
     {
@@ -137,11 +137,6 @@ public abstract class Circuit
      */
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
-        Debug.Log("-=+=-");
-        Debug.Log("POWERED: " + powered);
-        Debug.Log("NAME: " + input.ParentCircuit.circuitName);
-        Debug.Log("OUTPUT == NULL: " + (output == null));
-        Debug.Log("-=+=-");
         input.Powered = powered;
         if (input.StatusRenderer != null) input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         if (input.Connection != null) CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);

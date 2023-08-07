@@ -7,11 +7,16 @@ using UnityEngine;
 public class CustomCircuit : Circuit
 {
     /// <summary>
-    /// The current custom circuit that is being rendered.<br/><br/>.
+    /// The current custom circuit that is being rendered.<br/><br/>
     /// 
     /// This value is utilized to differentiate between external and internal (part of a custom circuit) custom circuits.
     /// </summary>
     private static CustomCircuit currentCustomCircuit;
+
+    /// <summary>
+    /// Whether or not the custom circuit has been removed and therefore deferenced by its child circuits.
+    /// </summary>
+    private bool shouldDereference;
 
     /// <summary>
     /// The list of all internal circuits within the custom circuit.
@@ -71,7 +76,7 @@ public class CustomCircuit : Circuit
     public CustomCircuit(PreviewStructure previewStructure, Vector2 startingPos, bool isFirst) : base(previewStructure.Name, Vector2.positiveInfinity)
     {
         // If this custom circuit is external, it should be marked as the current custom circuit to be built as well as visible.
-        if (isFirst) { currentCustomCircuit = this; Visible = true; }
+        if (isFirst) { shouldDereference = false; currentCustomCircuit = this; Visible = true; }
 
         CircuitName = previewStructure.Name;
         this.previewStructure = previewStructure;
@@ -163,6 +168,9 @@ public class CustomCircuit : Circuit
 
         return null;
     }
+
+    // Getter and setter method
+    public bool ShouldDereference { get { return shouldDereference; } set { shouldDereference = value; } }
 
     // Getter methods
     public GameObject Connections { get { return connections; } }
