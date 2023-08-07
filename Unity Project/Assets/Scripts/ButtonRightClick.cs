@@ -6,11 +6,16 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class ButtonRightClick : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] int saveIndex; // Stores which editor scene this instance is assigned to
-    
+    /// <summary>
+    /// Stores which editor scene this instance is assigned to.
+    /// </summary>
+    [SerializeField] int saveIndex;
+
+    /// <summary>
+    /// Begins the scene deletion process if the captured input was a right click.
+    /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
-        // Begins the scene deletion process if the captured input was a right click.
         if (eventData.button == PointerEventData.InputButton.Right) MenuInterfaceManager.Instance.BeginSceneDeletion(saveIndex);
     }
 }

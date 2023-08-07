@@ -320,6 +320,8 @@ public class BehaviorManager : MonoBehaviour
 
     public void CircuitPlacement(Circuit currentCircuit)
     {
+        if (this.currentCircuit != null) { CircuitCaller.Destroy(this.currentCircuit); }
+
         this.currentCircuit = currentCircuit;
         currentCircuit.PhysicalObject.transform.position = Coordinates.Instance.MousePos;
     }
