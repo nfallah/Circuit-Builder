@@ -137,6 +137,11 @@ public abstract class Circuit
      */
     public static void UpdateCircuit(bool powered, Input input, Output output)
     {
+        Debug.Log("-=+=-");
+        Debug.Log("POWERED: " + powered);
+        Debug.Log("NAME: " + input.ParentCircuit.circuitName);
+        Debug.Log("OUTPUT == NULL: " + (output == null));
+        Debug.Log("-=+=-");
         input.Powered = powered;
         if (input.StatusRenderer != null) input.StatusRenderer.material = powered ? CircuitVisualizer.Instance.PowerOnMaterial : CircuitVisualizer.Instance.PowerOffMaterial;
         if (input.Connection != null) CircuitConnector.UpdateConnectionMaterial(input.Connection, powered);

@@ -36,7 +36,7 @@ public class NotGate : Circuit
     {
         if (Outputs[0].StatusRenderer == null) return false;
 
-        return (Outputs[0].Powered && Outputs[0].StatusRenderer.material != CircuitVisualizer.Instance.PowerOnMaterial) ||
-               (!Outputs[0].Powered && Outputs[0].StatusRenderer.material != CircuitVisualizer.Instance.PowerOffMaterial);
+        return (Outputs[0].Powered && Outputs[0].StatusRenderer.sharedMaterial != CircuitVisualizer.Instance.PowerOnMaterial) ||
+               (!Outputs[0].Powered && Outputs[0].StatusRenderer.sharedMaterial != CircuitVisualizer.Instance.PowerOffMaterial);
     }
 }
