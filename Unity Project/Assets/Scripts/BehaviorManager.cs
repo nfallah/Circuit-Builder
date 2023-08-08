@@ -280,7 +280,7 @@ public class BehaviorManager : MonoBehaviour
             startingPos = currentOutput.Transform.position;
         }
 
-        CircuitConnector.Instance.BeginConnectionProcess(powerStatus, startingPos);
+        CircuitConnector.Instance.BeginConnectionProcess(startingPos);
     }
 
     private void IOAlternatePress(GameObject hitObject)
