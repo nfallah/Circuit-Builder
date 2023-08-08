@@ -122,6 +122,8 @@ public class CustomCircuit : Circuit
         // If the custom circuit is external/visible (synonymous with one another), render it into the scene.
         if (Visible) CircuitVisualizer.Instance.VisualizeCustomCircuit(this, startingPos);
 
+        List<UpdateCall> updateCalls = new List<UpdateCall>();
+
         // Within the custom circuit, reinstate every connection.
         foreach (InternalConnection internalConnection in previewStructure.Connections)
         {
@@ -136,9 +138,12 @@ public class CustomCircuit : Circuit
             input.ParentOutput = output;
             output.Connections.Add(connection);
             output.ChildInputs.Add(input);
-            UpdateCircuit(input, output);
+            updateCalls.Add(new UpdateCall(output.Powered, input, output));
             index++;
         }
+
+        // Begins to call each connection.
+        CircuitCaller.InitiateUpdateCalls(updateCalls);
 
         // Begins the chain reaction to inevitably update the outputs.
         UpdateOutputs();
