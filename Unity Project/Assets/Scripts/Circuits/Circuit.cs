@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Circuit;
 
 /// <summary>
 /// Circuit is the parent of every other concretized circuit, containing several predefined constructors, methods, and values.<br/><br/>
@@ -306,7 +305,7 @@ public abstract class Circuit
     }
 
     /// <summary>
-    /// Updates the materials of each output to update.
+    /// Updates the materials of each valid output.
     /// </summary>
     private void UpdateStatuses()
     {
