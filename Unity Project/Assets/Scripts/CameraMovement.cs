@@ -1,18 +1,51 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// CameraMovement handles all player movement within the editor scene.<br/><br/>
+/// Some behaviors (e.g. scrolling) will be enabled or disabled based on the state of several other scripts.
+/// </summary>
 public class CameraMovement : MonoBehaviour
 {
+    // Singleton state reference
     private static CameraMovement instance;
 
-    [SerializeField] Camera playerCamera;
+    /// <summary>
+    /// The primary camera utilized by the player.
+    /// </summary>
+    [SerializeField]
+    Camera playerCamera;
 
-    [SerializeField] float movementSpeed, scrollSpeed, minHeight, maxHeight;
+    /// <summary>
+    /// The speed under which the player can move around scenes.
+    /// </summary>
+    [SerializeField]
+    float movementSpeed;
 
-    [SerializeField] KeyCode upKey, downKey;
+    /// <summary>
+    /// The speed under which the player can scroll around scenes.
+    /// </summary>
+    [SerializeField]
+    float scrollSpeed;
 
-    private Vector3 mousePosCurrent; // Keeps track of the mouse position from the current frame
+    /// <summary>
+    /// How low and high the player can vertically go.
+    /// </summary>
+    [SerializeField]
+    float minHeight, maxHeight;
 
+    /// <summary>
+    /// Moves the player up and down respectively.
+    /// </summary>
+    [SerializeField]
+    KeyCode upKey, downKey;
+
+    /// <summary>
+    /// Keeps track of the mouse position in the current frame.
+    /// </summary>
+    private Vector3 mousePosCurrent;
+
+    // Enforces a singleton state pattern and initializes camera values.
     private void Awake()
     {
         if (instance != null)
@@ -25,11 +58,9 @@ public class CameraMovement : MonoBehaviour
         ClampPos();
     }
 
-    private void Start()
-    {
-        mousePosCurrent = Coordinates.Instance.MousePos;
-    }
+    private void Start() { mousePosCurrent = Coordinates.Instance.MousePos; }
 
+    // Listens to key inputs and updates movements each frame.
     private void Update()
     {
         float x, y, z;
@@ -38,10 +69,11 @@ public class CameraMovement : MonoBehaviour
 
         mousePosCurrent = Coordinates.Instance.MousePos;
 
-        // If the scene is paused, no movement can occur
+        // If the scene is paused or there is an override, no movement can occur.
         if (BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.PAUSED && !IOAssigner.Instance.MovementOverride) return;
 
-        // Otherwise, movement features are allowed depending on whether the game is unrestricted or locked.
+        // Otherwise, some/all movement features are allowed depending on whether the game is unrestricted or locked.
+        // X-Z movement via mouse drag
         if (Input.GetMouseButton(0) && BehaviorManager.Instance.CurrentStateType == BehaviorManager.StateType.UNRESTRICTED && BehaviorManager.Instance.CurrentGameState != BehaviorManager.GameState.CIRCUIT_HOVER)
         {
             Vector3 mousePosDelta = mousePosPrev - mousePosCurrent;
@@ -50,6 +82,7 @@ public class CameraMovement : MonoBehaviour
             z = mousePosDelta.z;
         }
 
+        // X-Z movement via WASD
         else
         {
             // Obtains x and z axis values based on input
@@ -57,11 +90,13 @@ public class CameraMovement : MonoBehaviour
             z = Input.GetAxisRaw("Vertical") * movementSpeed * Time.deltaTime;
         }
 
+        // Y movement via scroll wheel
         if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
         {
             y = -Input.mouseScrollDelta.y * scrollSpeed * Time.deltaTime;
         }
 
+        // Y movement via upKey and/or downKey
         else
         {
             y = 0;
@@ -84,7 +119,9 @@ public class CameraMovement : MonoBehaviour
         mousePosCurrent = Coordinates.Instance.MousePos;
     }
 
-    // Clamps values to ensure the user cannot traverse out of bounds
+    /// <summary>
+    /// Clamps values to ensure the user cannot traverse out of bounds.
+    /// </summary>
     private void ClampPos()
     {
         Vector3 pos = transform.position;
@@ -93,6 +130,7 @@ public class CameraMovement : MonoBehaviour
         transform.position = pos;
     }
 
+    // Getter methods
     public static CameraMovement Instance { get { return instance; } }
 
     public Camera PlayerCamera { get { return playerCamera; } }

@@ -1,18 +1,51 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// CameraMovementPreview handles all player movement within the preview scene.<br/><br/>
+/// Some behaviors (e.g. scrolling) will be enabled or disabled based on the state of several other scripts.
+/// </summary>
 public class CameraMovementPreview : MonoBehaviour
 {
+    // Singleton state reference
     private static CameraMovementPreview instance;
 
-    [SerializeField] Camera playerCamera;
+    /// <summary>
+    /// The primary camera utilized by the player.
+    /// </summary>
+    [SerializeField]
+    Camera playerCamera;
 
-    [SerializeField] float movementSpeed, scrollSpeed, minHeight, maxHeight;
+    /// <summary>
+    /// The speed under which the player can move around scenes.
+    /// </summary>
+    [SerializeField]
+    float movementSpeed;
 
-    [SerializeField] KeyCode upKey, downKey;
+    /// <summary>
+    /// The speed under which the player can scroll around scenes.
+    /// </summary>
+    [SerializeField]
+    float scrollSpeed;
 
-    private Vector3 mousePosCurrent; // Keeps track of the mouse position from the current frame
+    /// <summary>
+    /// How low and high the player can vertically go.
+    /// </summary>
+    [SerializeField]
+    float minHeight, maxHeight;
 
+    /// <summary>
+    /// Moves the player up and down respectively.
+    /// </summary>
+    [SerializeField]
+    KeyCode upKey, downKey;
+
+    /// <summary>
+    /// Keeps track of the mouse position in the current frame.
+    /// </summary>
+    private Vector3 mousePosCurrent;
+
+    // Enforces a singleton state pattern and initializes camera values.
     private void Awake()
     {
         if (instance != null)
@@ -25,11 +58,9 @@ public class CameraMovementPreview : MonoBehaviour
         ClampPos();
     }
 
-    private void Start()
-    {
-        mousePosCurrent = BehaviorManagerPreview.Instance.UpdateCoordinates();
-    }
+    private void Start() { mousePosCurrent = BehaviorManagerPreview.Instance.UpdateCoordinates(); }
 
+    // Listens to key inputs and updates movements each frame.
     private void Update()
     {
         float x, y, z;
@@ -38,7 +69,7 @@ public class CameraMovementPreview : MonoBehaviour
 
         mousePosCurrent = BehaviorManagerPreview.Instance.UpdateCoordinates();
 
-        // Movement features are allowed depending on whether the game is unrestricted or locked.
+        // X-Z movement via mouse drag
         if (Input.GetMouseButton(0) && !BehaviorManagerPreview.Instance.IsUILocked)
         {
             Vector3 mousePosDelta = mousePosPrev - mousePosCurrent;
@@ -47,6 +78,7 @@ public class CameraMovementPreview : MonoBehaviour
             z = mousePosDelta.z;
         }
 
+        // X-Z movement via WASD
         else
         {
             // Obtains x and z axis values based on input
@@ -54,11 +86,13 @@ public class CameraMovementPreview : MonoBehaviour
             z = Input.GetAxisRaw("Vertical") * movementSpeed * Time.deltaTime;
         }
 
+        // Y movement via scroll wheel
         if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
         {
             y = -Input.mouseScrollDelta.y * scrollSpeed * Time.deltaTime;
         }
 
+        // Y movement via upKey and/or downKey
         else
         {
             y = 0;
@@ -81,7 +115,9 @@ public class CameraMovementPreview : MonoBehaviour
         mousePosCurrent = BehaviorManagerPreview.Instance.UpdateCoordinates();
     }
 
-    // Clamps values to ensure the user cannot traverse out of bounds
+    /// <summary>
+    /// Clamps values to ensure the user cannot traverse out of bounds.
+    /// </summary>
     private void ClampPos()
     {
         Vector3 pos = transform.position;
@@ -89,7 +125,8 @@ public class CameraMovementPreview : MonoBehaviour
         pos.y = Mathf.Clamp(pos.y, minHeight, maxHeight);
         transform.position = pos;
     }
-
+    
+    // Getter methods
     public static CameraMovementPreview Instance { get { return instance; } }
 
     public Camera PlayerCamera { get { return playerCamera; } }
