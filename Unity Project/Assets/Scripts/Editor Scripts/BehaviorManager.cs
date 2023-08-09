@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.XR;
-using static UnityEditor.PlayerSettings;
 
 /// <summary>
 /// BehaviorManager primarily handles the bulk of all dynamic and scripted non-UI events triggerable by the user.
