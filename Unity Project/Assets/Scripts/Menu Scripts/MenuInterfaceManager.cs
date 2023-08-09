@@ -37,12 +37,12 @@ public class MenuInterfaceManager : MonoBehaviour
         customCircuitPrefab;
 
     /// <summary>
-    /// Loaded in when a relevant interface is opened.<br/><br/>
+    /// Set to visible when an interface is opened.<br/><br/>
     /// Within the scene, this should be a semi-transparent background overlayed onto everything except the currently opened interface.
     /// </summary>
     [SerializeField]
     GameObject transparentBackground,
-        transparentBackgroundUpper; // UtilizedfFor multi-level interfaces such as the options interface.
+        transparentBackgroundUpper; // Utilized for multi-level interfaces such as the options interface.
 
     [Space(10)]
     /// <summary>
@@ -217,7 +217,7 @@ public class MenuInterfaceManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Referenced when the user acknowledges and closes the delete error interface; called by pressing the in-scene button.
+    /// Referenced when the user acknowledges and closes the delete error interface; called by pressing an in-scene button.
     /// </summary>
     public void OnCircuitDeleteErrorConfirm()
     {

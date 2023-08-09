@@ -1231,7 +1231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3522709999272662286}
   m_Layer: 5
-  m_Name: Or
+  m_Name: '[Truth Table] OR'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

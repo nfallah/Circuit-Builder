@@ -2030,7 +2030,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5853404690225177517}
   m_Layer: 5
-  m_Name: Nor
+  m_Name: '[Truth Table] NOR'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

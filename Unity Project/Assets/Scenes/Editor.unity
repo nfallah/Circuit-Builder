@@ -4968,8 +4968,8 @@ MonoBehaviour:
   outputMaterial: {fileID: 2100000, guid: 902826a6fcd41624ea1a663e894a9cd2, type: 2}
   powerOffMaterial: {fileID: 2100000, guid: 3973f509dc909ca429c7f50f2bacbb09, type: 2}
   powerOnMaterial: {fileID: 2100000, guid: f8ad5f49f71a39f48a5ea3844a22edb5, type: 2}
-  textPadding: {x: 0.25, y: 0.125}
   font: {fileID: 11400000, guid: d70cbd4b361837b43af880d061805b3c, type: 2}
+  textPadding: {x: 0.25, y: 0.125}
 --- !u!114 &1100941118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4982,9 +4982,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78665c06dd7d9c04c8fd25dc8674c6c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  snapToggleKey: 103
   gridTransparencyConstant: 0.2
   gridStatus: {fileID: 1790265463}
+  snapToggleKey: 103
   coordinateText: {fileID: 2125847430}
 --- !u!114 &1100941119
 MonoBehaviour:
@@ -5054,10 +5054,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7fa40fcad42b9c40907e6b7f1d4928e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notifierText: {fileID: 9188795061014624757}
-  circuitErrorText: {fileID: 6273197713661186641}
-  labelText: {fileID: 6631920510273206716}
-  circuitNameField: {fileID: 5800013811524909546}
   startingCircuitColor: {r: 1, g: 0.6745098, b: 0.9372549, a: 1}
   customCircuitColor: {r: 0.7372549, g: 0.972549, b: 0.98039216, a: 1}
   bookmarkScrollThickness: 10
@@ -5074,17 +5070,21 @@ MonoBehaviour:
   bookmarksMenu: {fileID: 169274319}
   bookmarksScroll: {fileID: 627822570}
   bookmarksPanel: {fileID: 2006307155}
-  bookmarkRef: {fileID: 7915247660544106093, guid: fdaabd1e4c450154b86f3245fbc39580,
-    type: 3}
   customBookmarkRef: {fileID: 5054320141043047349, guid: deaa03f88f734bc4ca3329ead53f60ea,
+    type: 3}
+  bookmarkRef: {fileID: 7915247660544106093, guid: fdaabd1e4c450154b86f3245fbc39580,
     type: 3}
   cancelKey: 27
   addCustomPanel: {fileID: 393906638}
   addStartingPanel: {fileID: 1010960988}
   bookmarksBorder: {fileID: 269653725}
+  circuitErrorText: {fileID: 6273197713661186641}
+  labelText: {fileID: 6631920510273206716}
+  notifierText: {fileID: 9188795061014624757}
+  circuitNameField: {fileID: 5800013811524909546}
   circuitToggle: {fileID: 1407636648}
-  bookmarkSize: {x: 200, y: 50}
   bookmarkMaskSize: {x: 200, y: 200}
+  bookmarkSize: {x: 200, y: 50}
 --- !u!114 &1100941124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5122,9 +5122,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   exitKey: 27
-  hoveredMaterial: {fileID: 2100000, guid: 565fe31d7a308564ca63461b601a5e3d, type: 2}
   emptyInputMaterial: {fileID: 2100000, guid: 5e6c7b722cc6d9d45973a3f491371fb9, type: 2}
   emptyOutputMaterial: {fileID: 2100000, guid: fba33fbea8b373e42a61b4f984df9d0f, type: 2}
+  hoveredMaterial: {fileID: 2100000, guid: 565fe31d7a308564ca63461b601a5e3d, type: 2}
   hoverText: {fileID: 1497343685}
 --- !u!114 &1162301347 stripped
 MonoBehaviour:

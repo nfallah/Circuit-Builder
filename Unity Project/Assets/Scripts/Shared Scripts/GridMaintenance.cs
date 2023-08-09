@@ -1,6 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// GridMaintenance instantiates and maintains the visible grid in the editor and preview scenes.
+/// </summary>
 public class GridMaintenance : MonoBehaviour
 {
     // Singleton state reference

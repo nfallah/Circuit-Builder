@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// BehaviorManagerPreview handles game state actions transitions within a preview scene.
+/// </summary>
 public class BehaviorManagerPreview : MonoBehaviour
 {
     // Singleton state reference
