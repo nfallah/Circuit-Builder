@@ -1,7 +1,5 @@
 # Circuit Builder
-
-## Rundown
-A digital logic simulator for creating, saving, and testing circuits.
+_A digital logic simulator for creating, saving, and testing circuits_
 
 ## Included in the Game
 - Ability to load and save (3) different scenes
