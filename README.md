@@ -8,6 +8,7 @@ _A digital logic simulator for creating, saving, and testing circuits_
 - Visualize circuits with an 8-pin display
 - Compress all placed elements into a user-specified custom circuit
 - Inspect components of a custom circuit<br/>
+- An in-game guide documenting all features
 _... and more_
 
 ## Included in the Repository
