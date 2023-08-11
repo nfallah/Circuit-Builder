@@ -8,7 +8,7 @@ _A digital logic simulator for creating, saving, and testing circuits_
 - Visualize circuits with an 8-pin display
 - Compress all placed elements into a user-specified custom circuit
 - Inspect components of a custom circuit<br/>
-... and more
+_... and more_
 
 ## Included in the Repository
 - Unity project itself (note that when opening Circuit Builder in Unity, the right scene may not load and must be manually opened through the content browser)
