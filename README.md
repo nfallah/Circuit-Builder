@@ -1,14 +1,14 @@
 # Circuit Builder
 _A digital logic simulator for creating, saving, and testing circuits_
 
-## Included in the Game
+## Game Features
 - Ability to load and save (3) different scenes
 - Place/delete starting logic gates provided to the user
 - Connect logic gates to one another
 - Visualize circuits with an 8-pin display
 - Compress all placed elements into a user-specified custom circuit
-- Inspect components of a custom circuit<br/>
-- An in-game guide documenting all features
+- Inspect components of a custom circuit
+- In-game guide documenting all features<br/>
 _... and more_
 
 ## Included in the Repository
