@@ -7,7 +7,7 @@ _A digital logic simulator for creating, saving, and testing circuits_
 - Connect logic gates to one another
 - Visualize circuits with an 8-pin display
 - Compress all placed elements into a user-specified custom circuit
-- Inspect components of a custom circuit
+- Inspect components of a custom circuit<be/>
 ... and more
 
 ## Included in the Repository
